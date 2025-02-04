@@ -1,7 +1,7 @@
 import { Link, Outlet } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import Logo from "../components/Logo";
-import NavMenu from "../components/NavMenu";
+import Logo from "../components/ui/Logo";
+import NavMenu from "../components/ui/NavMenu";
 
 export default function AppLayout() {
     return (
