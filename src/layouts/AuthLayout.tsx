@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
-import Logo from "../components/ui/Logo";
+import Logo from "@/components/ui/Logo";
 import { ToastContainer } from "react-toastify";
+import Footer from "@/components/ui/Footer";
 
 export default function AuthLayout() {
     return (
@@ -16,6 +17,8 @@ export default function AuthLayout() {
                     </div>
                 </div>
             </div>
+
+            <Footer />
 
             <ToastContainer
                 position="top-right"
