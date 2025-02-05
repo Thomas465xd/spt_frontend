@@ -11,12 +11,13 @@ import { Fragment } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
 export default function NavMenu () {
-    //const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
     const navigate = useNavigate();
 
     const logout = () => {
-        localStorage.removeItem('UPTASK_AUTH_TOKEN');
-        //queryClient.removeQueries();
+        localStorage.removeItem('SPT_ADMIN_TOKEN');
+        localStorage.removeItem('SPT_AUTH_TOKEN');
+        queryClient.removeQueries();
         navigate('/auth/login');
     };
 
