@@ -8,6 +8,7 @@ import ForgotPasswordView from "./views/auth/ForgotPasswordView";
 import AdminLayout from "./layouts/AdminLayout";
 import ConfirmUserView from "./views/admin/ConfirmUserView";
 import AdminDashboardView from "./views/admin/AdminDashboardView";
+import SetPasswordView from "./views/auth/SetPasswordView";
 
 export default function Router() {
     return (
@@ -21,6 +22,7 @@ export default function Router() {
                     <Route path="/auth/login" element={<LoginView />} />
                     <Route path="/auth/register" element={<RegisterView />} />
                     <Route path="/auth/forgot-password" element={<ForgotPasswordView />} />
+                    <Route path="/auth/set-password/:token" element={<SetPasswordView />} />
                 </Route>
 
                 <Route element={<AdminLayout />}>
