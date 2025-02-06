@@ -1,5 +1,5 @@
 export default function ConfirmUserView() {
     return (
-        <div>ConfirmUserView</div>
+        <h1 className="text-4xl font-bold text-center mt-10">Confirmar Usuarios</h1>
     )
 }

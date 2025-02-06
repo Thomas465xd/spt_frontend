@@ -26,8 +26,8 @@ export default function Router() {
                 </Route>
 
                 <Route element={<AdminLayout />}>
-                    <Route path="/admin" element={<AdminDashboardView />} />
-                    <Route path="/admin/confirm/:token" element={<ConfirmUserView />} />
+                    <Route path="/admin/dashboard" element={<AdminDashboardView />} />
+                    <Route path="/admin/confirm" element={<ConfirmUserView />} />
                 </Route>
             </Routes>
         </BrowserRouter>
