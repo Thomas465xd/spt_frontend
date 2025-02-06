@@ -1,9 +1,20 @@
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import Footer from '@/components/ui/Footer'
-import { Outlet } from 'react-router-dom'
+import Loader from '@/components/ui/Loader';
+import { useAuth } from '@/hooks/useAuth';
+import { Navigate, Outlet } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 
 export default function AdminLayout() {
+
+    const { data, isError, isLoading } = useAuth();
+
+    if(isLoading) return <Loader />;
+
+    if(isError) return <Navigate to="/auth/login" replace />;
+
+    if(!data.admin) return <Navigate to="/" replace />;
+
     return (
         <>
             <div className="md:flex min-h-screen overflow-auto sm:overflow-hidden">

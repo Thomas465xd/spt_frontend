@@ -41,6 +41,7 @@ export const setPasswordSchema = z.object({
     confirmPassword: z.string().min(8),
 })
 
+export type User = z.infer<typeof userSchema>;
 export type UserRegistrationForm = z.infer<typeof registerSchema>;
 export type UserLoginForm = z.infer<typeof loginSchema>;
 export type ConfigurePasswordForm = z.infer<typeof setPasswordSchema>;
