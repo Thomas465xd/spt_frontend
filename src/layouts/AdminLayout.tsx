@@ -18,18 +18,18 @@ export default function AdminLayout() {
     return (
         <>
             <div className="md:flex min-h-screen overflow-auto sm:overflow-hidden">
-                <aside className="md:w-72 bg-orange-500 md:sticky md:top-0 md:h-screen border-r-4 border-slate-800">
+                <aside className="md:w-72 bg-orange-500 md:sticky md:top-0 md:h-screen overflow-y-auto border-r-4 border-slate-800">
                     <AdminSidebar />
                 </aside>
 
                 <div className="flex-1">
                     <Outlet />
 
-                    {/** <Footer />*/}
+                    <div className=''>
+                        <Footer />
+                    </div>
                 </div>
             </div>
-
-            <Footer />
 
             <ToastContainer
                 position="top-right"

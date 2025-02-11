@@ -41,7 +41,8 @@ export default function AppLayout() {
                     <div className="mx-auto flex flex-col md:flex-row items-center justify-between bg-slate-800 w-full p-5 mt-10 md:mt-0">
                         <div className="flex items-center space-x-4">
                             <Link to={'/'} className="text-white font-bold hover:underline">Inicio</Link>
-                            <Link to={'/auth/login'} className="text-white font-bold hover:underline">Login</Link>
+                            <Link to={'/orders'} className="text-white font-bold hover:underline">Ordenes Registradas</Link>
+                            <Link to={'/'} className="text-white font-bold hover:underline">Carrito</Link>
                         </div>
                     </div>
                 </nav>

@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const userSchema = z.object({
+    _id: z.string(),
     name: z.string(),
     businessName: z.string(),
     rut: z.string(),
@@ -13,6 +14,11 @@ export const userSchema = z.object({
     admin: z.boolean(),
     password: z.string().min(8),
 })
+
+// Define el esquema para la respuesta de la API
+export const usersResponseSchema = z.object({
+    users: z.array(userSchema),  // Se espera un arreglo dentro de la propiedad 'users'
+});
 
 export const registerSchema = userSchema.pick({
     name: true, 

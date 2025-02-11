@@ -44,26 +44,26 @@ export default function NavMenu ({name} : NavMenuProps) {
                 <PopoverPanel className='absolute left-1/2 z-10 mt-5 flex w-screen lg:max-w-min -translate-x-1/2 lg:-translate-x-48'>
                     <div className='w-full lg:w-56 shrink rounded-xl bg-white p-4 text-sm font-semibold leading-6 text-gray-900 shadow-lg ring-1 ring-gray-900/5'>
                         <p className='text-center border-b-gray-300 border-b-2 p-3 font-bold'>Bienvenido: {''}
-                            <span className='text-purple-800 font-extrabold'>{name}</span>
+                            <span className='text-slate-800 font-extrabold'>{name}</span>
                         </p>
                         <Link
                             to='/profile'
                             className='block p-2 hover:text-purple-950'
                         >
-                            My Profile
+                            Mi Perfil
                         </Link>
                         <Link
                             to='/'
                             className='block p-2 hover:text-purple-950'
                         >
-                            My Projects
+                            Mis Ordenes
                         </Link>
                         <button
                             className='block p-2 text-red-500 hover:text-purple-950'
                             type='button'
                             onClick={logout}
                         >
-                            Logout
+                            Cerrar Sesión
                         </button>
                     </div>
                 </PopoverPanel>

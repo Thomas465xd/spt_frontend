@@ -1,6 +1,7 @@
 import { login } from "@/api/AuthAPI";
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import { UserLoginForm } from "@/types/index"
+import { formatRUT } from "@/utilities/rut";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form"
 import { Link, useNavigate } from "react-router-dom"
@@ -15,7 +16,7 @@ export default function LoginView() {
         password: ""
     }
 
-    const { register, handleSubmit, reset, formState: { errors } } = useForm<UserLoginForm>({defaultValues: initialValues});
+    const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm<UserLoginForm>({defaultValues: initialValues});
 
     const navigate = useNavigate();
 
@@ -73,11 +74,16 @@ export default function LoginView() {
                         type="text"
                         placeholder="Ingresa el RUT de registro (ej. 12.345.678-9)"
                         className="border border-gray-300 w-full p-3 mt-3 bg-gray-50 rounded"
+                        maxLength={12}
                         {...register("rut", {
                             required: "El RUT no puede ir vacío",
                             pattern: {
                                 value: /^\d{1,2}\.?\d{3}\.?\d{3}-[\dkK]$/,
-                                message: "Formato de RUT inválido. Ejemplo: 12.345.678-9"
+                                message: "Formato de RUT inválido. Ejemplo: 12.345.678-9"
+                            },
+                            onChange: (e) => {
+                                const formattedRUT = formatRUT(e.target.value);
+                                setValue("rut", formattedRUT, { shouldValidate: true });
                             }
                         })}
                     />

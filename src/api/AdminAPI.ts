@@ -1,12 +1,20 @@
 import api from "@/lib/axios";
 import { isAxiosError } from "axios";
+import { usersResponseSchema } from "../types";
 
 export async function getConfirmedUsers() {
     try {
         const url = `/auth/admin/users`;
-        const response = await api.get(url);
+        const { data } = await api.get(url);
+        //console.log(data);
 
-        return response.data;
+        const response = usersResponseSchema.safeParse(data);
+        if(response.success) {
+            //console.log(response.data)
+            return response.data
+        }
+
+        console.error("Schema Validation failed:", response.error);
     } catch (error) {
         console.error("❌ Error en la solicitud:", error);
 
@@ -37,7 +45,7 @@ export async function getUser() {
     try {
         const url = `/auth/user`;
         const response = await api.get(url);
-        console.log(response.data)
+        //console.log(response.data)
 
         return response.data;
     } catch (error) {

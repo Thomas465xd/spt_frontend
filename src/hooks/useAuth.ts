@@ -9,7 +9,7 @@ export const useAuth = () => {
         refetchOnWindowFocus: false,
     });
 
-    console.log(data);
+    //console.log(data);
 
     return { data, isError, isLoading };
 }
