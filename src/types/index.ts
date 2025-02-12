@@ -18,6 +18,8 @@ export const userSchema = z.object({
 // Define el esquema para la respuesta de la API
 export const usersResponseSchema = z.object({
     users: z.array(userSchema),  // Se espera un arreglo dentro de la propiedad 'users'
+    totalUsers: z.number(),
+    totalPages: z.number(),
 });
 
 export const registerSchema = userSchema.pick({
@@ -48,6 +50,8 @@ export const setPasswordSchema = z.object({
 })
 
 export type User = z.infer<typeof userSchema>;
+export type UsersCompleteResponse = z.infer<typeof usersResponseSchema>;
+export type UsersResponse = Pick<UsersCompleteResponse, "users">;
 export type UserRegistrationForm = z.infer<typeof registerSchema>;
 export type UserLoginForm = z.infer<typeof loginSchema>;
 export type ConfigurePasswordForm = z.infer<typeof setPasswordSchema>;

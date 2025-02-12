@@ -1,26 +1,21 @@
-import { getConfirmedUsers } from "@/api/AdminAPI";
-import { useQuery } from "@tanstack/react-query"
+import { FC } from "react";
+import Loader from "../ui/Loader";
+import { UsersResponse } from "@/types/index";
 
-export default function AdminConfirmedTable() {
+type AdminConfirmedTableProps = {
+    users: UsersResponse['users'],
+    isLoading: boolean, 
+    error: any
+}
 
-    const { data, isLoading, error } = useQuery({
-        queryKey: ['confirmedUsers'],
-        queryFn: getConfirmedUsers,
-        staleTime: 1000 * 60 * 5,
-        refetchOnWindowFocus: false
-    })
-
-    // Verificamos si data está definida y contiene la propiedad 'users'
-    const users = data?.users || [];
-    //console.log(users)
-
+const AdminConfirmedTable: FC<AdminConfirmedTableProps> = ({ users, isLoading, error }) => {
     return (
         <>
             <div className="px-4 sm:px-6 lg:px-8 my-20">
                 <div className="mt-8 flow-root">
                     <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                         <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8 bg-white p-5">
-                            {isLoading && <p className="text-center text-gray-500">Cargando usuarios...</p>}
+                            {isLoading && <Loader />}
                             {error && <p className="text-center text-red-500">Error al cargar usuarios</p>}
                             {!isLoading && !error && users && (
                                 <div className="flex justify-center overflow-x-auto">
@@ -45,7 +40,7 @@ export default function AdminConfirmedTable() {
                                                 <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                                                     Dirección
                                                 </th>
-                                                <th className="relative py-3.5 pl-3 pr-4 sm:pr-0">
+                                                <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                                                     Acciones
                                                 </th>
                                             </tr>
@@ -80,4 +75,6 @@ export default function AdminConfirmedTable() {
             </div>
         </>
     );
-}
+};
+
+export default AdminConfirmedTable;

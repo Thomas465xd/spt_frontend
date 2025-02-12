@@ -22,8 +22,10 @@ export default function AdminLayout() {
                     <AdminSidebar />
                 </aside>
 
-                <div className="flex-1">
-                    <Outlet />
+                <div className="flex-1 flex flex-col md:max-h-screen md:overflow-auto">
+                    <div className='flex-1'>   
+                        <Outlet />
+                    </div>
 
                     <div className=''>
                         <Footer />
