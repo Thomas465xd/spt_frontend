@@ -49,11 +49,16 @@ export const setPasswordSchema = z.object({
     confirmPassword: z.string().min(8),
 })
 
+export const userStatusSchema = z.object({
+    userId: z.string(),
+})
+
 export type User = z.infer<typeof userSchema>;
 export type UsersCompleteResponse = z.infer<typeof usersResponseSchema>;
 export type UsersResponse = Pick<UsersCompleteResponse, "users">;
 export type UserRegistrationForm = z.infer<typeof registerSchema>;
 export type UserLoginForm = z.infer<typeof loginSchema>;
+export type UserStatusForm = z.infer<typeof userStatusSchema>;
 export type ConfigurePasswordForm = z.infer<typeof setPasswordSchema>;
 export type Token = z.infer<typeof tokenSchema>;
 export type PasswordToken = Pick<Token, "token">;

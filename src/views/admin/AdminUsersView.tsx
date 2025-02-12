@@ -1,6 +1,7 @@
 import { getConfirmedUsers } from "@/api/AdminAPI";
 import AdminConfirmedTable from "@/components/admin/AdminConfirmedTable";
 import UsersPagination from "@/components/admin/UsersPagination";
+import Heading from "@/components/ui/Heading";
 import Loader from "@/components/ui/Loader";
 import { useQuery } from "@tanstack/react-query";
 import { Navigate, useSearchParams } from "react-router-dom";
@@ -30,15 +31,17 @@ export default function AdminUsersView() {
 
     return (
         <>
-            <h1 className="text-4xl font-bold text-center mt-10">Panel de Administración de Usuarios</h1>
+            <Heading>Panel de Administración de Usuarios</Heading>
 
             <AdminConfirmedTable 
+                type="confirmed"
                 users={users} 
                 isLoading={isLoading} 
                 error={error} 
             />  {/* Pass the required props to the table */}
 
             <UsersPagination
+                route="dashboard/users"
                 page={page}
                 totalPages={totalPages}
             />

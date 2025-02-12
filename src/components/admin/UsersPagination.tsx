@@ -2,11 +2,12 @@ import { Link } from "react-router-dom";
 
 
 type UsersPaginationProps = {
+    route: string
     page: number
     totalPages: number
 }
 
-export default function UsersPagination({ page, totalPages }: UsersPaginationProps) {
+export default function UsersPagination({ route, page, totalPages }: UsersPaginationProps) {
     const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
     return (
@@ -14,7 +15,7 @@ export default function UsersPagination({ page, totalPages }: UsersPaginationPro
             {page > 1 && (
                 <Link
                     key={page}
-                    to={`/admin/dashboard/users?page=${page - 1}`}
+                    to={`/admin/${route}?page=${page - 1}`}
                     className="flex items-center justify-center w-10 h-10 bg-white text-gray-900 text-lg font-bold rounded-md shadow-md ring-1 ring-gray-300 hover:bg-gray-100 transition-all"
                 >
                     &laquo;
@@ -24,7 +25,7 @@ export default function UsersPagination({ page, totalPages }: UsersPaginationPro
             {pages.map(currentPage => (
                 <Link
                     key={currentPage}
-                    to={`/admin/dashboard/users?page=${currentPage}`}
+                    to={`/admin/${route}?page=${currentPage}`}
                     className={`flex items-center justify-center w-10 h-10 px-4 py-2 text-sm font-bold rounded-md shadow-md ring-1 ring-gray-300 transition-all ${
                         page === currentPage 
                         ? "bg-orange-500 text-white ring-orange-500"
@@ -37,7 +38,7 @@ export default function UsersPagination({ page, totalPages }: UsersPaginationPro
 
             {page < totalPages && (
                 <Link
-                    to={`/admin/dashboard/users?page=${page + 1}`}
+                    to={`/admin/${route}?page=${page + 1}`}
                     className="flex items-center justify-center w-10 h-10 bg-white text-gray-900 text-lg font-bold rounded-md shadow-md ring-1 ring-gray-300 hover:bg-gray-100 transition-all"
                 >
                     &raquo;

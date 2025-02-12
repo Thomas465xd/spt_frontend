@@ -1,14 +1,55 @@
 import { FC } from "react";
 import Loader from "../ui/Loader";
 import { UsersResponse } from "@/types/index";
+import { formatPhone } from "@/utilities/phone";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateUserStatus } from "@/api/AdminAPI";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
+import ConfirmUserModal from "./ConfirmUserModal";
 
 type AdminConfirmedTableProps = {
+    type: "confirmed" | "unconfirmed",
     users: UsersResponse['users'],
     isLoading: boolean, 
     error: any
 }
 
-const AdminConfirmedTable: FC<AdminConfirmedTableProps> = ({ users, isLoading, error }) => {
+const AdminConfirmedTable: FC<AdminConfirmedTableProps> = ({ type, users, isLoading, error }) => {
+
+    const navigate = useNavigate();
+
+    const queryClient = useQueryClient();
+
+    const { mutate } = useMutation({
+        mutationFn: updateUserStatus, 
+        onError: (error) => {
+            toast.error(error.message);
+        },
+        onSuccess: (data) => {
+            // "deletes de user from query cache"
+            queryClient.invalidateQueries({ queryKey: ["confirmedUsers"] });
+            toast.success(data.message);
+        }
+    });
+
+    const handleBlockUser = (userId: string) => {
+        Swal.fire({
+            title: "¿Estas Seguro de esta Acción?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Si, Bloquear",
+            cancelButtonText: "Cancelar",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                mutate({ userId });
+            }
+        });
+    }
+
     return (
         <>
             <div className="px-4 sm:px-6 lg:px-8 my-20">
@@ -56,12 +97,26 @@ const AdminConfirmedTable: FC<AdminConfirmedTableProps> = ({ users, isLoading, e
                                                     <td className="py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-0">
                                                         {user.email}
                                                     </td>
-                                                    <td className="px-3 py-4 text-sm text-gray-900">{user.phone}</td>
+                                                    <td className="px-3 py-4 text-sm text-gray-900">{formatPhone(user.phone)}</td>
                                                     <td className="px-3 py-4 text-sm text-gray-900">{user.address}</td>
                                                     <td className="px-3 py-4 text-sm text-gray-900">
-                                                        <button className="text-red-600 hover:underline">
-                                                            Bloquear Usuario
-                                                        </button>
+                                                        {type === "unconfirmed" ? (
+                                                            <button 
+                                                                className="text-green-600 hover:underline"
+                                                                type="button"
+                                                                onClick={() => navigate(location.pathname + `?confirmUser=${user._id}`)}
+                                                            >
+                                                                Confirmar Usuario
+                                                            </button>
+                                                        ) : (
+                                                            <button 
+                                                                className="text-red-600 hover:underline"
+                                                                type="button"
+                                                                onClick={() => handleBlockUser(user._id)}
+                                                            >
+                                                                Bloquear Usuario
+                                                            </button>
+                                                        )}
                                                     </td>
                                                 </tr>
                                             ))}
@@ -73,6 +128,8 @@ const AdminConfirmedTable: FC<AdminConfirmedTableProps> = ({ users, isLoading, e
                     </div>
                 </div>
             </div>
+
+            <ConfirmUserModal />
         </>
     );
 };
