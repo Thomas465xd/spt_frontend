@@ -22,6 +22,8 @@ export const usersResponseSchema = z.object({
     totalPages: z.number(),
 });
 
+export const userResponseSchema = z.object({ user: userSchema });
+
 export const registerSchema = userSchema.pick({
     name: true, 
     businessName: true,

@@ -30,18 +30,19 @@ const AdminConfirmedTable: FC<AdminConfirmedTableProps> = ({ type, users, isLoad
         onSuccess: (data) => {
             // "deletes de user from query cache"
             queryClient.invalidateQueries({ queryKey: ["confirmedUsers"] });
+            queryClient.invalidateQueries({ queryKey: ["unconfirmedUsers"] });
             toast.success(data.message);
         }
     });
 
-    const handleBlockUser = (userId: string) => {
+    const handleUserStatus = (userId: string) => {
         Swal.fire({
             title: "¿Estas Seguro de esta Acción?",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
-            confirmButtonText: "Si, Bloquear",
+            confirmButtonText: "Si, seguro",
             cancelButtonText: "Cancelar",
         }).then((result) => {
             if (result.isConfirmed) {
@@ -58,7 +59,10 @@ const AdminConfirmedTable: FC<AdminConfirmedTableProps> = ({ type, users, isLoad
                         <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8 bg-white p-5">
                             {isLoading && <Loader />}
                             {error && <p className="text-center text-red-500">Error al cargar usuarios</p>}
-                            {!isLoading && !error && users && (
+                            {!isLoading && !error && users && users.length === 0 && (
+                                <p className="text-center text-gray-500">No hay usuarios disponibles.</p>
+                            )}
+                            {!isLoading && !error && users && users.length > 0 && (
                                 <div className="flex justify-center overflow-x-auto">
                                     <table className="min-w-max sm:min-w-max md:min-w-full divide-y divide-gray-300 last-of-type:border-b border-b-gray-300">
                                         <thead>
@@ -101,18 +105,28 @@ const AdminConfirmedTable: FC<AdminConfirmedTableProps> = ({ type, users, isLoad
                                                     <td className="px-3 py-4 text-sm text-gray-900">{user.address}</td>
                                                     <td className="px-3 py-4 text-sm text-gray-900">
                                                         {type === "unconfirmed" ? (
-                                                            <button 
-                                                                className="text-green-600 hover:underline"
-                                                                type="button"
-                                                                onClick={() => navigate(location.pathname + `?confirmUser=${user._id}`)}
-                                                            >
-                                                                Confirmar Usuario
-                                                            </button>
+                                                            user.passwordSet ? (
+                                                                <button 
+                                                                    className="text-blue-600 hover:underline"
+                                                                    type="button"
+                                                                    onClick={() => handleUserStatus(user._id)}
+                                                                >
+                                                                    Desbloquear Usuario
+                                                                </button>
+                                                            ) : (
+                                                                <button 
+                                                                    className="text-green-600 hover:underline"
+                                                                    type="button"
+                                                                    onClick={() => navigate(location.pathname + `?confirmUser=${user._id}`)}
+                                                                >
+                                                                    Confirmar Usuario
+                                                                </button>
+                                                            )
                                                         ) : (
                                                             <button 
                                                                 className="text-red-600 hover:underline"
                                                                 type="button"
-                                                                onClick={() => handleBlockUser(user._id)}
+                                                                onClick={() => handleUserStatus(user._id)}
                                                             >
                                                                 Bloquear Usuario
                                                             </button>
@@ -129,7 +143,7 @@ const AdminConfirmedTable: FC<AdminConfirmedTableProps> = ({ type, users, isLoad
                 </div>
             </div>
 
-            <ConfirmUserModal />
+            {type === "unconfirmed" && <ConfirmUserModal />}
         </>
     );
 };

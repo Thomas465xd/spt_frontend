@@ -23,15 +23,26 @@ export default function AdminUnconfirmedUsersView() {
 
     const users = data?.users || [];
     const totalUsers = data?.totalUsers || 0; // Assuming totalUsers is returned from the API
+
     const totalPages = Math.ceil(totalUsers / itemsPerPage);
 
     if(isLoading) return <Loader />
 
-    if(page > totalPages) return <Navigate to={`/admin/confirm?page=${totalPages}`} replace />
+    if(totalPages === 0 && page > totalPages) return (
+        <>
+            <Heading>Administración de usuarios no Confirmados</Heading>
 
+            <p className="text-center text-gray-500 mt-10">No hay usuarios disponibles.</p>
+        </>
+    )
+
+    if(page > totalPages) return <Navigate to={`/admin/confirm?page=${totalPages}`} replace />
+    
     return (
         <>
             <Heading>Administración de usuarios no Confirmados</Heading>
+
+            {/** To do: Search Bar */}
 
             <AdminConfirmedTable 
                 type="unconfirmed"

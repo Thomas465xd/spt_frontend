@@ -1,6 +1,8 @@
+import { useMutation } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 
 export default function ForgotPasswordView() {
+
     return (
         <>
             <h1 className="text-5xl font-black text-white">Reestablecer Contraseña</h1>

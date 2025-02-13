@@ -1,6 +1,6 @@
 import api from "@/lib/axios";
 import { isAxiosError } from "axios";
-import {usersResponseSchema, UserStatusForm } from "../types";
+import {userResponseSchema, usersResponseSchema, UserStatusForm } from "../types";
 
 export async function getConfirmedUsers({ page, perPage }: { page: number, perPage: number }) {
     try {
@@ -58,11 +58,31 @@ export async function getUnconfirmedUsers({ page, perPage }: { page: number, per
     }
 }
 
-export async function getUserById() {
+export async function getUserById({ userId } : UserStatusForm) {
     try {
-        
+        const url = `/auth/admin/user/${userId}`;
+        const { data } = await api.get(url);
+
+        const response = userResponseSchema.safeParse(data);
+        if (response.success) {
+            console.log("✅ Respuesta exitosa de la API:", response.data);
+            return response.data;
+        }
+
+        console.error("Schema Validation failed:", response.error);
     } catch (error) {
-        
+        console.error("❌ Error en la solicitud:", error);
+
+        if (isAxiosError(error)) {
+            console.error("🔍 Error de Axios detectado:");
+            console.error("➡️ Código de estado:", error.response?.status);
+            console.error("➡️ Mensaje de error:", error.response?.data?.error || error.message);
+            console.error("➡️ Respuesta completa:", error.response?.data);
+            throw new Error(error.response?.data?.message || "Ocurrió un error en la API");
+        } else {
+            console.error("⚠️ Error desconocido:", error);
+            throw new Error("Error inesperado. Intenta nuevamente.");
+        }
     }
 }
 
@@ -99,6 +119,31 @@ export async function updateUserStatus({ userId } : UserStatusForm) {
         const response = await api.patch(url);
     
         return response.data; 
+    } catch (error) {
+        console.error("❌ Error en la solicitud:", error);
+
+        if (isAxiosError(error)) {
+            console.error("🔍 Error de Axios detectado:");
+            console.error("➡️ Código de estado:", error.response?.status);
+            console.error("➡️ Mensaje de error:", error.response?.data?.error || error.message);
+            console.error("➡️ Respuesta completa:", error.response?.data);
+
+            // Lanzamos un error más detallado para que pueda ser manejado correctamente
+            throw new Error(error.response?.data?.message || "Ocurrió un error en la API");
+        } else {
+            console.error("⚠️ Error desconocido:", error);
+            throw new Error("Error inesperado. Intenta nuevamente.");
+        }
+    }
+}
+
+// Confirm a user and delete the confirmation token
+export async function confirmUser({ userId } : UserStatusForm) {
+    try {
+        const url = `/auth/admin/confirm/${userId}`;
+        const response = await api.post(url);
+    
+        return response.data;
     } catch (error) {
         console.error("❌ Error en la solicitud:", error);
 
