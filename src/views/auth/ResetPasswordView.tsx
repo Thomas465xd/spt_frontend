@@ -5,7 +5,7 @@ import { PasswordToken } from "@/types/index"
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom"
 
-export default function SetPasswordView() {
+export default function ResetPasswordView() {
 
     const { token } = useParams<PasswordToken>();
     const [isValidToken, setIsValidToken] = useState<boolean | null>(null);
@@ -32,7 +32,7 @@ export default function SetPasswordView() {
                 <h1 className="text-5xl font-black text-white">Token Invalido o Expirado</h1>
                 <p className="text-2xl font-light text-white mt-5 mb-5">
                     En caso de haber pedido el token hace más de una semana {''}
-                    <span className=" text-white font-bold"> Contacta al Administrador </span>
+                    <span className=" text-white font-bold"> vuelva a solicitar uno nuevo </span>
                 </p>
 
                 <div className="flex flex-col bg-white rounded p-5 shadow-md">
@@ -62,15 +62,15 @@ export default function SetPasswordView() {
 
     if(token) return (
         <>
-            <h1 className="text-5xl font-black text-white">Solo un paso mas!</h1>
+            <h1 className="text-5xl font-black text-white">Restablecer Contraseña</h1>
             <p className="text-2xl font-light text-white mt-5 mb-5">
-                Completa el formulario para Establecer tu {''}
-                <span className=" text-white font-bold"> Contraseña de Ingreso </span>
+                Completa el formulario para Restablecer tu {''}
+                <span className=" text-white font-bold"> Contraseña de Ingreso Portal SPT </span>
             </p>
 
             <SetPasswordForm 
                 token={token}
-                type="set_password"
+                type="reset_password"
             />
         </>
     )

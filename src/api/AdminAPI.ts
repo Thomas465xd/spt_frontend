@@ -1,6 +1,6 @@
 import api from "@/lib/axios";
 import { isAxiosError } from "axios";
-import {userResponseSchema, usersResponseSchema, UserStatusForm } from "../types";
+import {Token, userResponseSchema, usersResponseSchema, UserStatusForm } from "../types";
 
 export async function getConfirmedUsers({ page, perPage }: { page: number, perPage: number }) {
     try {
@@ -34,6 +34,7 @@ export async function getUnconfirmedUsers({ page, perPage }: { page: number, per
     try {
         const url = `/auth/admin/unconfirmed-users?page=${page}&perPage=${perPage}`;
         const { data } = await api.get(url);
+        console.log(data)
 
         const response = usersResponseSchema.safeParse(data);
         if (response.success) {
@@ -138,9 +139,9 @@ export async function updateUserStatus({ userId } : UserStatusForm) {
 }
 
 // Confirm a user and delete the confirmation token
-export async function confirmUser({ userId } : UserStatusForm) {
+export async function confirmUser(token : Token['token']) {
     try {
-        const url = `/auth/admin/confirm/${userId}`;
+        const url = `/auth/admin/confirm/${token}`;
         const response = await api.post(url);
     
         return response.data;
@@ -154,7 +155,32 @@ export async function confirmUser({ userId } : UserStatusForm) {
             console.error("➡️ Respuesta completa:", error.response?.data);
 
             // Lanzamos un error más detallado para que pueda ser manejado correctamente
-            throw new Error(error.response?.data?.message || "Ocurrió un error en la API");
+            throw new Error(error.response?.data?.message || "El Token no Existe");
+        } else {
+            console.error("⚠️ Error desconocido:", error);
+            throw new Error("Error inesperado. Intenta nuevamente.");
+        }
+    }
+}
+
+// Delete a user who does not have a password setted
+export async function deleteUser(userId : UserStatusForm['userId']) {
+    try {
+        const url = `/auth/admin/delete-user/${userId}`;
+        const response = await api.delete(url);
+
+        return response.data;
+    } catch (error) {
+        console.error("❌ Error en la solicitud:", error);
+
+        if (isAxiosError(error)) {
+            console.error("🔍 Error de Axios detectado:");
+            console.error("➡️ Código de estado:", error.response?.status);
+            console.error("➡️ Mensaje de error:", error.response?.data?.error || error.message);
+            console.error("➡️ Respuesta completa:", error.response?.data);
+
+            // Lanzamos un error más detallado para que pueda ser manejado correctamente
+            throw new Error(error.response?.data?.message || "El Token no Existe");
         } else {
             console.error("⚠️ Error desconocido:", error);
             throw new Error("Error inesperado. Intenta nuevamente.");

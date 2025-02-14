@@ -3,7 +3,7 @@ import Loader from "../ui/Loader";
 import { UsersResponse } from "@/types/index";
 import { formatPhone } from "@/utilities/phone";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateUserStatus } from "@/api/AdminAPI";
+import { deleteUser, updateUserStatus } from "@/api/AdminAPI";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
@@ -22,7 +22,7 @@ const AdminConfirmedTable: FC<AdminConfirmedTableProps> = ({ type, users, isLoad
 
     const queryClient = useQueryClient();
 
-    const { mutate } = useMutation({
+    const { mutate: changeUserStatus } = useMutation({
         mutationFn: updateUserStatus, 
         onError: (error) => {
             toast.error(error.message);
@@ -38,15 +38,46 @@ const AdminConfirmedTable: FC<AdminConfirmedTableProps> = ({ type, users, isLoad
     const handleUserStatus = (userId: string) => {
         Swal.fire({
             title: "¿Estas Seguro de esta Acción?",
+            text: "🚨 El usuario quedara como 'no confirmado'. Puedes deshacer esta acción en cualquier momento. 🚨",
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
-            confirmButtonText: "Si, seguro",
+            confirmButtonText: "Si, seguro ✅",
             cancelButtonText: "Cancelar",
         }).then((result) => {
             if (result.isConfirmed) {
-                mutate({ userId });
+                changeUserStatus({ userId });
+            }
+        });
+    }
+
+    const { mutate: deleteNoPasswordUser } = useMutation({
+        mutationFn: deleteUser, 
+        onError: (error) => {
+            toast.error(error.message);
+        },
+        onSuccess: (data) => {
+            // "deletes de user from query cache"
+            queryClient.invalidateQueries({ queryKey: ["confirmedUsers"] });
+            queryClient.invalidateQueries({ queryKey: ["unconfirmedUsers"] });
+            toast.success(data.message);
+        }
+    })
+
+    const handleDeleteUser = (userId: string) => {
+        Swal.fire({
+            title: "¿Estas Seguro de esta Acción? ⚠️",
+            text: "🚨 Recuerda que esta acción no es reversible 🚨",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Si, Eliminar",
+            cancelButtonText: "Cancelar",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                deleteNoPasswordUser( userId );
             }
         });
     }
@@ -123,13 +154,23 @@ const AdminConfirmedTable: FC<AdminConfirmedTableProps> = ({ type, users, isLoad
                                                                 </button>
                                                             )
                                                         ) : (
-                                                            <button 
-                                                                className="text-red-600 hover:underline"
-                                                                type="button"
-                                                                onClick={() => handleUserStatus(user._id)}
-                                                            >
-                                                                Bloquear Usuario
-                                                            </button>
+                                                            user.passwordSet ? (
+                                                                <button 
+                                                                    className="text-orange-600 hover:underline font-bold"
+                                                                    type="button"
+                                                                    onClick={() => handleUserStatus(user._id)}
+                                                                >
+                                                                    Bloquear Usuario
+                                                                </button>
+                                                            ) : (
+                                                                <button
+                                                                    className="text-red-700 hover:underline font-bold"
+                                                                    type="button"
+                                                                    onClick={() => handleDeleteUser(user._id)}
+                                                                >
+                                                                    Eliminar Usuario
+                                                                </button>
+                                                            )
                                                         )}
                                                     </td>
                                                 </tr>

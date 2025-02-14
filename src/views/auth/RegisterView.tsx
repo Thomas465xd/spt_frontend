@@ -6,6 +6,7 @@ import { createAccount } from "@/api/AuthAPI";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import ErrorMessage from "@/components/ui/ErrorMessage";
+import { formatRUT } from "@/utilities/rut";
 
 export default function RegisterView() {
 
@@ -19,7 +20,7 @@ export default function RegisterView() {
         address: ''
     }
 
-    const { register, handleSubmit, reset, formState: { errors } } = useForm<UserRegistrationForm>({defaultValues: initialValues});
+    const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<UserRegistrationForm>({defaultValues: initialValues});
 
     const { mutate } = useMutation({
         mutationFn: createAccount, 
@@ -107,11 +108,16 @@ export default function RegisterView() {
                         id="rut"
                         placeholder="Ingresa tu RUT personal (ej. 12.345.678-9)"
                         className="border border-gray-300 w-full p-3 mt-3 bg-gray-50 rounded"
+                        maxLength={12}
                         {...register("rut", {
                             required: "El RUT es obligatorio",
                             pattern: {
                                 value: /^\d{1,2}\.?\d{3}\.?\d{3}-[\dkK]$/,
                                 message: "Formato de RUT inválido. Ejemplo: 12.345.678-9"
+                            },
+                            onChange: (e) => {
+                                const formattedRUT = formatRUT(e.target.value);
+                                setValue("rut", formattedRUT, { shouldValidate: true });
                             }
                         })}
                     />
@@ -132,11 +138,16 @@ export default function RegisterView() {
                         id="rutempresa"
                         placeholder="Ingresa el RUT de la Empresa (ej. 12.345.678-9)"
                         className="border border-gray-300 w-full p-3 mt-3 bg-gray-50 rounded"
+                        maxLength={12}
                         {...register("businessRut", {
                             required: "El RUT de la Empresa es obligatorio",
                             pattern: {
                                 value: /^\d{1,2}\.?\d{3}\.?\d{3}-[\dkK]$/,
                                 message: "Formato de RUT inválido. Ejemplo: 12.345.678-9"
+                            },
+                            onChange: (e) => {
+                                const formattedRUT = formatRUT(e.target.value);
+                                setValue("businessRut", formattedRUT, { shouldValidate: true });
                             }
                         })}
                     />

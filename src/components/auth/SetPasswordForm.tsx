@@ -1,4 +1,4 @@
-import { setPassword } from "@/api/AuthAPI";
+import { resetPassword, setPassword } from "@/api/AuthAPI";
 import { ConfigurePasswordForm } from "@/types/index";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -8,10 +8,11 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 
 type SetPasswordFormProps = {
+    type: "reset_password" | "set_password"
     token: string;
 }
 
-export default function SetPasswordForm({ token } : SetPasswordFormProps) {
+export default function SetPasswordForm({ type, token } : SetPasswordFormProps) {
 
     const initialValues: ConfigurePasswordForm = {
         password: "",
@@ -24,7 +25,7 @@ export default function SetPasswordForm({ token } : SetPasswordFormProps) {
 
     const navigate = useNavigate();
 
-    const { mutate, isPending } = useMutation({
+    const { mutate: setNewPassword, isPending: isPendingSetting } = useMutation({
         mutationFn: setPassword,
         onError: (error) => {
             toast.error(error.message);
@@ -46,14 +47,39 @@ export default function SetPasswordForm({ token } : SetPasswordFormProps) {
             token,
             formData, 
         }
-        mutate(data);
+        setNewPassword(data);
+    }
+
+    const { mutate: resetOldPassword, isPending: isPendingReset } = useMutation({
+        mutationFn: resetPassword, 
+        onError: (error) => {
+            toast.error(error.message);
+        }, 
+        onSuccess: () => {
+            reset();
+            Swal.fire({
+                title: "Contraseña Restablecida Correctamente",
+                text: "Ahora puedes Iniciar Sesión con tu Nueva Contraseña",
+                icon: "success",
+            }).then(() => {
+                navigate("/auth/login");
+            })
+        }
+    })
+
+    const handleResetPassword = (formData: ConfigurePasswordForm) => {
+        const data = {
+            token,
+            formData, 
+        }
+        resetOldPassword(data);
     }
 
     const password = watch('password');
 
     return (
         <form
-            onSubmit={handleSubmit(handleSetPassword)}
+            onSubmit={type === "reset_password" ? handleSubmit(handleResetPassword) : handleSubmit(handleSetPassword)}
             className="space-y-8 p-10  bg-white mt-10 rounded"
             noValidate
         >
@@ -106,9 +132,9 @@ export default function SetPasswordForm({ token } : SetPasswordFormProps) {
 
             <input
                 type="submit"
-                value='Establecer Contraseña'
+                value={type === "reset_password" ? "Restablecer Contraseña" : "Establecer Contraseña"}
                 className="bg-slate-800 hover:bg-slate-900 rounded transition-colors w-full p-3  text-white font-black  text-xl cursor-pointer"
-                disabled={isPending}
+                disabled={type === "reset_password" ? isPendingReset : isPendingSetting}
             />
         </form>
     )

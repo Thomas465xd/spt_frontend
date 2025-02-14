@@ -10,6 +10,8 @@ import AdminDashboardView from "./views/admin/AdminDashboardView";
 import SetPasswordView from "./views/auth/SetPasswordView";
 import AdminUsersView from "./views/admin/AdminUsersView";
 import AdminUnconfirmedUsersView from "./views/admin/AdminUnconfirmedUsersView";
+import NotFound from "./views/404/NotFound";
+import ResetPasswordView from "./views/auth/ResetPasswordView";
 
 export default function Router() {
     return (
@@ -23,6 +25,7 @@ export default function Router() {
                     <Route path="/auth/login" element={<LoginView />} />
                     <Route path="/auth/register" element={<RegisterView />} />
                     <Route path="/auth/forgot-password" element={<ForgotPasswordView />} />
+                    <Route path="/auth/reset-password/:token" element={<ResetPasswordView />} />
                     <Route path="/auth/set-password/:token" element={<SetPasswordView />} />
                 </Route>
 
@@ -31,6 +34,10 @@ export default function Router() {
                     <Route path="/admin/dashboard/users" element={<AdminUsersView />} />
                     <Route path="/admin/confirm" element={<AdminUnconfirmedUsersView />} />
                 </Route>
+
+                <Route element={<AuthLayout />}>
+                    <Route path="/404" element={<NotFound />} />
+                </Route>    
             </Routes>
         </BrowserRouter>
     )

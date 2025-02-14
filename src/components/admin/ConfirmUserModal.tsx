@@ -29,21 +29,24 @@ export default function ConfirmUserModal() {
     });
 
     const user = data?.user;
+    const token = data?.token ?? "";
 
-    const { mutate } = useMutation({
+    const { mutate, isPending } = useMutation({
         mutationFn: confirmUser,
         onError: (error) => {
             toast.error(error.message)
+            navigate(location.pathname, { replace: true })
         },
         onSuccess: (data) => {
             // "delete" unconfirmed user from query cache
             queryClient.invalidateQueries({ queryKey: ["unconfirmedUsers"] });
+            navigate(location.pathname, { replace: true })
             toast.success(data.message)
         }
     })
 
     const handleForm = async () => {
-        mutate({ userId:  confirmUserId });
+        mutate(token);
     }
 
     return (
@@ -135,7 +138,8 @@ export default function ConfirmUserModal() {
                                 <form className="mt-10 space-y-5 border-t border-gray-300 pt-10" onSubmit={handleSubmit(handleForm)} noValidate>
                                     <input
                                         type="submit"
-                                        className="bg-orange-500 hover:bg-orange-600 w-full p-3 text-white font-black text-xl cursor-pointer rounded transition-colors"
+                                        disabled={isLoading || isPending}
+                                        className="bg-orange-500 hover:bg-orange-600 w-full p-3 text-white font-black text-xl cursor-pointer rounded transition-colors disabled:opacity-50"
                                         value="Autorizar Usuario"
                                     />
                                 </form>
