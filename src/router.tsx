@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AppLayout from "./layouts/AppLayout";
-import ClientView from "./views/ClientView";
+import ClientView from "./views/products/ClientView";
 import AuthLayout from "./layouts/AuthLayout";
 import LoginView from "./views/auth/LoginView";
 import RegisterView from "./views/auth/RegisterView";
@@ -12,6 +12,7 @@ import AdminUsersView from "./views/admin/AdminUsersView";
 import AdminUnconfirmedUsersView from "./views/admin/AdminUnconfirmedUsersView";
 import NotFound from "./views/404/NotFound";
 import ResetPasswordView from "./views/auth/ResetPasswordView";
+import ProductsView from "./views/products/ProductsView";
 
 export default function Router() {
     return (
@@ -19,6 +20,7 @@ export default function Router() {
             <Routes>
                 <Route element={<AppLayout />}>
                     <Route path="/" element={<ClientView />} index />
+                    <Route path="/products" element={<ProductsView />} />
                 </Route>
 
                 <Route element={<AuthLayout />}>

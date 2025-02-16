@@ -41,7 +41,9 @@ export default function NavMenu ({name} : NavMenuProps) {
                 leaveFrom='opacity-100 translate-y-0'
                 leaveTo='opacity-0 translate-y-1'
             >
-                <PopoverPanel className='absolute left-1/2 z-10 mt-5 flex w-screen lg:max-w-min -translate-x-1/2 lg:-translate-x-48'>
+                <PopoverPanel 
+                    className='absolute left-1/2 z-10 mt-5 flex w-screen md:w-72 md:-translate-x-66 lg:max-w-min -translate-x-1/2 lg:-translate-x-48'
+                >
                     <div className='w-full lg:w-56 shrink rounded-xl bg-white p-4 text-sm font-semibold leading-6 text-gray-900 shadow-lg ring-1 ring-gray-900/5'>
                         <p className='text-center border-b-gray-300 border-b-2 p-3 font-bold'>Bienvenido: {''}
                             <span className='text-slate-800 font-extrabold'>{name}</span>
