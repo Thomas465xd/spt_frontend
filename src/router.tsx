@@ -16,6 +16,7 @@ import ProfileLayout from "./layouts/ProfileLayout";
 import ProfileView from "./views/profile/ProfileView";
 import ChangePasswordView from "./views/profile/ChangePasswordView";
 import CategoriesView from "./views/categories/CategoriesView";
+import ProductsView from "./views/products/ProductsView";
 
 export default function Router() {
     return (
@@ -24,6 +25,7 @@ export default function Router() {
                 <Route element={<AppLayout />}>
                     <Route path="/" element={<ClientView />} index />
                     <Route path="/categories" element={<CategoriesView />} />
+                    <Route path="/categories/products" element={<ProductsView />} />
 
                     <Route element={<ProfileLayout />}>
                             <Route path="/profile" element={<ProfileView/>} />

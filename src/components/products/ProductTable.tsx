@@ -1,10 +1,4 @@
-import { Category } from "@/types/index"
-
-type CategoriesTableProps = {
-    category: Category
-}
-
-export default function ProductTable({category} : CategoriesTableProps) {
+export default function ProductTable() {
     return (
         <div>ProductTable</div>
     )
