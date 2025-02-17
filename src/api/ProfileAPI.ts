@@ -1,13 +1,12 @@
-/*
 import { isAxiosError } from "axios";
 import api from "@/lib/axios";
-import { UpdateCurrentPasswordForm, UserProfileForm } from "../types";
+import { UserUpdatePasswordForm, UserProfileForm } from "../types";
 
 // Update user profile name and email
 export async function updateProfile(formData: UserProfileForm) {
     try {
-        const url = `/auth/profile`;
-        const { data } = await api.put(url, formData);
+        const url = `/auth/profile/update`;
+        const { data } = await api.patch(url, formData);
         //console.log(data)
 
         return data;
@@ -19,10 +18,11 @@ export async function updateProfile(formData: UserProfileForm) {
     }
 }
 
-export async function changePassword(formData: UpdateCurrentPasswordForm) {
+// Update user password
+export async function changePassword(formData: UserUpdatePasswordForm) {
     try {
-        const url = `/auth/update-password`;
-        const { data } = await api.post(url, formData);
+        const url = `/auth/profile/update-password`;
+        const { data } = await api.patch(url, formData);
         //console.log(data)
 
         return data;
@@ -33,4 +33,3 @@ export async function changePassword(formData: UpdateCurrentPasswordForm) {
         }
     }
 }
-*/

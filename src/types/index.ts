@@ -75,6 +75,12 @@ export const setPasswordSchema = z.object({
 	confirmPassword: z.string().min(8),
 });
 
+export const updatePasswordSchema = z.object({
+    currentPassword: z.string().min(8), 
+    newPassword: z.string().min(8), 
+    confirmPassword: z.string().min(8),
+})
+
 export const userStatusSchema = z.object({
 	userId: z.string(),
 });
@@ -89,10 +95,12 @@ export type UserStatusForm = z.infer<typeof userStatusSchema>;
 export type ConfigurePasswordForm = z.infer<typeof setPasswordSchema>;
 export type Token = z.infer<typeof tokenSchema>;
 export type PasswordToken = Pick<Token, "token">;
+export type UserProfileForm = Pick<User, "name" | "businessName" | "email" | "phone" | "address">;
+export type UserUpdatePasswordForm = z.infer<typeof updatePasswordSchema>;
 
 /** Bsale Products */
 
-export const productSchema = z.object({
+export const categorySchema = z.object({
 	href: z.string().url(),
 	id: z.number(),
 	name: z.string(),
@@ -110,7 +118,7 @@ export const bsaleResponseSchema = z.object({
 	count: z.number(),
 	limit: z.number(),
 	offset: z.number(),
-	items: z.array(productSchema),
+	items: z.array(categorySchema),
 });
 
 export const coinSchema = z.object({
@@ -181,7 +189,7 @@ export const variantsResponseSchema = z.object({
 	next: z.string().url().optional(),
 });
 
-export type Product = z.infer<typeof productSchema>;
+export type Category = z.infer<typeof categorySchema>;
 export type BsaleResponse = z.infer<typeof bsaleResponseSchema>;
 
 export type PriceLists = z.infer<typeof priceListItemSchema>;

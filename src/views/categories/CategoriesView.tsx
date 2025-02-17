@@ -1,11 +1,11 @@
-import { getAllProducts, getPriceLists } from "@/api/ProductAPI"
-import ProductsTable from "@/components/products/ProductsTable";
+import { getAllCategories, getPriceLists } from "@/api/ProductAPI"
+import CategoriesTable from "@/components/categories/CategoriesTable";
 import Heading from "@/components/ui/Heading";
 import Loader from "@/components/ui/Loader";
 import { useQuery } from "@tanstack/react-query"
 import { Navigate, useSearchParams } from "react-router-dom";
 
-export default function ProductsView() {
+export default function CategoriesView() {
 
     const [searchParams] = useSearchParams();
     const page = parseInt(searchParams.get("page") || "1", 10); // Default to page 1 if not present
@@ -14,9 +14,9 @@ export default function ProductsView() {
 
     const itemsPerPage = 21;
 
-    const { data: productsData, isLoading: isLoadingProducts, isError: isErrorProducts } = useQuery({
-        queryKey: ["products"],
-        queryFn: getAllProducts,
+    const { data: categoriesData, isLoading: isLoadingCategories, isError: isErrorCategories } = useQuery({
+        queryKey: ["categories"],
+        queryFn: getAllCategories,
         staleTime: 1000 * 60 * 5,
         refetchOnWindowFocus: false,
     });
@@ -28,25 +28,25 @@ export default function ProductsView() {
         refetchOnWindowFocus: false,
     });
 
-    const products = productsData?.items || [];
-    const totalProducts = productsData?.count || 0;
+    const categories = categoriesData?.items || [];
+    const totalcategories = categoriesData?.count || 0;
 
-    const totalPages = Math.ceil(totalProducts / itemsPerPage);
+    const totalPages = Math.ceil(totalcategories / itemsPerPage);
 
     // Handle loading state
-    if (isLoadingProducts || isLoadingPrices) return <Loader />;
+    if (isLoadingCategories || isLoadingPrices) return <Loader />;
     
     // Handle errors
-    if (isErrorProducts || isErrorPrices) return <Navigate to="/404" replace />;
+    if (isErrorCategories || isErrorPrices) return <Navigate to="/404" replace />;
 
-    if(page > totalPages) return <Navigate to={`/products?page=${totalPages}`} replace />
+    if(page > totalPages) return <Navigate to={`/categories?page=${totalPages}`} replace />
 
     return (
         <>
-            <Heading>Conoce Nuestros Productos</Heading>
+            <Heading>Conoce Nuestras Categorías</Heading>
 
-            <ProductsTable
-                products={products}
+            <CategoriesTable
+                categories={categories}
             />
         </>
     )
