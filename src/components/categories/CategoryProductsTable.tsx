@@ -1,5 +1,5 @@
 import { Product } from "@/types/index";
-import ProductCard from "../products/ProductCard";
+import ProductCard from "./CategoryProductCard";
 import Pagination from "../ui/Pagination";
 
 type CategoryProductsTableProps = {

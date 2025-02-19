@@ -381,11 +381,11 @@ export const productWebDescriptionSchema = z.object({
 
 // Esquema para la respuesta de la API
 export const productWebDescriptionResponseSchema = z.object({
-	code: z.string(),
-	href: z.string().url(),
-	count: z.number(),
-	limit: z.number(),
-	offset: z.number(),
+	code: z.string().or(z.number()).optional(),
+	href: z.string().url().optional(),
+	count: z.number().optional(),
+	limit: z.number().optional(),
+	offset: z.number().optional(),
 	data: z.array(productWebDescriptionSchema),
 });
 
