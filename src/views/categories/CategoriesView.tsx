@@ -1,4 +1,5 @@
-import { getAllCategories, getPriceLists } from "@/api/ProductAPI"
+import { getAllCategories } from "@/api/CategoryAPI"
+import { getPriceLists } from "@/api/ProductAPI";
 import CategoriesTable from "@/components/categories/CategoriesTable";
 import CategorySearchBar from "@/components/categories/CategorySearchBar";
 import Heading from "@/components/ui/Heading";

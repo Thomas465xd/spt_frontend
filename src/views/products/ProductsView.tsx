@@ -1,38 +1,75 @@
-import { getCategory } from "@/api/ProductAPI";
+import { getAllProductDescription } from "@/api/ProductAPI";
+import ProductsTable from "@/components/products/ProductsTable";
+import Heading from "@/components/ui/Heading";
 import Loader from "@/components/ui/Loader";
+import Pagination from "@/components/ui/Pagination";
 import { useQuery } from "@tanstack/react-query";
-import { Navigate, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useSearchParams } from "react-router-dom";
 
 export default function ProductsView() {
 
     const [searchParams] = useSearchParams();
-    const categoryId = parseInt(searchParams.get("category") || "", 10);
     const page = parseInt(searchParams.get("page") || "1", 10); // Default to page 1 if not present
+    const searchQuery = searchParams.get("search") || ""; // Obtener el término de búsqueda
 
-    const itemsPerPage = 18
+    if(page < 1) return <Navigate to={`/products?page=1`} replace />
 
-    const offset = (page - 1) * itemsPerPage
+    const itemsPerPage = 18;
 
-    const { data, isLoading, isError } = useQuery({
-        queryKey: ["products", categoryId, page],
-        queryFn: () => getCategory({ categoryId }),
+    // Calculamos el offset
+    const offset = (page - 1) * itemsPerPage;
+
+    const { data: productsData, isLoading: isLoadingProducts, isError: isErrorProducts } = useQuery({
+        queryKey: ["products"],
+        queryFn: () => getAllProductDescription({ limit: itemsPerPage, offset }), 
         staleTime: 1000 * 60 * 5,
         refetchOnWindowFocus: false,
     })
 
-    const category = data
+    const products = productsData?.data || [];
+    const totalProducts = productsData?.count || 0;
 
-    if(isError) return <Navigate to={`/categories`} replace />
+    const totalPages = Math.ceil(totalProducts / itemsPerPage);
 
-    if(isLoading) return <Loader />
+    
 
-    if(!categoryId) return <Navigate to={`/categories`} replace />
+    if(isLoadingProducts) return <Loader />
 
-    if(page < 1) return <Navigate to={`/categories/products?category=${categoryId}&page=1`} replace />
+    if(isErrorProducts) return <Navigate to="/404" />
+
+    if(totalPages === 0 || page === 0) return (
+        <>
+            <Heading>Productos Disponibles</Heading>
+
+            <p className="text-center text-gray-500 my-10">No hay Resultados de Busqueda.</p>
+
+            <Link
+                to="/products?page=1"
+                className="mt-6 px-6 py-3 grid place-content-center text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors"
+            >Volver a Categorías</Link>
+        </>
+    )
+
+    // Si la página es mayor que el total de páginas, redirigimos a la última página
+    if(page > totalPages) return <Navigate to={`/categories?page=${totalPages}`} replace />
 
     return (
         <>
+            <Heading>Conoce Nuestros Productos</Heading>
 
+            <p className="text-center mt-5 text-gray-500">Usa nuestro <span className="font-bold text-orange-500">Buscador de productos por Código</span> para encontrar el producto que necesitas</p>
+
+            {/* Product Search Form */}
+            <ProductsTable 
+                products={products}
+            />
+
+            {/* Pagination */}
+            <Pagination
+                route="products"
+                page={page}
+                totalPages={totalPages}
+            />
         </>
     )
 }

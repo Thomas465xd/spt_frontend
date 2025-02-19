@@ -133,37 +133,47 @@ export const bsaleResponseSchema = z.object({
 	items: z.array(categorySchema),
 });
 
-// Esquema para el producto asociado
-const ProductTypeSchema = z.object({
+export const productTypeSchema = z.object({
 	href: z.string(),
-	id: z.string(), // Como el id de "product_type" es un string en la respuesta, lo declaramos como string
+	id: z.string(),
 });
 
-// Esquema para un producto individual
-const ProductSchema = z.object({
+// Updated product schema to allow null for description
+export const productSchema = z.object({
 	href: z.string(),
 	id: z.number(),
 	name: z.string(),
-	description: z.string().optional(),
+	description: z.string().nullable().optional(), // Allowing `null` values for description
 	classification: z.number(),
-	ledgerAccount: z.string().optional(),
-	costCenter: z.string().optional(),
+	ledgerAccount: z.string().nullable().optional(),
+	costCenter: z.string().nullable().optional(),
 	allowDecimal: z.number(),
 	stockControl: z.number(),
 	printDetailPack: z.number(),
 	state: z.number(),
 	prestashopProductId: z.number(),
 	presashopAttributeId: z.number(),
-	product_type: ProductTypeSchema, // Usamos el esquema de "product_type"
+	product_type: productTypeSchema,
+	variants: z
+		.object({
+			href: z.string(),
+		})
+		.optional(),
+	product_taxes: z
+		.object({
+			href: z.string(),
+		})
+		.optional(),
 });
 
-// Esquema para la respuesta que contiene una lista de productos
-const ProductsResponseSchema = z.object({
+// Updated response schema
+export const productsResponseSchema = z.object({
 	href: z.string(),
 	count: z.number(),
 	limit: z.number(),
 	offset: z.number(),
-	items: z.array(ProductSchema), // Un arreglo de productos
+	items: z.array(productSchema),
+	next: z.string().optional(),
 });
 
 export const coinSchema = z.object({
@@ -234,13 +244,161 @@ export const variantsResponseSchema = z.object({
 	next: z.string().url().optional(),
 });
 
+//! Web Descriptions
+
+// Esquema para productType
+export const productWebTypeSchema = z.object({
+	id: z.number(),
+	name: z.string(),
+	isEditable: z.number(),
+	state: z.number(),
+	href: z.string().url(),
+});
+
+// Esquema para productTaxes (convertido a array para manejar el error más común)
+export const productTaxesSchema = z.object({
+	href: z.string().url(),
+});
+
+// Update baseInfo schema to match the actual structure
+export const baseInfoSchema = z.object({
+	id: z.number(),
+	prestashopProductId: z.number(),
+	prestashopAttributeId: z.number(),
+	name: z.string(),
+	description: z.string().nullable(),
+	classification: z.number(),
+	basePrice: z.number(),
+	state: z.number(),
+	ledgerAccount: z.string().nullable(),
+	costCenter: z.string().nullable(),
+	allowDecimal: z.number(),
+	stockControl: z.number(),
+	printDetailPack: z.number(),
+	href: z.string().url(),
+});
+
+// Esquema para pictures (array de imágenes)
+export const pictureSchema = z.array(
+	z.object({
+		id: z.number(),
+		href: z.string().url(),
+		state: z.number(),
+		legendImage: z.string().nullable(),
+	})
+);
+
+// Esquema para variant - Corregido con campos requeridos
+// Update variantWebSchema to include missing fields and make optional fields
+export const variantWebSchema = z.object({
+	id: z.number(),
+	productId: z.number(),
+	description: z.string().nullable().optional(),
+	unlimitedStock: z.number().optional(),
+	allowNegativeStock: z.number().optional(),
+	showInEcommerce: z.number().optional(),
+	state: z.number().optional(),
+	barCode: z.string().nullable().optional(),
+	code: z.string(),
+	salePrices: z
+		.object({
+			price: z.string().nullable(),
+			finalPrice: z.string().nullable(),
+			taxPrice: z.string().nullable(),
+			netDiscountPrice: z.string().nullable(),
+		})
+		.optional(),
+	discounts: z.array(z.unknown()).optional(),
+	stockInfo: z
+		.array(
+			z.object({
+				productId: z.number(),
+				variantId: z.number(),
+				code: z.string(),
+				quantity: z.number(),
+				quantityReserved: z.number(),
+				quantityAvailable: z.number(),
+				office: z
+					.object({
+						id: z.number(),
+						href: z.string().url(),
+					})
+					.optional(),
+			})
+		)
+		.optional(),
+	href: z.string().url().optional(),
+	integration: z.record(z.string()).optional().nullable(),
+	variantMarket: z.record(z.unknown()).optional(),
+	attributeValues: z.array(z.unknown()).optional(),
+	prices: z.array(z.unknown()).optional(),
+	shipping: z
+		.object({
+			href: z.string().url(),
+		})
+		.optional(),
+});
+
+// Esquema para productWebDescription
+export const productWebDescriptionSchema = z.object({
+	id: z.number(),
+	productId: z.number(),
+	idVariantDefault: z.number(),
+	urlSlug: z.string(),
+	name: z.string(),
+	description: z.string().nullable(),
+	descriptions: z.array(z.any()).nullable(),
+	displayNotice: z.string(),
+	state: z.number(),
+	mkProductType: z.string(),
+	productType: productWebTypeSchema,
+	productTaxes: z.object({ href: z.string().url() }),
+	urlImg: z.string().url(),
+	pictures: pictureSchema,
+	urlVideo: z.string().nullable(),
+	shippingUnit: z.number(),
+	width: z.number(),
+	depth: z.number(),
+	length: z.number(),
+	baseInfo: baseInfoSchema,
+	variants: z.array(variantWebSchema),
+	relatedVariants: z.object({ href: z.string().url() }),
+	collections: z.object({ href: z.string().url() }),
+	brand: z.any().nullable(),
+	variantShipping: z.object({ href: z.string().url() }),
+	discounts: z.any().nullable(),
+	stocks: z.object({ href: z.string().url() }),
+	integration: z.record(z.string()).optional().nullable(),
+	variant: z
+		.object({
+			id: z.number(),
+			code: z.string(),
+		})
+		.optional(),
+	order: z.number(),
+	link: z.string(),
+});
+
+// Esquema para la respuesta de la API
+export const productWebDescriptionResponseSchema = z.object({
+	code: z.string(),
+	href: z.string().url(),
+	count: z.number(),
+	limit: z.number(),
+	offset: z.number(),
+	data: z.array(productWebDescriptionSchema),
+});
+
+export type ProductWebDescription = z.infer<typeof productWebDescriptionResponseSchema>;
+export type ProductWebType = z.infer<typeof productWebDescriptionSchema>;
+
 export type Category = z.infer<typeof categorySchema>;
 export type Categories = z.infer<typeof categoriesSchema>;
 export type SearchFormData = z.infer<typeof searchSchema>;
 export type BsaleResponse = z.infer<typeof bsaleResponseSchema>;
 
-export type Product = z.infer<typeof ProductSchema>;
-export type ProductsResponse = z.infer<typeof ProductsResponseSchema>;
+export type Product = z.infer<typeof productSchema>;
+export type ProductsResponse = z.infer<typeof productsResponseSchema>;
 
 export type PriceLists = z.infer<typeof priceListItemSchema>;
 export type PriceListsResponse = z.infer<typeof priceListsResponseSchema>;
