@@ -30,7 +30,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
     useEffect(() => {
         if (cartId) {
-            fetchCartDetails().then((details) => console.log(details));
+            fetchCartDetails();
         }
     }, [cartId]);
 
@@ -44,7 +44,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         const formData = { cartDetails: [
                 {
                     quantity: 1,
-                    unitValue: product.baseInfo.basePrice,
+                    unitValue: parseInt(basePrice),
                     image: product.urlImg,
                     idVarianteProducto: product.variants[0].id,
                     itemName: product.name, 
@@ -56,6 +56,9 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         await addItemToCart(formData);
     };
+
+    const basePrice = product.variants[0].salePrices.price ?? "N/A"; // Default value if salePrices is undefined
+    const finalPrice = product.variants[0].salePrices.finalPrice ?? "N/A"; // Default value if salePrices is undefined
 
 	return (
 		<>
@@ -94,9 +97,13 @@ export default function ProductCard({ product }: ProductCardProps) {
 							</span>
 						</p>
 
-						{/* Product Price */}
+						{/* Product Prices */}
+						<p className="text-gray-400 text-sm font-semibold mt-2">
+                            {basePrice ? formatToCLP(parseInt(basePrice)) : "N/A"}
+						</p>
+
 						<p className="text-orange-600 text-lg font-bold mt-2">
-							{formatToCLP(product.baseInfo.basePrice)}
+                            {finalPrice ? formatToCLP(parseInt(finalPrice)) : "N/A"}
 						</p>
 
 						{/* Product Category */}
@@ -121,7 +128,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
 						{/* Product Description */}
 						<p className="text-slate-800 text-sm mt-2 truncate">
-							{product.description}
+							{product.description ? product.description : "No description available..."}
 						</p>
 
 						<div className="flex justify-center gap-3">

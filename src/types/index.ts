@@ -402,12 +402,51 @@ export const productWebDescriptionResponseSchema = z.object({
 });
 
 //? Cart Schemas
+export const detailCartDataSchema = z.object({
+    id: z.number(), 
+    quantity: z.number(),
+    unitValue: z.number(),
+    netUnitValue: z.number(), 
+    discount: z.number().optional(),
+    itemName: z.string(),
+    total: z.number(),
+    image: z.string().url(),
+    idVarianteProducto: z.number(),
+    sku: z.string(),
+    link: z.string(),
+    productWebId: z.number(),
+    cartId: z.number(),
+    taxList: z.array(z.number()),
+    shipping: z.object({
+        id: z.number(),
+        weight: z.number(),
+        height: z.number(),
+        width: z.number(),
+        deph: z.number(), 
+        length: z.number(), 
+        match: z.number()
+    }).optional(),
+    value: z.number(),
+    cd_q: z.number(),
+    cd_unit_value: z.number(),
+    cd_discount: z.number(),
+    cd_sub_total: z.number(),
+    cd_id: z.number(), 
+    cd_id_discount: z.number(),
+    cd_image: z.string().url(),
+    id_variante_producto: z.number(),
+    codigo_variante_producto: z.string(), 
+    href: z.string().url(),
+})
+
 export const detailCartSchema = z.object({
     code: z.string(),
     href: z.string().url(),
     count: z.number(),
     limit: z.number(),
     offset: z.number(),
+    data: z.array(detailCartDataSchema).default([]),
+    /*
     data: z.array(z.object({
         id: z.number(), 
         quantity: z.number(),
@@ -442,7 +481,8 @@ export const detailCartSchema = z.object({
         id_variante_producto: z.number(),
         codigo_variante_producto: z.string(), 
         href: z.string().url(),
-    })),
+    })).default([]),
+    */
     previous: z.string().url().optional(),
 })
 
@@ -466,6 +506,8 @@ export type ProductWebType = z.infer<typeof productWebDescriptionSchema>;
 
 export type CartForm = z.infer<typeof cartSchema>;
 export type CartDetail = z.infer<typeof detailCartSchema>;
+export type CartDetailModal = Pick<CartDetail, "data">;
+export type CartDetailData = z.infer<typeof detailCartDataSchema>;
 
 export type Category = z.infer<typeof categorySchema>;
 export type Categories = z.infer<typeof categoriesSchema>;

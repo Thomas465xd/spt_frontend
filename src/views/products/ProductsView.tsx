@@ -1,18 +1,31 @@
 import { getAllProductDescription } from "@/api/ProductAPI";
+import CartDetailsModal from "@/components/cart/CartDetailsModal";
 import ProductsTable from "@/components/products/ProductsTable";
 import Heading from "@/components/ui/Heading";
 import Loader from "@/components/ui/Loader";
 import Pagination from "@/components/ui/Pagination";
 import SearchBar from "@/components/ui/SearchBar";
+import { ShoppingCartIcon } from "@heroicons/react/20/solid";
 import { useQuery } from "@tanstack/react-query";
-import { Link, Navigate, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 
 export default function ProductsView() {
 
     const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
     const page = parseInt(searchParams.get("page") || "1", 10); // Default to page 1 if not present
     const searchQuery = searchParams.get("searchName") || ""; // Obtener el término de búsqueda
     const searchCode = searchParams.get("searchCode") || ""; // Obtener el término de búsqueda
+
+	// Get the 'productDetails' query param from the URL
+	const queryParams = new URLSearchParams(location.search);
+	const cartModal = queryParams.get("cart");
+
+    const handleClick = () => {
+		queryParams.set("cart", "true"); // Set the product code
+
+		navigate(`${location.pathname}?${queryParams.toString()}`); // Navigate with the updated URL
+	};
 
     if(page < 1) return <Navigate to={`/products?page=1`} replace />
 
@@ -32,8 +45,6 @@ export default function ProductsView() {
     const totalProducts = productsData?.count || 0;
 
     const totalPages = Math.ceil(totalProducts / itemsPerPage);
-
-    
 
     if(isLoadingProducts) return <Loader />
 
@@ -100,6 +111,17 @@ export default function ProductsView() {
                 page={page}
                 totalPages={totalPages}
             />
+
+            <button 
+                className="fixed bottom-5 left-5 bg-orange-600 text-white p-4 rounded-full shadow-lg hover:bg-orange-700 transition-colors"
+                onClick={() => handleClick()}
+            >
+                <ShoppingCartIcon className="w-6 h-6"></ShoppingCartIcon>
+            </button>
+
+            {cartModal === "true" && (
+                <CartDetailsModal />
+            )}
         </>
     )
 }

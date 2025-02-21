@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getCartDetailById, addToCart, updateCart } from "@/api/ProductAPI";
+import { getCartDetailById, addToCart, updateCart, deleteCart } from "@/api/ProductAPI";
 import { CartForm } from "../types";
 import { toast } from "react-toastify";
 
@@ -26,7 +26,9 @@ export function useCart() {
             if (!cartId) {
                 const newCartId = await addToCart(formData);
                 setCartId(newCartId);
+                localStorage.setItem("cartId", newCartId.toString());
                 toast.success("Producto añadido al carrito");
+                window.location.reload();
                 return newCartId;
             } else {
                 await updateCart({ formData, cartId });
@@ -40,11 +42,33 @@ export function useCart() {
         }
     };
 
+    // Function to delete an item from the cart and update state in real time
+    const deleteItemFromCart = async (detailId: number) => {
+        try {
+            if (!cartId) return;
+    
+            const updatedCart = await deleteCart({ cartId, detailId });
+    
+            if (!updatedCart) {
+                // Si el carrito está vacío, eliminar el cartId
+                localStorage.removeItem("cartId");
+                setCartId(null);
+                toast.success("Último producto eliminado. Carrito vacío.");
+            } else {
+                toast.success("Producto eliminado del carrito");
+            }
+        } catch (error) {
+            toast.error("Error al eliminar producto del carrito");
+            console.error("Error al eliminar producto del carrito:", error);
+        }
+    };
+
     //! REVISAR Función para limpiar carrito (por ejemplo, después del checkout) 
     const clearCart = () => {
         localStorage.removeItem("cartId");
         setCartId(null);
+        toast.success('Carrito Reiniciado')
     };
 
-    return { cartId, fetchCartDetails, addItemToCart, clearCart };
+    return { cartId, fetchCartDetails, addItemToCart, deleteItemFromCart, clearCart };
 }

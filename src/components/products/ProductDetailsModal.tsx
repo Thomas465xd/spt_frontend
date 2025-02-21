@@ -1,10 +1,11 @@
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import { ProductWebType } from "@/types/index";
 import { formatToCLP } from "@/utilities/price";
 import { capitalizeFirstLetter } from "@/utilities/text";
+import { useCart } from "@/hooks/useCart";
 
 type ProductDetailsModalProps = {
 	product: ProductWebType;
@@ -16,9 +17,12 @@ export default function ProductDetailsModal({
 	const location = useLocation();
 	const navigate = useNavigate();
 
+    const { addItemToCart } = useCart();
+
 	const queryParams = new URLSearchParams(location.search);
 	const productDetails = queryParams.get("productDetails");
 	const show = !!productDetails;
+
 
 	// Close handler to remove 'productDetails' parameter from URL
 	const handleClose = () => {
@@ -28,8 +32,31 @@ export default function ProductDetailsModal({
 		}); // Update the URL
 	};
 
-    const handleAddToCart = () => {
-        
+    const [quantity, setQuantity] = useState(1);
+
+    const handleIncrease = () => setQuantity((prev: number) => prev + 1);
+    const handleDecrease = () => setQuantity((prev: number) => Math.max(1, prev - 1));
+
+    const handleAddToCart = async () => {
+        const discount =
+        product.variants[0].discounts.length > 0 
+            ? product.variants[0].discounts[0] // O usar reduce() si los descuentos se suman
+            : 0; // Si no hay descuentos, asignar 0
+
+        const formData = { cartDetails: [
+                {
+                    quantity: quantity,
+                    unitValue: parseInt(basePrice),
+                    image: product.urlImg,
+                    idVarianteProducto: product.variants[0].id,
+                    itemName: product.name, 
+                    productWebId: product.productId,
+                    discount: discount,
+                }
+            ] 
+        };
+
+        await addItemToCart(formData);
     }
 
     const basePrice = product.variants[0].salePrices.price ?? "N/A"; // Default value if salePrices is undefined
@@ -156,10 +183,32 @@ export default function ProductDetailsModal({
                                             </p>
                                         </div>
                                     </div>
+
+                                    {/* Quantity Selector */}
+                                    <div className="flex items-center justify-center my-0 sm:my-10">
+                                        <button 
+                                            onClick={handleDecrease} 
+                                            className="px-3 py-1 bg-gray-300 rounded-l-lg hover:bg-gray-400"
+                                        >
+                                            -
+                                        </button>
+                                        <input 
+                                            type="text" 
+                                            value={quantity} 
+                                            readOnly
+                                            className="w-32 h-8 text-center border-t border-b border-gray-300"
+                                        />
+                                        <button 
+                                            onClick={handleIncrease} 
+                                            className="px-3 py-1 bg-gray-300 rounded-r-lg hover:bg-gray-400"
+                                        >
+                                            +
+                                        </button>
+                                    </div>
     
                                     {/* Action Button */}
                                     <button 
-                                        className="mt-6 w-full bg-orange-600 text-white py-3 rounded-lg font-semibold hover:bg-orange-700 transition"
+                                        className="w-full bg-orange-600 text-white py-3 rounded-lg font-semibold hover:bg-orange-700 transition"
                                         onClick={handleAddToCart}
                                     >
                                         Agregar al Carrito 🛒
