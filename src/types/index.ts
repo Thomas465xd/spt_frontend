@@ -307,8 +307,16 @@ export const variantWebSchema = z.object({
 			taxPrice: z.string().nullable(),
 			netDiscountPrice: z.string().nullable(),
 		})
-		.optional(),
-	discounts: z.array(z.unknown()).optional(),
+        .default({
+            price: null,
+            finalPrice: null,
+            taxPrice: null,
+            netDiscountPrice: null,
+        }),
+	discounts: z.preprocess((val) => (val === null ? [] : val), // Convert null to []
+        z.array(z.number()).optional().default([])
+    ),
+
 	stockInfo: z
 		.array(
 			z.object({
@@ -353,7 +361,8 @@ export const productWebDescriptionSchema = z.object({
 	mkProductType: z.string(),
 	productType: productWebTypeSchema,
 	productTaxes: z.object({ href: z.string().url() }),
-	urlImg: z.string().url(),
+	urlImg: z.string(),
+    //urlImg: z.string().url(),
 	pictures: pictureSchema,
 	urlVideo: z.string().nullable(),
 	shippingUnit: z.number(),
@@ -366,7 +375,10 @@ export const productWebDescriptionSchema = z.object({
 	collections: z.object({ href: z.string().url() }),
 	brand: z.any().nullable(),
 	variantShipping: z.object({ href: z.string().url() }),
-	discounts: z.any().nullable(),
+	discounts: z.preprocess((val) => (val === null ? [] : val), // Convert null to []
+        z.array(z.number()).optional().default([])
+    ),
+
 	stocks: z.object({ href: z.string().url() }),
 	integration: z.record(z.string()).optional().nullable(),
 	variant: z
@@ -389,8 +401,71 @@ export const productWebDescriptionResponseSchema = z.object({
 	data: z.array(productWebDescriptionSchema),
 });
 
+//? Cart Schemas
+export const detailCartSchema = z.object({
+    code: z.string(),
+    href: z.string().url(),
+    count: z.number(),
+    limit: z.number(),
+    offset: z.number(),
+    data: z.array(z.object({
+        id: z.number(), 
+        quantity: z.number(),
+        unitValue: z.number(),
+        netUnitValue: z.number(), 
+        discount: z.number().optional(),
+        total: z.number(),
+        image: z.string().url(),
+        idVarianteProducto: z.number(),
+        sku: z.string(),
+        link: z.string(),
+        productWebId: z.number(),
+        cartId: z.number(),
+        taxList: z.array(z.number()),
+        shipping: z.object({
+            id: z.number(),
+            weight: z.number(),
+            height: z.number(),
+            width: z.number(),
+            deph: z.number(), 
+            length: z.number(), 
+            match: z.number()
+        }).optional(),
+        value: z.number(),
+        cd_q: z.number(),
+        cd_unit_value: z.number(),
+        cd_discount: z.number(),
+        cd_sub_total: z.number(),
+        cd_id: z.number(), 
+        cd_id_discount: z.number(),
+        cd_image: z.string().url(),
+        id_variante_producto: z.number(),
+        codigo_variante_producto: z.string(), 
+        href: z.string().url(),
+    })),
+    previous: z.string().url().optional(),
+})
+
+export const cartSchema = z.object({
+    cartDetails: z.array(z.object({
+        quantity: z.number(),
+        unitValue: z.number(),
+        image: z.string().url(),
+        idVarianteProducto: z.number(),
+        itemName: z.string(),
+        productWebId: z.number(), 
+        discount: z.number().optional(), 
+    }))
+})
+
+//* Checkout Schemas TO DO */
+
+
 export type ProductWebDescription = z.infer<typeof productWebDescriptionResponseSchema>;
 export type ProductWebType = z.infer<typeof productWebDescriptionSchema>;
+
+export type CartForm = z.infer<typeof cartSchema>;
+export type CartDetail = z.infer<typeof detailCartSchema>;
 
 export type Category = z.infer<typeof categorySchema>;
 export type Categories = z.infer<typeof categoriesSchema>;

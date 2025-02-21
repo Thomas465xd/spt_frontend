@@ -7,11 +7,12 @@ import ErrorMessage from "./ErrorMessage";
 type SearchBarProps = {
     route: string;
     param: string;
+    inputType: string;
     formText: string;
     searchText: string;
 }
 
-export default function SearchBar({route, param, formText, searchText} : SearchBarProps) {
+export default function SearchBar({route, param, inputType, formText, searchText} : SearchBarProps) {
     const initialValues = {
         search: "" 
     };
@@ -38,7 +39,7 @@ export default function SearchBar({route, param, formText, searchText} : SearchB
             >
                 <div className="relative flex-grow">
                     <input 
-                        type="text"
+                        type={inputType}
                         placeholder={formText}
                         className="p-3 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
                         {...register("search", { required: "El campo de búsqueda es obligatorio." })}
@@ -50,7 +51,7 @@ export default function SearchBar({route, param, formText, searchText} : SearchB
                     type="submit" 
                     className="p-3 text-white bg-orange-600 hover:bg-orange-700 transition-colors rounded-lg font-semibold shadow-md"
                 >
-                    Buscar {searchText} 🕵️
+                    Buscar {searchText}
                 </button>
             </form>
 

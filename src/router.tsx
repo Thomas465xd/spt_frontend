@@ -18,6 +18,7 @@ import ChangePasswordView from "./views/profile/ChangePasswordView";
 import CategoriesView from "./views/categories/CategoriesView";
 import ProductsView from "./views/products/ProductsView";
 import CategoryProductsView from "./views/categories/CategoryProductsView";
+import CartView from "./views/cart/CartView";
 
 export default function Router() {
     return (
@@ -27,6 +28,7 @@ export default function Router() {
                     <Route path="/" element={<ClientView />} index />
 
                     <Route path="/products" element={<ProductsView />} index />
+                    <Route path="/cart" element={<CartView />} />
 
                     <Route path="/categories" element={<CategoriesView />} />
                     <Route path="/categories/products" element={<CategoryProductsView />} />

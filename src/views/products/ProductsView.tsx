@@ -12,6 +12,7 @@ export default function ProductsView() {
     const [searchParams] = useSearchParams();
     const page = parseInt(searchParams.get("page") || "1", 10); // Default to page 1 if not present
     const searchQuery = searchParams.get("searchName") || ""; // Obtener el término de búsqueda
+    const searchCode = searchParams.get("searchCode") || ""; // Obtener el término de búsqueda
 
     if(page < 1) return <Navigate to={`/products?page=1`} replace />
 
@@ -21,8 +22,8 @@ export default function ProductsView() {
     const offset = (page - 1) * itemsPerPage;
 
     const { data: productsData, isLoading: isLoadingProducts, isError: isErrorProducts } = useQuery({
-        queryKey: ["products", page, searchQuery],
-        queryFn: () => getAllProductDescription({ limit: itemsPerPage, offset, name: searchQuery }), 
+        queryKey: ["products", page, searchQuery, searchCode],
+        queryFn: () => getAllProductDescription({ limit: itemsPerPage, offset, name: searchQuery, code: searchCode }), 
         staleTime: 1000 * 60 * 5,
         refetchOnWindowFocus: false,
     })
@@ -42,7 +43,7 @@ export default function ProductsView() {
         <>
             <Heading>Producto no Encontrado</Heading>
 
-            <p className="text-center text-gray-500 my-10">No hay Resultados de Busqueda para: <span className="font-bold italic">"{searchParams.get("searchName")}"</span></p>
+            <p className="text-center text-gray-500 my-10">No hay Resultados de Busqueda para: <span className="font-bold italic">"{searchParams.get("searchName") ? searchParams.get("searchName") : searchParams.get("searchCode")}"</span></p>
 
             <Link
                 to="/products?page=1"
@@ -63,11 +64,20 @@ export default function ProductsView() {
             <SearchBar 
                 route="products"
                 param="searchName"
+                inputType="text"
                 formText="Buscar por Nombre de Producto..."
                 searchText="Productos"
             />
 
-            {searchParams.has("searchName") && (
+            <SearchBar 
+                route="products"
+                param="searchCode"
+                inputType="text"
+                formText="Buscar por SKU/Código del Producto..."
+                searchText="por SKU/Código"
+            />
+
+            {searchParams.has("searchName") || searchParams.has("searchCode") && (
                 <Link
                     to="/products"
                     className="mt-6 px-6 py-3 mx-auto grid place-content-center max-w-md lg:max-w-lg text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-colors"
