@@ -1,6 +1,6 @@
 import api from "@/lib/axios";
 import { isAxiosError } from "axios";
-import {Token, userResponseSchema, usersResponseSchema, UserStatusForm } from "../types";
+import {authUserSchema, Token, userResponseSchema, usersResponseSchema, UserStatusForm } from "../types";
 
 export async function getConfirmedUsers({ page, perPage }: { page: number, perPage: number }) {
     try {
@@ -91,8 +91,9 @@ export async function getUserById({ userId } : UserStatusForm) {
 export async function getUser() {
     try {
         const url = `/auth/user`;
-        const response = await api.get(url);
-        //console.log(response.data)
+        const { data } = await api.get(url);
+
+        const response = authUserSchema.safeParse(data);
 
         return response.data;
     } catch (error) {

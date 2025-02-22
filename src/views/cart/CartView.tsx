@@ -49,25 +49,51 @@ export default function CartView() {
                 <span className="font-bold text-orange-500"> Emitir una Orden</span>
             </p>
 
-            <CartTable
-                cartDetails={cartDetails || []}
-            />
+            {!cartDetails ? (
+                <>
+                    <p className="text-center text-gray-700 my-20">
+                        El Carrito de Compras esta vacio.
+                    </p>
+                </>
+            ) : (
+                <CartTable
+                    cartDetails={cartDetails || []}
+                />
+            )}
 
-            <div className="flex justify-center mt-10">
-                <button 
-                    className="px-4 py-2 bg-orange-600 text-white rounded-full hover:bg-orange-700 transition duration-300"
-                    onClick={() =>  navigate("/cart/checkout") }
-                >
-                    Ir a Emitir Orden
-                </button>
+            {cartDetails ? (
+                <div className="flex justify-center mt-10">
+                    <button 
+                        className="px-4 py-2 bg-orange-600 text-white rounded-full hover:bg-orange-700 transition duration-300"
+                        onClick={() =>  navigate(`/cart/checkout`) }
+                    >
+                        Ir a Emitir Orden
+                    </button>
 
-                <button 
-                    className="px-4 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition duration-300 ml-4"
-                    onClick={handleClearCart}
-                >
-                    Limpiar Carrito
-                </button>
-            </div>
+                    <button 
+                        className="px-4 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition duration-300 ml-4"
+                        onClick={handleClearCart}
+                    >
+                        Limpiar Carrito
+                    </button>
+
+                    <button 
+                        className="px-4 py-2 bg-gray-600 text-white rounded-full hover:bg-gray-700 transition duration-300 ml-4"
+                        onClick={() => navigate("/products")}
+                    >
+                        Seguir Comprando
+                    </button>
+                </div>
+            ) : (
+                <div className="flex justify-center my-10">
+                    <button 
+                        className="px-10 py-2 bg-orange-500 text-white rounded-full hover:bg-orange-600 transition duration-300"
+                        onClick={() => navigate("/products")}
+                    >
+                        Volver a la Sección de Productos
+                    </button>
+                </div>
+            )}
         </>
     )
 }

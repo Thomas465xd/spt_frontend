@@ -15,8 +15,8 @@ export default function CartTable({cartDetails}: CartTableProps) {
     const queryClient = useQueryClient();
     const [isUpdating, setIsUpdating] = useState<Record<number, boolean>>({});
 
-    const handleDeleteItem = (detailId: number) => {
-        deleteItemFromCart(detailId);
+    const handleDeleteItem = async (detailId: number) => {
+        await deleteItemFromCart(detailId);
         queryClient.invalidateQueries({ queryKey: ["cartDetails", cartId] });
     }
 
@@ -152,7 +152,7 @@ export default function CartTable({cartDetails}: CartTableProps) {
                         {cartDetails.length > 0 && (
                             <>
                                 <tr className="bg-gray-50">
-                                    <td colSpan={3} className="py-4 pl-4 pr-3 text-right font-medium text-gray-900 sm:pl-6">
+                                    <td colSpan={3} className="py-4 pl-4 pr-3 text-left sm:text-right font-medium text-gray-900 sm:pl-6">
                                         Subtotal:
                                     </td>
                                     <td className="whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900">
@@ -161,7 +161,7 @@ export default function CartTable({cartDetails}: CartTableProps) {
                                     <td></td>
                                 </tr>
                                 <tr className="bg-gray-50">
-                                    <td colSpan={3} className="py-2 pl-4 pr-3 text-right font-medium text-gray-900 sm:pl-6">
+                                    <td colSpan={3} className="py-2 pl-4 pr-3 text-left sm:text-right font-medium text-gray-900 sm:pl-6">
                                         IVA (19%):
                                     </td>
                                     <td className="whitespace-nowrap px-3 py-2 text-sm font-medium text-gray-900">
@@ -170,7 +170,7 @@ export default function CartTable({cartDetails}: CartTableProps) {
                                     <td></td>
                                 </tr>
                                 <tr className="bg-gray-100">
-                                    <td colSpan={3} className="py-4 pl-4 pr-3 text-right font-semibold text-gray-900 sm:pl-6 text-base">
+                                    <td colSpan={3} className="py-4 pl-4 pr-3 text-left sm:text-right font-semibold text-gray-900 sm:pl-6 text-base">
                                         Total a pagar:
                                     </td>
                                     <td className="whitespace-nowrap px-3 py-4 font-bold text-lg text-gray-900">

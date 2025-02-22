@@ -20,6 +20,7 @@ import ProductsView from "./views/products/ProductsView";
 import CategoryProductsView from "./views/categories/CategoryProductsView";
 import CartView from "./views/cart/CartView";
 import OrdersView from "./views/orders/OrdersView";
+import CartCheckoutView from "./views/cart/CartCheckoutView";
 
 export default function Router() {
     return (
@@ -29,7 +30,10 @@ export default function Router() {
                     <Route path="/" element={<ClientView />} index />
 
                     <Route path="/products" element={<ProductsView />} index />
+
                     <Route path="/cart" element={<CartView />} />
+                    <Route path="/cart/checkout" element={<CartCheckoutView />} />
+
                     <Route path="/orders" element={<OrdersView />} />
                     <Route path="/orders/details/:orderId" element={<ProductsView />} />
 

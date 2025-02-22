@@ -67,6 +67,7 @@ export function useCart() {
     const clearCart = () => {
         localStorage.removeItem("cartId");
         setCartId(null);
+        window.location.reload();
         toast.success('Carrito Reiniciado')
     };
 

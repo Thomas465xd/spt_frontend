@@ -1,41 +1,37 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import Swal from 'sweetalert2';
 import { useCart } from '@/hooks/useCart';
-import { toast } from 'react-toastify';
-import { CartDetailModal } from '@/types/index';
+import { useQuery} from '@tanstack/react-query';
+import CartTable from './CartTable';
+import Loader from '../ui/Loader';
 
 export default function ConfirmUserModal() {
-
-    const location = useLocation()
-    const navigate = useNavigate()
-
-    const { cartId, fetchCartDetails, addItemToCart, deleteItemFromCart, clearCart } = useCart();
-    const [cartDetails, setCartDetails] =  useState<CartDetailModal[]>([]);
+    const location = useLocation();
+    const navigate = useNavigate();
+    const { cartId, fetchCartDetails, clearCart } = useCart();
 
     const queryParams = new URLSearchParams(location.search);
-    const cartModal = queryParams.get('cart')!;
-    const show = cartModal ? true : false
+    const cartModal = queryParams.get('cart');
+    const show = Boolean(cartModal);
+
+    const { data, isLoading, isError } = useQuery({
+        queryKey: ["cartDetails", cartId],
+        queryFn: fetchCartDetails,
+        enabled: !!cartId,
+    });
+
+    const cartDetails = data?.data || [];
 
     const handleClose = () => {
-		queryParams.delete("cart"); // Remove the productDetails param
-		navigate(`${location.pathname}?${queryParams.toString()}`, {
-			replace: true,
-		}); // Update the URL
-	};
-
-    /*
-    useEffect(() => {
-        if (cartId) {
-            fetchCartDetails().then((data) => {
-                setCartDetails();
-            });
-        }
-    }, [cartId]);
-    */
-
+        queryParams.delete("cart");
+        navigate(`${location.pathname}?${queryParams.toString()}`, {
+            replace: true,
+        });
+    };
+    
     const handleReset = () => {
         Swal.fire({
             title: "¿Estas Seguro de esta Acción? ⚠️",
@@ -52,9 +48,13 @@ export default function ConfirmUserModal() {
                 queryParams.delete('cart');
                 navigate(`${location.pathname}?${queryParams.toString()}`, { replace: true });
             }
-        })
-    }
+        });
+    };
 
+    if(isLoading) return <Loader />
+
+    if(isError) return <Navigate to="/404" replace />
+    
     return (
         <Transition appear show={show} as={Fragment}>
             <Dialog as="div" className="relative z-10" onClose={handleClose}>
@@ -82,8 +82,6 @@ export default function ConfirmUserModal() {
                             leaveTo="opacity-0 scale-95"
                         >
                             <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-xl transition-all p-16">
-
-                                {/* Botón de cierre */}
                                 <button 
                                     onClick={handleClose}
                                     className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition"
@@ -94,32 +92,63 @@ export default function ConfirmUserModal() {
                                 <Dialog.Title
                                     as="h3"
                                     className="font-black text-4xl my-5 border-b border-gray-300 pb-3"
-                                >Resúmen de Compra</Dialog.Title>
+                                >
+                                    Resúmen de Compra 🛒
+                                </Dialog.Title>
 
-                                <p className="text-xl font-bold">Verifica que los productos ingresados sean correctos para {''}
+                                <p className="text-xl font-bold mb-10">
+                                    Verifica que los productos ingresados sean correctos para{' '}
                                     <span className="text-orange-600">proceder con la orden</span>
                                 </p>
 
-                                <div
-                                    className="mt-10 space-y-5"
-                                >
+                                {cartDetails.length === 0 ? (
+                                    <p className="text-2xl font-bold text-center underline text-orange-500">
+                                        No hay productos en tu carrito
+                                    </p>
+                                ) : (
+                                    <CartTable 
+                                        cartDetails={cartDetails}
+                                    />
+                                )}
 
-                                    <div className="flex gap-5">
-                                        <button
-                                            type="button"
-                                            className=" bg-orange-600 hover:bg-orange-700 w-full rounded p-3 text-white font-black text-xl cursor-pointer transition-colors"
-                                            onClick={() => navigate(location.pathname, { replace: true })}
-                                        >
-                                            Ir a Emitir Orden de Compra
-                                        </button>
+                                <div className="mt-10 space-y-5">
+                                    <div className="grid grid-cols-1 md:flex gap-5">
+                                        {cartDetails.length === 0 ? (
+                                            <button
+                                                type="button"
+                                                className="bg-slate-700 hover:bg-slate-800 w-full rounded p-3 text-white font-black text-xl cursor-pointer transition-colors"
+                                                onClick={handleClose}
+                                            >
+                                                Cerrar y Continuar Comprando
+                                            </button>
+                                        ) : (
+                                            <>
+                                                <button
+                                                    type="button"
+                                                    className="bg-orange-600 hover:bg-orange-700 w-full rounded-full p-2 text-white font-black text-lg cursor-pointer transition-colors"
+                                                    onClick={() => navigate(location.pathname, { replace: true })}
+                                                >
+                                                    Ir a Emitir Orden de Compra
+                                                </button>
 
-                                        <button
-                                            type="button"
-                                            className=" bg-slate-700 hover:bg-slate-700 w-full rounded p-3 text-white font-black text-xl cursor-pointer transition-colors"
-                                            onClick={handleReset}
-                                        >
-                                            Borrar Carrito
-                                        </button>
+                                                <button
+                                                    type="button"
+                                                    className="bg-red-600 hover:bg-red-700 w-full rounded-full p-2 text-white font-black text-lg cursor-pointer transition-colors"
+                                                    onClick={handleReset}
+                                                >
+                                                    Limpiar Carrito
+                                                </button>
+
+                                                <button
+                                                    type="button"
+                                                    className="bg-slate-700 hover:bg-slate-800 w-full rounded-full p-3 text-white font-black text-lg cursor-pointer transition-colors"
+                                                    onClick={handleClose}
+                                                >
+                                                    Seguir Comprando
+                                                </button>
+                                            </>
+                                        )}
+
                                     </div>
                                 </div>
                             </Dialog.Panel>
