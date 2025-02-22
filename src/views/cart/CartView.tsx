@@ -3,12 +3,13 @@ import Heading from "@/components/ui/Heading";
 import Loader from "@/components/ui/Loader";
 import { useCart } from "@/hooks/useCart";
 import { useQuery } from "@tanstack/react-query";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
 export default function CartView() {
 
     const { cartId, fetchCartDetails, clearCart } = useCart();
+    const navigate = useNavigate()
 
     const { data, isLoading, isError } = useQuery({
         queryKey: ["cartDetails", cartId],
@@ -53,8 +54,11 @@ export default function CartView() {
             />
 
             <div className="flex justify-center mt-10">
-                <button className="px-4 py-2 bg-orange-600 text-white rounded-full hover:bg-orange-700 transition duration-300">
-                    Emitir Orden
+                <button 
+                    className="px-4 py-2 bg-orange-600 text-white rounded-full hover:bg-orange-700 transition duration-300"
+                    onClick={() =>  navigate("/cart/checkout") }
+                >
+                    Ir a Emitir Orden
                 </button>
 
                 <button 

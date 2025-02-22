@@ -499,15 +499,78 @@ export const cartSchema = z.object({
 })
 
 //* Checkout Schemas TO DO */
+export const extrasUserDataSchema = z.object({
+    user_rut: z.string(), 
+    razon_social: z.string(), 
+    direccion: z.string(), 
+    ciudad: z.string(), 
+    comuna: z.string(),
+})
 
+export const dispatchCheckoutSchema = z.object({
+    generateDocument: z.number(), 
+    clientName: z.string(), 
+    clientLastName: z.string(), 
+    clientEmail: z.string(), 
+    clientPhone: z.string(), 
+    code: z.string(), 
+    marketId: z.number(), 
+    withdrawStore: z.number(), 
+    shippingCost: z.number(), 
+    ptId: z.number(), 
+    payProcess: z.string(), 
+    clientCountry: z.string(), 
+    clientState: z.string(),
+    clientCityZone: z.string(), 
+    clientStreet: z.string(), 
+    clientPostcode: z.string(), 
+    clientBuildingNumber: z.string(), 
+    documentData: z.object({
+        emissionDate: z.string(), 
+    }),
+    extrasUserData: extrasUserDataSchema.optional(),
+    cartDetails: z.array(detailCartDataSchema),
+})
 
+export const withdrawCheckoutSchema = z.object({
+    generateDocument: z.number(), 
+    clientName: z.string(), 
+    clientLastName: z.string(), 
+    clientEmail: z.string(), 
+    clientPhone: z.string(), 
+    code: z.string(), 
+    pickStoreId: z.number(), 
+    marketId: z.number(), 
+    withdrawStore: z.number(), 
+    shippingCost: z.number(),
+    ptId: z.number(), 
+    payProcess: z.string(), 
+    clientCountry: z.string(), 
+    clientState: z.string(),
+    clientCityZone: z.string(), 
+    clientStreet: z.string(), 
+    clientPostcode: z.string(), 
+    clientBuildingNumber: z.string(), 
+    documentData: z.object({
+        emissionDate: z.string(), 
+    }),
+    extrasUserData: extrasUserDataSchema.optional(),
+    cartDetails: z.array(detailCartDataSchema),
+})
+
+// Product Types 
 export type ProductWebDescription = z.infer<typeof productWebDescriptionResponseSchema>;
 export type ProductWebType = z.infer<typeof productWebDescriptionSchema>;
 
+// Shopping Cart Types
 export type CartForm = z.infer<typeof cartSchema>;
 export type CartDetail = z.infer<typeof detailCartSchema>;
 export type CartDetailModal = Pick<CartDetail, "data">;
 export type CartDetailData = z.infer<typeof detailCartDataSchema>;
+
+// Checkout/Orders Types
+export type DispatchOrderForm = z.infer<typeof dispatchCheckoutSchema>;
+export type WithdrawOrderForm = z.infer<typeof withdrawCheckoutSchema>;
 
 export type Category = z.infer<typeof categorySchema>;
 export type Categories = z.infer<typeof categoriesSchema>;

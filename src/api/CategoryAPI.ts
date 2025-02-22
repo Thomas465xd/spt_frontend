@@ -62,7 +62,7 @@ export async function getCategory({ categoryId } : { categoryId: number }) {
     }
 }
 
-// Get Products by Category ID
+//! Get Products by Category ID - Pendiente
 export async function getProductsByCategory({ categoryId } : { categoryId: number }) {
     try {
         const url = `/v1/product_types/${categoryId}/products.json`;

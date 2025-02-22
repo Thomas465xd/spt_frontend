@@ -48,7 +48,7 @@ export default function AppLayout() {
             </header>
 
             {/* Main Content Area */}
-            <main className="flex-1 max-w-screen-2xl mx-auto mt-8 p-5">
+            <main className="flex-1 max-w-screen-2xl  md:mx-10 lg:mx-auto mt-8 p-5">
                 <Outlet />
             </main>
 

@@ -1,6 +1,6 @@
 import api from "@/lib/bsale";
 import { isAxiosError } from "axios";
-import { CartForm, detailCartSchema, priceListsResponseSchema, productSchema, productWebDescriptionResponseSchema, productWebDescriptionSchema } from "../types";
+import { CartForm, detailCartSchema, priceListsResponseSchema, productSchema, productWebDescriptionResponseSchema } from "../types";
 
 //! posible eliminación
 export async function getProductById({ productId } : { productId: number }) {
@@ -200,7 +200,7 @@ export async function updateCart({formData, cartId} : {formData: CartForm, cartI
 }
 
 //? Delete Cart
-export async function deleteCart({cartId, detailId} : {cartId: number, detailId: number}) {
+export async function deleteCart({ cartId, detailId }: { cartId: number; detailId: number }) {
     try {
         const url = `/v1/cart/${cartId}/detail/${detailId}.json`;
         const response = await api.delete(url);
@@ -215,7 +215,6 @@ export async function deleteCart({cartId, detailId} : {cartId: number, detailId:
             console.error("➡️ Mensaje de error:", error.response?.data?.error || error.message);
             console.error("➡️ Respuesta completa:", error.response?.data);
 
-            // Lanzamos un error más detallado para que pueda ser manejado correctamente
             throw new Error(error.response?.data?.message || "Ocurrió un error en la API");
         } else {
             console.error("⚠️ Error desconocido:", error);

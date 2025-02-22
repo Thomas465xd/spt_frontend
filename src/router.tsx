@@ -19,6 +19,7 @@ import CategoriesView from "./views/categories/CategoriesView";
 import ProductsView from "./views/products/ProductsView";
 import CategoryProductsView from "./views/categories/CategoryProductsView";
 import CartView from "./views/cart/CartView";
+import OrdersView from "./views/orders/OrdersView";
 
 export default function Router() {
     return (
@@ -29,6 +30,8 @@ export default function Router() {
 
                     <Route path="/products" element={<ProductsView />} index />
                     <Route path="/cart" element={<CartView />} />
+                    <Route path="/orders" element={<OrdersView />} />
+                    <Route path="/orders/details/:orderId" element={<ProductsView />} />
 
                     <Route path="/categories" element={<CategoriesView />} />
                     <Route path="/categories/products" element={<CategoryProductsView />} />
