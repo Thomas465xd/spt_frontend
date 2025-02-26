@@ -118,11 +118,11 @@ export default function ProductDetailsModal({
                                             as="h3"
                                             className="text-2xl font-bold text-gray-800 border-t-2 border-gray-300 pt-2"
                                         >
-                                            {product?.name || "Nombre del Producto"}
+                                            {capitalizeFirstLetter(product.name) || "Nombre del Producto"}
                                         </Dialog.Title>
     
                                         <p className="text-lg text-gray-600 mt-2">
-                                            {product?.description || "Descripción del producto..."}
+                                            {product?.description || "No hay Descripción Disponible..."}
                                         </p>
                                     </div>
                                 </div>
@@ -208,7 +208,8 @@ export default function ProductDetailsModal({
     
                                     {/* Action Button */}
                                     <button 
-                                        className="w-full bg-orange-600 text-white py-3 rounded-lg font-semibold hover:bg-orange-700 transition"
+                                        disabled={!product.baseInfo.stockControl}
+                                        className="w-full bg-orange-600 text-white py-3 rounded-lg font-semibold hover:bg-orange-700 transition disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
                                         onClick={handleAddToCart}
                                     >
                                         Agregar al Carrito 🛒

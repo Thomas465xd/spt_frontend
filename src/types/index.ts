@@ -484,10 +484,16 @@ export const extrasUserDataSchema = z.object({
 
 export const userCheckoutSchema = z.object({
     generateDocument: z.number(), 
+    documentData: z.object({
+        emissionDate: z.string(), 
+    }),
     clientName: z.string(), 
     clientLastName: z.string(), 
     clientEmail: z.string(), 
     clientPhone: z.string(), 
+    pickName: z.string(),
+    pickCode: z.string(),
+    pickStoreId: z.number().default(1),
     code: z.string(), 
     ptId: z.number(), 
     payProcess: z.string(), 
@@ -517,11 +523,9 @@ export const dispatchCheckoutSchema = z.object({
     clientStreet: z.string(), 
     clientPostcode: z.string(), 
     clientBuildingNumber: z.string(), 
-
     marketId: z.number(), 
     withdrawStore: z.number(), 
     shippingCost: z.number(),
-
     extrasUserData: extrasUserDataSchema.optional(),
     cartDetails: z.array(detailCartDataSchema),
     documentData: z.object({
@@ -535,6 +539,8 @@ export const withdrawCheckoutSchema = z.object({
     clientLastName: z.string(), 
     clientEmail: z.string(), 
     clientPhone: z.string(), 
+    pickName: z.string(),
+    pickCode: z.string(),
     code: z.string(), 
     ptId: z.number(), 
     payProcess: z.string(), 
@@ -544,20 +550,67 @@ export const withdrawCheckoutSchema = z.object({
     clientStreet: z.string(), 
     clientPostcode: z.string(), 
     clientBuildingNumber: z.string(), 
-
     pickStoreId: z.number(), 
     marketId: z.number(), 
     withdrawStore: z.number(), 
     shippingCost: z.number(),
-    
     extrasUserData: extrasUserDataSchema.optional(),
-
     cartDetails: z.array(detailCartDataSchema),
     documentData: z.object({
         emissionDate: z.string(), 
     }),
 })
 
+export const checkoutSchema = z.object({
+    id: z.number(),
+    token: z.string(),
+    clientName: z.string(),
+    clientEmail: z.string().email(),
+    clientPhone: z.string(),
+    clientCountry: z.string(),
+    clientState: z.string(),
+    clientCityZone: z.string(),
+    clientStreet: z.string(),
+    clientPostcode: z.string(),
+    clientBuildingNumber: z.string(),
+    cartId: z.number(),
+    cartDetails: z.array(detailCartDataSchema),
+    extrasUserData: extrasUserDataSchema.optional(),
+    ptId: z.number(),
+    createAt: z.number().optional(),
+    shippingCost: z.number(),
+    isMafs: z.number(),
+    discountCost: z.number(),
+    active: z.number(),
+    totalCart: z.number(),
+    pickStoreId: z.number(),
+    pickName: z.string(),
+    pickCode: z.string(), 
+    id_venta_documento_tributario: z.number().optional(),
+    documentNumber: z.number().optional(),
+    documentToken: z.string(), 
+    marketId: z.number(), 
+    isService: z.number(),
+    withdrawStore: z.number(),
+    payProcess: z.string(), 
+    nameTypeDocument: z.string(), 
+    total: z.number(), 
+    url: z.string().url(),
+    currency: z.object({
+        decimals: z.number(), 
+        symbol: z.string(), 
+        decimalSeparator: z.string(), 
+    })
+}) 
+
+export const checkoutResponseSchema = z.object({
+    code: z.number(), 
+    href: z.string().url(),
+    count: z.number(), 
+    limit: z.number(), 
+    offset: z.number(), 
+    data: z.array(checkoutSchema).default([]),
+})
 
 // Product Types 
 export type ProductWebDescription = z.infer<typeof productWebDescriptionResponseSchema>;
@@ -574,6 +627,8 @@ export type DispatchOrderForm = z.infer<typeof dispatchCheckoutSchema>;
 export type WithdrawOrderForm = z.infer<typeof withdrawCheckoutSchema>;
 
 export type UserCheckoutForm = z.infer<typeof userCheckoutSchema>;
+
+export type CheckoutForm = z.infer<typeof checkoutSchema>;
 
 export type Category = z.infer<typeof categorySchema>;
 export type Categories = z.infer<typeof categoriesSchema>;

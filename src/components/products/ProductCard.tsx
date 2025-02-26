@@ -86,7 +86,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 					<div className="p-4 bg-white">
 						{/* Product Name */}
 						<h2 className="text-xl font-semibold text-slate-800 truncate">
-							{product.name}
+							{capitalizeFirstLetter(product.name)}
 						</h2>
 
 						{/* Product ID */}
@@ -156,7 +156,8 @@ export default function ProductCard({ product }: ProductCardProps) {
 
 						{/* Add to Cart Button */}
 						<button
-							className="mt-4 w-full py-2 bg-orange-600 text-white font-semibold rounded-lg hover:bg-orange-700 transition duration-200"
+                            disabled={!product.baseInfo.stockControl}
+							className="mt-4 w-full py-2 bg-orange-600 text-white font-semibold rounded-lg hover:bg-orange-700 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
 							onClick={handleAddToCart}
 						>
 							Añadir al Carrito

@@ -5,6 +5,10 @@ import { formatToCLP } from "@/utilities/price";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useEffect } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { createDispatchOrder, createWithdrawalOrder } from "@/api/OrderAPI";
+import { toast } from "react-toastify";
+import { useCart } from "@/hooks/useCart";
 
 type CheckoutFormProps = {
 	cartDetails: CartDetailData[];
@@ -15,10 +19,16 @@ export default function CheckoutForm({ cartDetails, user }: CheckoutFormProps) {
 	const initialValue: UserCheckoutForm = {
 		code: user.rut,
 		generateDocument: 1,
+        documentData: {
+            emissionDate: new Date().toISOString().split("T")[0],
+        },
 		clientName: user.name,
 		clientLastName: "...",
 		clientEmail: user.email,
 		clientPhone: user.phone,
+        pickCode: user.rut,
+        pickName: user.name,
+        pickStoreId: 1,
 		ptId: 2,
 		payProcess: "for_validate",
 		clientCountry: "Chile",
@@ -37,13 +47,9 @@ export default function CheckoutForm({ cartDetails, user }: CheckoutFormProps) {
 		isDispatch: true,
 	};
 
-	const {
-		register,
-		handleSubmit,
-		formState: { errors },
-		watch,
-		setValue,
-	} = useForm({
+    const { clearCart } = useCart();
+
+	const { register, handleSubmit, formState: { errors }, watch, setValue} = useForm({
 		defaultValues: initialValue,
 	});
 
@@ -54,6 +60,28 @@ export default function CheckoutForm({ cartDetails, user }: CheckoutFormProps) {
 	const navigate = useNavigate();
 
 	const isDispatch = watch("isDispatch"); // Estado controlado por react-hook-form
+
+    const { mutate: createDispatch, isPending: isPendingDispatch } = useMutation({
+        mutationFn: createDispatchOrder, 
+        onError: (error) => {
+            toast.error(error.message);
+        },
+        onSuccess: () => {
+            navigate("/orders", { state: { message: "Orden con Despacho Creada Correctamente", type: "success" } });
+            clearCart();
+        }
+    })
+
+    const { mutate: createWithdraw, isPending: isPendingWithdraw } = useMutation({
+        mutationFn: createWithdrawalOrder, 
+        onError: (error) => {
+            toast.error(error.message);
+        },
+        onSuccess: () => {
+            navigate("/orders", { state: { message: "Orden con Despacho Creada Correctamente", type: "success" } });
+            clearCart();
+        }
+    })
 
 	const handleCancel = () => {
 		Swal.fire({
@@ -73,21 +101,37 @@ export default function CheckoutForm({ cartDetails, user }: CheckoutFormProps) {
 	};
 
 const handleCheckout = (formData: UserCheckoutForm) => {
-    // Convert the submitted value to a boolean
-    //@ts-expect-error //!BUG with Checkboxes
-    const isDispatch = formData.isDispatch === "true";
-    //console.log(isDispatch, typeof isDispatch); // ✅ Boolean
-
-    // Exclude isDispatch before sending data
-    const { isDispatch: _, ...apiData } = formData;
-
-    const finalData = isDispatch
-        ? { ...apiData, marketId: 1, withdrawStore: 1, shippingCost: 0 } // Dispatch data
-        : { ...apiData, pickStoreId: 1, marketId: 1, withdrawStore: 1, shippingCost: 0 }; // Withdrawal data
-
-    //console.log(finalData); // ✅ No isDispatch in the API payload
-
-    
+    Swal.fire({
+        title: "¿Todo Listo para Solicitar la Orden? ✅",
+        text: "⚠️ Una vez confirmada la orden no podra ser modificada ⚠️",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Si, Confirmar",
+        cancelButtonText: "No, Volver",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Convert the submitted value to a boolean
+            //@ts-expect-error //!BUG with Checkboxes
+            const isDispatch = formData.isDispatch === "true";
+            console.log(isDispatch, typeof isDispatch); // ✅ Boolean
+        
+            // Exclude isDispatch before sending data
+            const { isDispatch: _, ...apiData } = formData;
+        
+            const finalData = isDispatch
+                ? { ...apiData, marketId: 1, withdrawStore: 0, shippingCost: 0 } // Dispatch data
+                : { ...apiData, marketId: 1, withdrawStore: 1, shippingCost: 0 }; // Withdrawal data
+        
+            //console.log(finalData); // ✅ No isDispatch in the API payload
+            if(isDispatch) {
+                createDispatch(finalData);
+            } else {
+                createWithdraw(finalData);
+            }
+        }
+    })
 };
 
 	// Calculate order total
@@ -99,7 +143,7 @@ const handleCheckout = (formData: UserCheckoutForm) => {
 	const total = subtotal + iva;
 
 	return (
-		<div className="mx-auto max-w-xl px-4 lg:px-0">
+		<div className="mx-auto max-w-2xl  px-4 lg:px-0">
 			<form
 				className="mt-10 space-y-5 bg-white shadow-lg rounded-lg p-6 lg:p-10 border border-gray-200"
 				noValidate
@@ -500,10 +544,10 @@ const handleCheckout = (formData: UserCheckoutForm) => {
 
 				<input type="hidden" {...register("cartDetails")} />
 
-				<div className="flex gap-5">
+				<div className="flex-row space-y-5 sm:flex sm:space-y-0 sm:gap-5">
 					<button
 						type="submit"
-						disabled={false}
+						disabled={isPendingDispatch || isPendingWithdraw || cartDetails.length === 0}
 						className="bg-orange-500 w-full rounded p-3 text-white font-bold hover:bg-orange-600 transition-colors disabled:opacity-50"
 					>
 						{false ? "Guardando..." : "Generar Orden"}
@@ -511,6 +555,7 @@ const handleCheckout = (formData: UserCheckoutForm) => {
 
 					<button
 						type="button"
+                        disabled={isPendingDispatch || isPendingWithdraw}
 						className="bg-red-600 w-full rounded p-3 text-white font-bold hover:bg-red-700 transition-colors disabled:opacity-50"
 						onClick={handleCancel}
 					>
