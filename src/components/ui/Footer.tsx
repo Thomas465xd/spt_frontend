@@ -27,7 +27,6 @@ export default function Footer() {
                         <h3 className="text-lg font-bold mb-4">Productos</h3>
                         <ul className="space-y-2">
                             <li><Link to="/products" className="text-gray-300 hover:text-white transition">Todos los Productos</Link></li>
-                            <li><Link to="/categories" className="text-gray-300 hover:text-white transition">Categorías</Link></li>
                             <li><Link to="/cart" className="text-gray-300 hover:text-white transition">Carrito</Link></li>
                             <li><Link to="/cart/checkout" className="text-gray-300 hover:text-white transition">Checkout</Link></li>
                         </ul>

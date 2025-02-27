@@ -5,7 +5,7 @@ import NavMenu from "../components/ui/NavMenu";
 import { useAuth } from "@/hooks/useAuth";
 import Loader from "@/components/ui/Loader";
 import Footer from "@/components/ui/Footer";
-import { ShoppingCart, Home, Tag, Boxes, ClipboardList } from "lucide-react";
+import { ShoppingCart, Home, Boxes, ClipboardList, User } from "lucide-react";
 
 export default function AppLayout() {
     const { data, isError, isLoading } = useAuth();
@@ -42,9 +42,15 @@ export default function AppLayout() {
                                 <Home size={18} />
                                 <span>Inicio</span>
                             </Link>
+                            {/*
                             <Link to={'/categories'} className="text-white font-medium hover:text-orange-300 transition-colors flex items-center gap-1.5 px-2 py-1 rounded hover:bg-slate-700">
                                 <Tag size={18} />
                                 <span>Categorías</span>
+                            </Link>
+                            */}
+                            <Link to={'/profile'} className="text-white font-medium hover:text-orange-300 transition-colors flex items-center gap-1.5 px-2 py-1 rounded hover:bg-slate-700">
+                                <User size={18} />
+                                <span>Perfil</span>
                             </Link>
                             <Link to={'/products'} className="text-white font-medium hover:text-orange-300 transition-colors flex items-center gap-1.5 px-2 py-1 rounded hover:bg-slate-700">
                                 <Boxes size={18} />

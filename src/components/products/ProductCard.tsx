@@ -5,6 +5,7 @@ import { capitalizeFirstLetter } from "@/utilities/text";
 import ProductDetailsModal from "./ProductDetailsModal";
 import { useCart } from "@/hooks/useCart";
 import { useEffect } from "react";
+import { copyToClipboard } from "@/utilities/copy";
 
 type ProductCardProps = {
 	product: ProductWebType;
@@ -14,7 +15,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 	const navigate = useNavigate();
 	const location = useLocation();
 
-    const { cartId, fetchCartDetails, addItemToCart } = useCart();
+	const { cartId, fetchCartDetails, addItemToCart } = useCart();
 
 	// Get the 'productDetails' query param from the URL
 	const queryParams = new URLSearchParams(location.search);
@@ -28,37 +29,39 @@ export default function ProductCard({ product }: ProductCardProps) {
 		navigate(`${location.pathname}?${params.toString()}`); // Navigate with the updated URL
 	};
 
-    useEffect(() => {
-        if (cartId) {
-            fetchCartDetails();
-        }
-    }, [cartId]);
+	useEffect(() => {
+		if (cartId) {
+			fetchCartDetails();
+		}
+	}, [cartId]);
 
-    const handleAddToCart = async () => {
+	const handleAddToCart = async () => {
+		const discount =
+			product.variants[0].discounts.length > 0
+				? product.variants[0].discounts[0] // O usar reduce() si los descuentos se suman
+				: 0; // Si no hay descuentos, asignar 0
 
-        const discount =
-        product.variants[0].discounts.length > 0 
-            ? product.variants[0].discounts[0] // O usar reduce() si los descuentos se suman
-            : 0; // Si no hay descuentos, asignar 0
+		const formData = {
+			cartDetails: [
+				{
+					quantity: 1,
+					unitValue: parseInt(basePrice),
+					image: product.urlImg,
+					idVarianteProducto: product.variants[0].id,
+					itemName: product.name,
+					productWebId: product.productId,
+					discount: discount,
+				},
+			],
+		};
 
-        const formData = { cartDetails: [
-                {
-                    quantity: 1,
-                    unitValue: parseInt(basePrice),
-                    image: product.urlImg,
-                    idVarianteProducto: product.variants[0].id,
-                    itemName: product.name, 
-                    productWebId: product.productId,
-                    discount: discount,
-                }
-            ] 
-        };
+		await addItemToCart(formData);
+	};
 
-        await addItemToCart(formData);
-    };
+	const basePrice = product.variants[0].salePrices.price ?? "N/A"; // Default value if salePrices is undefined
+	const finalPrice = product.variants[0].salePrices.finalPrice ?? "N/A"; // Default value if salePrices is undefined
 
-    const basePrice = product.variants[0].salePrices.price ?? "N/A"; // Default value if salePrices is undefined
-    const finalPrice = product.variants[0].salePrices.finalPrice ?? "N/A"; // Default value if salePrices is undefined
+	const hasStock = product.variants[0].stockInfo?.[0]?.quantityAvailable > 0;
 
 	return (
 		<>
@@ -90,7 +93,12 @@ export default function ProductCard({ product }: ProductCardProps) {
 						</h2>
 
 						{/* Product ID */}
-						<p className="text-slate-600 text-sm mt-2">
+						<p
+							className="text-slate-600 text-sm mt-2 hover:cursor-pointer hover:underline"
+							onClick={() =>
+								copyToClipboard(product.variants[0].code)
+							}
+						>
 							SKU:{" "}
 							<span className="font-semibold">
 								{product.variants[0].code}
@@ -99,11 +107,15 @@ export default function ProductCard({ product }: ProductCardProps) {
 
 						{/* Product Prices */}
 						<p className="text-gray-400 text-sm font-semibold mt-2">
-                            {basePrice ? formatToCLP(parseInt(basePrice)) : "N/A"}
+							{basePrice
+								? formatToCLP(parseInt(basePrice))
+								: "N/A"}
 						</p>
 
 						<p className="text-orange-600 text-lg font-bold mt-2">
-                            {finalPrice ? formatToCLP(parseInt(finalPrice)) : "N/A"}
+							{finalPrice
+								? formatToCLP(parseInt(finalPrice))
+								: "N/A"}
 						</p>
 
 						{/* Product Category */}
@@ -128,20 +140,20 @@ export default function ProductCard({ product }: ProductCardProps) {
 
 						{/* Product Description */}
 						<p className="text-slate-800 text-sm mt-2 truncate">
-							{product.description ? product.description : "No description available..."}
+							{product.description
+								? product.description
+								: "No description available..."}
 						</p>
 
 						<div className="flex justify-center gap-3">
 							<p
 								className={`${
-									product.baseInfo.stockControl
+									hasStock
 										? "bg-green-200 text-green-800"
 										: "bg-red-200 text-red-800"
 								} rounded-full w-full text-sm mt-5 truncate text-center font-semibold`}
 							>
-								{product.baseInfo.stockControl
-									? "Con Stock"
-									: "Sin Stock"}
+								{hasStock ? "Con Stock" : "Sin Stock"}
 							</p>
 							<p
 								className={`${
@@ -154,10 +166,14 @@ export default function ProductCard({ product }: ProductCardProps) {
 							</p>
 						</div>
 
-						{/* Add to Cart Button */}
+						{/* Add to Cart Button - Disabled if no stock */}
 						<button
-                            disabled={!product.baseInfo.stockControl}
-							className="mt-4 w-full py-2 bg-orange-600 text-white font-semibold rounded-lg hover:bg-orange-700 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
+							disabled={!hasStock}
+							className={`mt-4 w-full py-2 font-semibold rounded-lg transition duration-200 ${
+								hasStock
+									? "bg-orange-600 text-white hover:bg-orange-700"
+									: "bg-gray-300 text-gray-500 cursor-not-allowed"
+							}`}
 							onClick={handleAddToCart}
 						>
 							Añadir al Carrito

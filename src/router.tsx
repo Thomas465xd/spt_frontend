@@ -15,9 +15,7 @@ import ResetPasswordView from "./views/auth/ResetPasswordView";
 import ProfileLayout from "./layouts/ProfileLayout";
 import ProfileView from "./views/profile/ProfileView";
 import ChangePasswordView from "./views/profile/ChangePasswordView";
-import CategoriesView from "./views/categories/CategoriesView";
 import ProductsView from "./views/products/ProductsView";
-import CategoryProductsView from "./views/categories/CategoryProductsView";
 import CartView from "./views/cart/CartView";
 import OrdersView from "./views/orders/OrdersView";
 import CartCheckoutView from "./views/cart/CartCheckoutView";
@@ -38,8 +36,10 @@ export default function Router() {
                     <Route path="/orders" element={<OrdersView />} />
                     <Route path="/orders/details/:orderId" element={<ProductsView />} />
 
+                    {/*
                     <Route path="/categories" element={<CategoriesView />} />
                     <Route path="/categories/products" element={<CategoryProductsView />} />
+                    */}
 
                     <Route element={<ProfileLayout />}>
                             <Route path="/profile" element={<ProfileView/>} />

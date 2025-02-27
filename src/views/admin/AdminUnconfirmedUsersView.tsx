@@ -3,6 +3,7 @@ import AdminConfirmedTable from "@/components/admin/AdminConfirmedTable";
 import UsersPagination from "@/components/admin/UsersPagination";
 import Heading from "@/components/ui/Heading";
 import Loader from "@/components/ui/Loader";
+import SearchBar from "@/components/ui/SearchBar";
 import { useQuery } from "@tanstack/react-query";
 import { Navigate, useSearchParams } from "react-router-dom";
 
@@ -42,7 +43,16 @@ export default function AdminUnconfirmedUsersView() {
         <>
             <Heading>Administración de usuarios no Confirmados</Heading>
 
+            <p className="text-center text-gray-500 mt-10">Listado de usuarios no confirmados.</p>
+
             {/** To do: Search Bar */}
+            <SearchBar
+                route="admin/confirm"
+                param="searchUser"
+                inputType="text"
+                formText="Buscar por RUT o Correo"
+                searchText="Usuario"
+            />
 
             <AdminConfirmedTable 
                 type="unconfirmed"

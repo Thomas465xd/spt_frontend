@@ -306,8 +306,7 @@ export const variantWebSchema = z.object({
 					})
 					.optional(),
 			})
-		)
-		.optional(),
+		),
 	href: z.string().url().optional(),
 	integration: z.record(z.string()).optional().nullable(),
 	variantMarket: z.record(z.unknown()).optional(),
