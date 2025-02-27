@@ -24,6 +24,14 @@ export default function OrderCard({ order }: OrderCardProps) {
         });
     };
 
+    // Calculate order total
+	const subtotal = order.cartDetails.reduce(
+		(sum, item) => sum + item.cd_sub_total,
+		0
+	);
+	const iva = Math.round(subtotal * 0.19); // 19% IVA in Chile
+	const total = subtotal + iva;
+
     return (
         <div className="border border-gray-200 rounded-lg shadow-md overflow-hidden bg-white">
             {/* Header */}
@@ -97,7 +105,7 @@ export default function OrderCard({ order }: OrderCardProps) {
                 <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
                         <span className="text-gray-600">Items ({order.cartDetails?.length || 0})</span>
-                        <span>{formatToCLP(order.totalCart)}</span>
+                        <span>{formatToCLP(subtotal)}</span>
                     </div>
                     <div className="flex justify-between">
                         <span className="text-gray-600">Envío</span>
@@ -114,7 +122,7 @@ export default function OrderCard({ order }: OrderCardProps) {
                     <div className="border-t border-gray-200 pt-2 mt-2">
                         <div className="flex justify-between font-bold">
                             <span>Total</span>
-                            <span className="text-orange-700">{formatToCLP(order.total)}</span>
+                            <span className="text-orange-700">{formatToCLP(total)}</span>
                         </div>
                     </div>
                 </div>

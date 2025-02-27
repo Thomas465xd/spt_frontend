@@ -2,6 +2,7 @@ import { getOrdersByEmail } from "@/api/OrderAPI";
 import OrderCard from "@/components/orders/OrderCard";
 import Heading from "@/components/ui/Heading";
 import Loader from "@/components/ui/Loader";
+import Pagination from "@/components/ui/Pagination";
 import SearchBar from "@/components/ui/SearchBar";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
@@ -16,6 +17,14 @@ export default function OrdersView() {
 
     const [searchParams] = useSearchParams();
     const searchOrder = searchParams.get("searchOrder") || "";
+    const page = parseInt(searchParams.get("page") || "1", 10); // Default to page 1 if not present
+
+    if(page < 1) return <Navigate to={`/orders?page=1`} replace />
+
+    const itemsPerPage = 4; 
+
+    // Calculamos el offset
+    const offset = (page - 1) * itemsPerPage;
 
     useEffect(() => {
         if (location.state?.message) {
@@ -29,13 +38,21 @@ export default function OrdersView() {
     }, [location]);
 
     const { data, isLoading, isError } = useQuery({
-        queryKey: ["orders", searchOrder, user?.email],
-        queryFn: () => getOrdersByEmail({ email: user?.email || "", token: searchOrder}),
+        queryKey: ["orders", searchOrder, user?.email, page],
+        queryFn: () => getOrdersByEmail({
+            email: user?.email || "",
+            token: searchOrder, 
+            limit: itemsPerPage, 
+            offset
+        }),
         staleTime: 1000 * 60 * 5,
         refetchOnWindowFocus: false
     })
 
     const orders = data?.data;
+    const totalOrders = data?.count || 0;
+
+    const totalPages = Math.ceil(totalOrders / itemsPerPage);
 
     if(isLoading || isLoadingUser) return <Loader />
 
@@ -94,6 +111,26 @@ export default function OrdersView() {
         </>
     )
 
+    if(totalPages === 0 || page === 0) return (
+        <>
+            <Heading>Orden no Encontrada</Heading>
+
+            <p className="text-center text-gray-500 my-10">No se encontraron Ordenes con el Tóken: <span className="font-bold italic">"{searchParams.get("searchOrder") ? searchParams.get("searchOrder") : searchParams.get("searchOrder")}"</span></p>
+
+            <div className="flex gap-5 justify-center my-10">
+                <Link
+                    className=" bg-orange-500 text-white px-5 py-2 rounded-full"
+                    to="/orders?page=1"
+                >
+                    Volver a mis Ordenes
+                </Link>
+            </div>
+        </>
+    )
+
+    // Si la página es mayor que el total de páginas, redirigimos a la última página
+    if(page > totalPages) return <Navigate to={`/orders?page=${totalPages}`} replace />
+
     if(orders) return (
         <>
             <Heading>Mis Pedidos</Heading>
@@ -148,6 +185,12 @@ export default function OrdersView() {
                     Ir a Productos
                 </Link>
             </div>
+
+            <Pagination 
+                route={"orders"}
+                page={page}
+                totalPages={totalPages}
+            />
         </>
     )
 }

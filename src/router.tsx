@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AppLayout from "./layouts/AppLayout";
-import ClientView from "./views/categories/ClientView";
+import ClientView from "./views/home/ClientView";
 import AuthLayout from "./layouts/AuthLayout";
 import LoginView from "./views/auth/LoginView";
 import RegisterView from "./views/auth/RegisterView";
@@ -21,6 +21,7 @@ import CategoryProductsView from "./views/categories/CategoryProductsView";
 import CartView from "./views/cart/CartView";
 import OrdersView from "./views/orders/OrdersView";
 import CartCheckoutView from "./views/cart/CartCheckoutView";
+import AdminOrdersView from "./views/admin/AdminOrdersView";
 
 export default function Router() {
     return (
@@ -58,6 +59,7 @@ export default function Router() {
                     <Route path="/admin/dashboard" element={<AdminDashboardView />} />
                     <Route path="/admin/dashboard/users" element={<AdminUsersView />} />
                     <Route path="/admin/confirm" element={<AdminUnconfirmedUsersView />} />
+                    <Route path="/admin/orders" element={<AdminOrdersView />} />
                 </Route>
 
                 <Route element={<AuthLayout />}>

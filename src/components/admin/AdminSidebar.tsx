@@ -4,9 +4,10 @@ import AdminRoute from "./AdminRoute"
 import { useNavigate } from "react-router-dom";
 
 const adminNavigation = [
+    {url: '/admin/dashboard', text: 'Inicio', blank: false},
     {url: '/admin/dashboard/users', text: 'Usuarios', blank: false},
     {url: '/admin/confirm', text: "Autorizar", blank: false},
-    {url: '/admin/products', text: 'Productos', blank: false},
+    {url: '/admin/orders', text: 'Ordenes', blank: false},
     {url: '/', text: 'Ir al Portal', blank: true},
 ]
 

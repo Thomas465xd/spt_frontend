@@ -1,5 +1,4 @@
 import { getAllCategories } from "@/api/CategoryAPI"
-import { getPriceLists } from "@/api/ProductAPI";
 import CategoriesTable from "@/components/categories/CategoriesTable";
 import CategorySearchBar from "@/components/categories/CategorySearchBar";
 import Heading from "@/components/ui/Heading";
@@ -30,13 +29,6 @@ export default function CategoriesView() {
         staleTime: 1000 * 60 * 5,
         refetchOnWindowFocus: false,
     });
-    
-    const { data: priceData, isLoading: isLoadingPrices, isError: isErrorPrices } = useQuery({
-        queryKey: ["prices"],
-        queryFn: getPriceLists,  // Correct function
-        staleTime: 1000 * 60 * 5,
-        refetchOnWindowFocus: false,
-    });
 
     const categories = categoriesData?.items || [];
     const totalcategories = categoriesData?.count || 0;
@@ -45,10 +37,10 @@ export default function CategoriesView() {
     //console.log(totalPages)
 
     // Handle loading state
-    if (isLoadingCategories || isLoadingPrices) return <Loader />;
+    if (isLoadingCategories) return <Loader />;
     
     // Handle errors
-    if (isErrorCategories || isErrorPrices) return <Navigate to="/404" replace />;
+    if (isErrorCategories) return <Navigate to="/404" replace />;
 
     if(totalPages === 0 || page === 0) return (
         <>

@@ -102,7 +102,7 @@ export default function ConfirmUserModal() {
                                 </p>
 
                                 {cartDetails.length === 0 ? (
-                                    <p className="text-2xl font-bold text-center underline text-orange-500">
+                                    <p className="text-2xl font-bold text-center text-orange-500 border-b-2 border-gray-300 pb-5">
                                         No hay productos en tu carrito
                                     </p>
                                 ) : (
@@ -116,7 +116,7 @@ export default function ConfirmUserModal() {
                                         {cartDetails.length === 0 ? (
                                             <button
                                                 type="button"
-                                                className="bg-slate-700 hover:bg-slate-800 w-full rounded p-3 text-white font-black text-xl cursor-pointer transition-colors"
+                                                className="bg-orange-500 hover:bg-orange-700 w-full rounded p-3 text-white font-black text-xl cursor-pointer transition-colors"
                                                 onClick={handleClose}
                                             >
                                                 Cerrar y Continuar Comprando
@@ -125,15 +125,15 @@ export default function ConfirmUserModal() {
                                             <>
                                                 <button
                                                     type="button"
-                                                    className="bg-orange-600 hover:bg-orange-700 w-full rounded-full p-2 text-white font-black text-lg cursor-pointer transition-colors"
-                                                    onClick={() => navigate(location.pathname, { replace: true })}
+                                                    className="bg-orange-600 hover:bg-orange-700 w-full rounded-full p-2 text-white font-medium text-sm cursor-pointer transition-colors"
+                                                    onClick={() => navigate("/cart/checkout")}
                                                 >
                                                     Ir a Emitir Orden de Compra
                                                 </button>
 
                                                 <button
                                                     type="button"
-                                                    className="bg-red-600 hover:bg-red-700 w-full rounded-full p-2 text-white font-black text-lg cursor-pointer transition-colors"
+                                                    className="bg-red-600 hover:bg-red-700 w-full rounded-full p-2 text-white font-medium text-sm cursor-pointer transition-colors"
                                                     onClick={handleReset}
                                                 >
                                                     Limpiar Carrito
@@ -141,7 +141,7 @@ export default function ConfirmUserModal() {
 
                                                 <button
                                                     type="button"
-                                                    className="bg-slate-700 hover:bg-slate-800 w-full rounded-full p-3 text-white font-black text-lg cursor-pointer transition-colors"
+                                                    className="bg-slate-700 hover:bg-slate-800 w-full rounded-full p-2 text-white font-medium text-sm cursor-pointer transition-colors"
                                                     onClick={handleClose}
                                                 >
                                                     Seguir Comprando

@@ -26,6 +26,7 @@ export const authUserSchema = z.object({
     email: z.string().email(),
     phone: z.string(),
     address: z.string(),
+    admin: z.boolean(),
 })
 
 export const adminTableUserSchema = z.object({
@@ -215,46 +216,6 @@ export const priceListsResponseSchema = z.object({
 	items: z.array(priceListItemSchema),
 });
 
-export const variantProductSchema = z.object({
-	href: z.string().url(),
-	id: z.string(),
-});
-
-export const variantSchema = z.object({
-	href: z.string().url(),
-	id: z.number(),
-	description: z.string(),
-	unlimitedStock: z.boolean(),
-	allowNegativeStock: z.boolean(),
-	state: z.boolean(),
-	barCode: z.string(),
-	code: z.string(),
-	imagestionCenterCost: z.number(),
-	imagestionAccount: z.number(),
-	imagestionConceptCod: z.number(),
-	imagestionProyectCod: z.number(),
-	imagestionCategoryCod: z.number(),
-	imagestionProductId: z.number(),
-	serialNumber: z.number(),
-	prestashopCombinationId: z.number(),
-	prestashopValueId: z.number(),
-	product: variantProductSchema,
-	attribute_values: z.object({
-		href: z.string().url(),
-	}),
-	costs: z.object({
-		href: z.string().url(),
-	}),
-});
-
-export const variantsResponseSchema = z.object({
-	href: z.string().url(),
-	count: z.number(),
-	limit: z.number(),
-	offset: z.number(),
-	items: z.array(variantSchema),
-	next: z.string().url().optional(),
-});
 
 //! Web Descriptions
 
@@ -422,7 +383,7 @@ export const detailCartDataSchema = z.object({
     discount: z.number().optional(),
     itemName: z.string(),
     total: z.number(),
-    image: z.string().url(),
+    image: z.string(),
     idVarianteProducto: z.number(),
     sku: z.string(),
     link: z.string(),
@@ -445,7 +406,7 @@ export const detailCartDataSchema = z.object({
     cd_sub_total: z.number(),
     cd_id: z.number(), 
     cd_id_discount: z.number(),
-    cd_image: z.string().url(),
+    cd_image: z.string(),
     id_variante_producto: z.number(),
     codigo_variante_producto: z.string(), 
     href: z.string().url(),
@@ -612,6 +573,25 @@ export const checkoutResponseSchema = z.object({
     data: z.array(checkoutSchema).default([]),
 })
 
+//! Email
+export const emailSchema = checkoutSchema.pick({
+    token: true,
+    clientName: true,
+    clientEmail: true,
+    clientPhone: true,
+    clientCountry: true,
+    clientState: true,
+    clientCityZone: true,
+    clientStreet: true,
+    clientPostcode: true,
+    clientBuildingNumber: true,
+    shippingCost: true,
+    discountCost: true,
+    total: true,
+    pickCode: true,
+    cartDetails: true,
+})
+
 // Product Types 
 export type ProductWebDescription = z.infer<typeof productWebDescriptionResponseSchema>;
 export type ProductWebType = z.infer<typeof productWebDescriptionSchema>;
@@ -629,6 +609,7 @@ export type WithdrawOrderForm = z.infer<typeof withdrawCheckoutSchema>;
 export type UserCheckoutForm = z.infer<typeof userCheckoutSchema>;
 
 export type CheckoutForm = z.infer<typeof checkoutSchema>;
+export type CheckoutEmails = z.infer<typeof emailSchema>;
 
 export type Category = z.infer<typeof categorySchema>;
 export type Categories = z.infer<typeof categoriesSchema>;
@@ -640,6 +621,3 @@ export type ProductsResponse = z.infer<typeof productsResponseSchema>;
 
 export type PriceLists = z.infer<typeof priceListItemSchema>;
 export type PriceListsResponse = z.infer<typeof priceListsResponseSchema>;
-
-export type Variants = z.infer<typeof variantSchema>;
-export type VariantsResponse = z.infer<typeof variantsResponseSchema>;

@@ -13,12 +13,12 @@ export default function AdminLayout() {
 
     if(isError) return <Navigate to="/auth/login" replace />;
 
-    if(!data.admin) return <Navigate to="/" replace />;
+    if(!data?.admin) return <Navigate to="/" replace />;
 
     return (
         <>
             <div className="md:flex min-h-screen overflow-auto sm:overflow-hidden">
-                <aside className="md:w-72 bg-orange-500 md:sticky md:top-0 md:h-screen overflow-y-auto border-r-4 border-slate-800">
+                <aside className="md:w-72 bg-gradient-to-r from-orange-600 to-orange-400 md:sticky md:top-0 md:h-screen overflow-y-auto border-r-4 border-slate-800">
                     <AdminSidebar />
                 </aside>
 

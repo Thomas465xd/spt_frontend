@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { createDispatchOrder, createWithdrawalOrder } from "@/api/OrderAPI";
+import { createDispatchOrder, createWithdrawalOrder, sendOrderEmails } from "@/api/OrderAPI";
 import { toast } from "react-toastify";
 import { useCart } from "@/hooks/useCart";
 
@@ -65,23 +65,16 @@ export default function CheckoutForm({ cartDetails, user }: CheckoutFormProps) {
         mutationFn: createDispatchOrder, 
         onError: (error) => {
             toast.error(error.message);
-        },
-        onSuccess: () => {
-            navigate("/orders", { state: { message: "Orden con Despacho Creada Correctamente", type: "success" } });
-            clearCart();
         }
-    })
-
+    });
+    
     const { mutate: createWithdraw, isPending: isPendingWithdraw } = useMutation({
         mutationFn: createWithdrawalOrder, 
         onError: (error) => {
             toast.error(error.message);
-        },
-        onSuccess: () => {
-            navigate("/orders", { state: { message: "Orden con Despacho Creada Correctamente", type: "success" } });
-            clearCart();
         }
-    })
+    });
+    
 
 	const handleCancel = () => {
 		Swal.fire({
@@ -110,7 +103,7 @@ const handleCheckout = (formData: UserCheckoutForm) => {
         cancelButtonColor: "#d33",
         confirmButtonText: "Si, Confirmar",
         cancelButtonText: "No, Volver",
-    }).then((result) => {
+    }).then(async (result) => {
         if (result.isConfirmed) {
             // Convert the submitted value to a boolean
             //@ts-expect-error //!BUG with Checkboxes
@@ -123,12 +116,71 @@ const handleCheckout = (formData: UserCheckoutForm) => {
             const finalData = isDispatch
                 ? { ...apiData, marketId: 1, withdrawStore: 0, shippingCost: 0 } // Dispatch data
                 : { ...apiData, marketId: 1, withdrawStore: 1, shippingCost: 0 }; // Withdrawal data
-        
-            //console.log(finalData); // ✅ No isDispatch in the API payload
-            if(isDispatch) {
-                createDispatch(finalData);
+
+            // Enviar la orden y luego enviar los correos en onSuccess
+            if (isDispatch) {
+                createDispatch(finalData, {
+                    onSuccess: async (orderResponse) => {
+                        if(orderResponse?.data) {
+                            console.log(orderResponse.data);
+                            await sendOrderEmails({
+                                token: orderResponse.data.token,
+                                clientName: orderResponse.data.clientName,
+                                clientEmail: orderResponse.data.clientEmail,
+                                clientPhone: orderResponse.data.clientPhone,
+                                clientCountry: orderResponse.data.clientCountry,
+                                clientState: orderResponse.data.clientState,
+                                clientCityZone: orderResponse.data.clientCityZone,
+                                clientStreet: orderResponse.data.clientStreet,
+                                clientPostcode: orderResponse.data.clientPostcode,
+                                clientBuildingNumber: orderResponse.data.clientBuildingNumber,
+                                shippingCost: orderResponse.data.shippingCost,
+                                total: orderResponse.data.total,
+                                pickCode: orderResponse.data.pickCode,
+                                discountCost: orderResponse.data.discountCost,
+                                cartDetails: cartDetails,
+                            }).then(() => {
+                                navigate("/orders", { state: { message: "Orden con Despacho Creada Correctamente. Revisa tu Email", type: "info" } });
+                                clearCart();
+                            });
+                        }
+                    },
+                    onError: (error) => {
+                        toast.error("❌ Error al crear la orden de despacho.");
+                        console.error("Error:", error);
+                    },
+                });
             } else {
-                createWithdraw(finalData);
+                createWithdraw(finalData, {
+                    onSuccess: async (orderResponse) => {
+                        if(orderResponse?.data) {
+                            await sendOrderEmails({
+                                token: orderResponse.data.token,
+                                clientName: orderResponse.data.clientName,
+                                clientEmail: orderResponse.data.clientEmail,
+                                clientPhone: orderResponse.data.clientPhone,
+                                clientCountry: orderResponse.data.clientCountry,
+                                clientState: orderResponse.data.clientState,
+                                clientCityZone: orderResponse.data.clientCityZone,
+                                clientStreet: orderResponse.data.clientStreet,
+                                clientPostcode: orderResponse.data.clientPostcode,
+                                clientBuildingNumber: orderResponse.data.clientBuildingNumber,
+                                shippingCost: orderResponse.data.shippingCost,
+                                total: orderResponse.data.total,
+                                pickCode: orderResponse.data.pickCode,
+                                discountCost: orderResponse.data.discountCost,
+                                cartDetails: cartDetails,
+                            }).then(() => {
+                                navigate("/orders", { state: { message: "Orden con Retiro Creada Correctamente. Revisa tu Email", type: "info" } });
+                                clearCart();
+                            });
+                        }
+                    },
+                    onError: (error) => {
+                        toast.error("❌ Error al crear la orden de retiro.");
+                        console.error("Error:", error);
+                    },
+                });
             }
         }
     })
