@@ -1,8 +1,8 @@
 import { useForm } from "react-hook-form";
-import { toast } from "react-toastify";
 import { SearchFormData } from "@/types/index";
 import { useNavigate } from "react-router-dom";
 import ErrorMessage from "./ErrorMessage";
+import { Search } from "lucide-react";
 
 type SearchBarProps = {
     route: string;
@@ -49,8 +49,9 @@ export default function SearchBar({route, param, inputType, formText, searchText
 
                 <button 
                     type="submit" 
-                    className="p-3 text-white bg-orange-600 hover:bg-orange-700 transition-colors rounded-lg font-semibold shadow-md"
+                    className="p-3 text-white bg-orange-600 hover:bg-orange-700 transition-colors rounded-lg font-semibold shadow-md flex gap-2 items-center justify-center"
                 >
+                    <Search size={18} />
                     Buscar {searchText}
                 </button>
             </form>

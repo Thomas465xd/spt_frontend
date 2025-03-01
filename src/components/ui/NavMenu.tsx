@@ -69,7 +69,7 @@ export default function NavMenu ({name} : NavMenuProps) {
                             Mi Perfil
                         </Link>
                         <Link
-                            to='/'
+                            to='/orders'
                             className='block p-2 hover:text-purple-950'
                         >
                             Mis Ordenes

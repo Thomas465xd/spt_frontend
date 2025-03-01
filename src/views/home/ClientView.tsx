@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { Search, Tag, ShoppingCart, Clock, Heart } from 'lucide-react';
+import {Tag, ShoppingCart, Clock, Heart } from 'lucide-react';
+import SearchBar from '@/components/ui/SearchBar';
 
 export default function ClientView() {
     return (
@@ -17,24 +18,20 @@ export default function ClientView() {
                     <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                             {/* Left Column - Content */}
-                            <div className="text-white space-y-6">
+                            <div className="text-slate-700 space-y-6">
                                 <h2 className="text-3xl md:text-4xl font-bold text-orange-400">Todo lo que necesitas en un solo lugar</h2>
                                 <p className="text-lg text-gray-300">Descubre la forma más rápida y sencilla de encontrar los repuestos que estás buscando.</p>
                                 
                                 {/* Quick Search Form */}
                                 <div className="mt-8 bg-white/10 backdrop-blur-sm p-6 rounded-lg border border-white/20">
-                                    <h3 className="text-xl font-semibold mb-4">Búsqueda Rápida por SKU</h3>
-                                    <div className="flex flex-col sm:flex-row gap-2">
-                                        <input 
-                                            type="text" 
-                                            placeholder="Ingresa el código o SKU del producto"
-                                            className="flex-grow p-3 rounded border border-gray-300 text-gray-800 text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                        />
-                                        <button className="bg-orange-500 hover:bg-orange-600 text-white p-3 rounded flex items-center justify-center gap-2 transition-colors">
-                                            <Search size={18} />
-                                            <span>Buscar</span>
-                                        </button>
-                                    </div>
+                                    <h3 className="text-xl font-semibold mb-4 text-white">Búsqueda Rápida por SKU</h3>
+                                    <SearchBar 
+                                        route="products"
+                                        param="searchCode"
+                                        inputType="text"
+                                        formText="Buscar por SKU/Código del Producto..."
+                                        searchText="por SKU/Código"
+                                    />
                                 </div>
                             </div>
                             
@@ -96,8 +93,8 @@ export default function ClientView() {
                         
                         {/* Bottom CTA */}
                         <div className="mt-12 text-center">
-                            <Link to="/categories" className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 shadow-lg transition-colors">
-                                Explorar por categorías
+                            <Link to="/products" className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-orange-600 hover:bg-orange-700 shadow-lg transition-colors">
+                                Explorar Productos
                             </Link>
                         </div>
                     </div>

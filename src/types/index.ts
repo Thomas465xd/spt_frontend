@@ -116,106 +116,12 @@ export type UserUpdatePasswordForm = z.infer<typeof updatePasswordSchema>;
 
 /** Bsale Products */
 
-export const categorySchema = z.object({
-	href: z.string().url(),
-	id: z.number(),
-	name: z.string(),
-	isEditable: z.number().optional(),
-	state: z.number(),
-	imagestionCategoryId: z.number().optional(),
-	prestashopCategoryId: z.number().optional(),
-	attributes: z.object({
-		href: z.string().url(),
-	}),
-});
-
-export const categoriesSchema = z.array(categorySchema);
-
 export const searchSchema = z.object({
 	search: z
 		.string()
 		.trim()
 		.min(1, { message: "El campo de busqueda no puede ir vacío" }),
 });
-
-export const bsaleResponseSchema = z.object({
-	href: z.string().url(),
-	count: z.number(),
-	limit: z.number(),
-	offset: z.number(),
-	items: z.array(categorySchema),
-});
-
-export const productTypeSchema = z.object({
-	href: z.string(),
-	id: z.string(),
-});
-
-// Updated product schema to allow null for description
-export const productSchema = z.object({
-	href: z.string(),
-	id: z.number(),
-	name: z.string(),
-	description: z.string().nullable().optional(), // Allowing `null` values for description
-	classification: z.number(),
-	ledgerAccount: z.string().nullable().optional(),
-	costCenter: z.string().nullable().optional(),
-	allowDecimal: z.number(),
-	stockControl: z.number(),
-	printDetailPack: z.number(),
-	state: z.number(),
-	prestashopProductId: z.number(),
-	presashopAttributeId: z.number(),
-	product_type: productTypeSchema,
-	variants: z
-		.object({
-			href: z.string(),
-		})
-		.optional(),
-	product_taxes: z
-		.object({
-			href: z.string(),
-		})
-		.optional(),
-});
-
-// Updated response schema
-export const productsResponseSchema = z.object({
-	href: z.string(),
-	count: z.number(),
-	limit: z.number(),
-	offset: z.number(),
-	items: z.array(productSchema),
-	next: z.string().optional(),
-});
-
-export const coinSchema = z.object({
-	href: z.string().url(),
-	id: z.string(),
-});
-
-export const detailsSchema = z.object({
-	href: z.string().url(),
-});
-
-export const priceListItemSchema = z.object({
-	href: z.string().url(),
-	id: z.string(),
-	name: z.string(),
-	description: z.string().nullable(),
-	state: z.number().int().min(0).max(1),
-	coin: coinSchema,
-	details: detailsSchema,
-});
-
-export const priceListsResponseSchema = z.object({
-	href: z.string().url(),
-	count: z.number().int(),
-	limit: z.number().int().max(50),
-	offset: z.number().int(),
-	items: z.array(priceListItemSchema),
-});
-
 
 //! Web Descriptions
 
@@ -610,13 +516,4 @@ export type UserCheckoutForm = z.infer<typeof userCheckoutSchema>;
 export type CheckoutForm = z.infer<typeof checkoutSchema>;
 export type CheckoutEmails = z.infer<typeof emailSchema>;
 
-export type Category = z.infer<typeof categorySchema>;
-export type Categories = z.infer<typeof categoriesSchema>;
-export type SearchFormData = z.infer<typeof searchSchema>;
-export type BsaleResponse = z.infer<typeof bsaleResponseSchema>;
-
-export type Product = z.infer<typeof productSchema>;
-export type ProductsResponse = z.infer<typeof productsResponseSchema>;
-
-export type PriceLists = z.infer<typeof priceListItemSchema>;
-export type PriceListsResponse = z.infer<typeof priceListsResponseSchema>;
+export type SearchFormData = z.infer<typeof searchSchema>

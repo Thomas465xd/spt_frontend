@@ -6,9 +6,9 @@ import { CheckoutEmails, checkoutResponseSchema, DispatchOrderForm, emailSchema,
 export async function getOrdersByEmail({ email, token, limit, offset } : {email: User["email"], token?: string, limit: number, offset: number}) {
     try {
         const url = `/v1/markets/checkout/list.json?clientEmail=${email}&expand=cartDetails&token=${token || ""}&limit=${limit}&offset=${offset}`;
-        console.log(url)
+        //console.log(url)
         const { data } = await api.get(url);
-        console.log(data)
+        //console.log(data)
 
         const response = checkoutResponseSchema.safeParse(data);
         if(response.success) {
@@ -96,6 +96,32 @@ export async function sendOrderEmails(emailData: CheckoutEmails) {
         }
 
         console.error("Schema Validation Failed", response.error);
+    } catch (error) {
+        console.error("❌ Error en la solicitud:", error);
+
+        if (isAxiosError(error)) {
+            console.error("🔍 Error de Axios detectado:");
+            console.error("➡️ Código de estado:", error.response?.status);
+            console.error("➡️ Mensaje de error:", error.response?.data?.error || error.message);
+            console.error("➡️ Respuesta completa:", error.response?.data);
+
+            // Lanzamos un error más detallado para que pueda ser manejado correctamente
+            throw new Error(error.response?.data?.message || "Ocurrió un error en la API");
+        } else {
+            console.error("⚠️ Error desconocido:", error);
+            throw new Error("Error inesperado. Intenta nuevamente.");
+        }
+    }
+}
+
+export async function changeOrderStatus({ orderId, active}: { orderId: number, active: number } ) {
+    try {
+        console.log(orderId, active)
+        const url = `/v1/checkout/${orderId}.json`
+        const response = await api.put(url, { active: active });
+        console.log(response)
+
+        return response.data
     } catch (error) {
         console.error("❌ Error en la solicitud:", error);
 
