@@ -1,8 +1,35 @@
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import {Tag, ShoppingCart, Clock, Heart } from 'lucide-react';
 import SearchBar from '@/components/ui/SearchBar';
+import { useAuth } from '@/hooks/useAuth';
+import Loader from '@/components/ui/Loader';
+import { toast } from 'react-toastify';
+import { useEffect, useRef } from 'react';
 
 export default function ClientView() {
+
+    const { data, isLoading, isError } = useAuth();
+    const toastShown = useRef(false);
+
+    useEffect(() => {
+        if (!data?.country && !data?.city && !data?.region && !data?.province && !data?.postalCode && !data?.reference && !toastShown.current) {
+            toast.warn("Aún no has establecido tus datos de Envío 🚚 Puedes hacerlo en la sección de Perfil 👨‍💼", {
+                type: "info", 
+                autoClose: 5000, 
+                position: "bottom-left",
+                closeOnClick: true,
+                theme: "colored",
+                style: {
+                    width: "400px"
+                }
+            });
+            toastShown.current = true;  // Marca que el toast ya fue mostrado
+        }
+    }, [data]);
+
+    if (isLoading) return <Loader />;
+    if (isError) return <Navigate to="/login" />;
+
     return (
         <>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center p-5 sm:px-0 mt-10 mx-0 sm:mx-32 border-b border-gray-300">
@@ -30,26 +57,31 @@ export default function ClientView() {
                                         param="searchCode"
                                         inputType="text"
                                         formText="Buscar por SKU/Código del Producto..."
-                                        searchText="por SKU/Código"
+                                        searchText=""
                                     />
                                 </div>
                             </div>
                             
-                            {/* Right Column - Features */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className="bg-white/10 backdrop-blur-sm p-5 rounded-lg border border-white/20 transform transition-transform hover:scale-105">
-                                    <div className="flex items-center gap-3 mb-3">
-                                        <div className="bg-orange-500 p-2 rounded-lg">
-                                            <Tag size={20} className="text-white" />
-                                        </div>
-                                        <h3 className="text-lg font-semibold text-white">Descuentos Exclusivos</h3>
+                                {/* Tarjeta de Descuentos (Inactiva) */}
+                                <div className="relative bg-white/10 backdrop-blur-sm p-5 rounded-lg border border-white/20 transform transition-transform overflow-hidden opacity-70 cursor-not-allowed">
+                                    {/* Cinta diagonal "En Construcción" */}
+                                    <div className="absolute -right-12 top-5 bg-yellow-500 text-gray-900 font-bold py-1 px-10 text-xs transform rotate-45 z-10">
+                                        EN DESARROLLO
                                     </div>
-                                    <p className="text-gray-300 text-sm">Accede a precios especiales y promociones diseñadas específicamente para ti.</p>
-                                    <Link to="/promotions" className="inline-block mt-4 text-orange-400 hover:text-orange-300 text-sm font-medium">
-                                        Ver mis descuentos →
-                                    </Link>
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <div className="bg-gray-500 p-2 rounded-lg">
+                                            <Tag size={20} className="text-white/70" />
+                                        </div>
+                                        <h3 className="text-lg font-semibold text-white/80">Descuentos Exclusivos</h3>
+                                    </div>
+                                    <p className="text-gray-300/80 text-sm">Accede a precios especiales y promociones diseñadas específicamente para ti.</p>
+                                    <div className="inline-block mt-4 text-gray-400 text-sm font-medium">
+                                        Próximamente →
+                                    </div>
                                 </div>
                                 
+                                {/* Tarjeta de Catálogo (Activa) */}
                                 <div className="bg-white/10 backdrop-blur-sm p-5 rounded-lg border border-white/20 transform transition-transform hover:scale-105">
                                     <div className="flex items-center gap-3 mb-3">
                                         <div className="bg-orange-500 p-2 rounded-lg">
@@ -63,6 +95,7 @@ export default function ClientView() {
                                     </Link>
                                 </div>
                                 
+                                {/* Tarjeta de Historial (Activa) */}
                                 <div className="bg-white/10 backdrop-blur-sm p-5 rounded-lg border border-white/20 transform transition-transform hover:scale-105">
                                     <div className="flex items-center gap-3 mb-3">
                                         <div className="bg-orange-500 p-2 rounded-lg">
@@ -76,17 +109,22 @@ export default function ClientView() {
                                     </Link>
                                 </div>
                                 
-                                <div className="bg-white/10 backdrop-blur-sm p-5 rounded-lg border border-white/20 transform transition-transform hover:scale-105">
-                                    <div className="flex items-center gap-3 mb-3">
-                                        <div className="bg-orange-500 p-2 rounded-lg">
-                                            <Heart size={20} className="text-white" />
-                                        </div>
-                                        <h3 className="text-lg font-semibold text-white">Favoritos</h3>
+                                {/* Tarjeta de Favoritos (Inactiva) */}
+                                <div className="relative bg-white/10 backdrop-blur-sm p-5 rounded-lg border border-white/20 transform transition-transform overflow-hidden opacity-70 cursor-not-allowed">
+                                    {/* Cinta diagonal "En Construcción" */}
+                                    <div className="absolute -right-12 top-5 bg-yellow-500 text-gray-900 font-bold py-1 px-10 text-xs transform rotate-45 z-10">
+                                        EN DESARROLLO
                                     </div>
-                                    <p className="text-gray-300 text-sm">Guarda tus productos preferidos para acceder a ellos rápidamente.</p>
-                                    <Link to="/favorites" className="inline-block mt-4 text-orange-400 hover:text-orange-300 text-sm font-medium">
-                                        Mis favoritos →
-                                    </Link>
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <div className="bg-gray-500 p-2 rounded-lg">
+                                            <Heart size={20} className="text-white/70" />
+                                        </div>
+                                        <h3 className="text-lg font-semibold text-white/80">Favoritos</h3>
+                                    </div>
+                                    <p className="text-gray-300/80 text-sm">Guarda tus productos preferidos para acceder a ellos rápidamente.</p>
+                                    <div className="inline-block mt-4 text-gray-400 text-sm font-medium">
+                                        Próximamente →
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -141,7 +141,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                         {/* Product Description */}
                         <p 
                             className="text-slate-800 text-sm mt-2 truncate" 
-                            dangerouslySetInnerHTML={{ __html: product.description || "No hay descripción disponible..." }} 
+                            dangerouslySetInnerHTML={{ __html: capitalizeFirstLetter(product.description || "No Disponible") }} 
                         />
 
 						<div className="flex justify-center gap-3">

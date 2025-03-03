@@ -1,71 +1,135 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import AppLayout from "./layouts/AppLayout";
-import ClientView from "./views/home/ClientView";
-import AuthLayout from "./layouts/AuthLayout";
-import LoginView from "./views/auth/LoginView";
-import RegisterView from "./views/auth/RegisterView";
-import ForgotPasswordView from "./views/auth/ForgotPasswordView";
-import AdminLayout from "./layouts/AdminLayout";
-import AdminDashboardView from "./views/admin/AdminDashboardView";
-import SetPasswordView from "./views/auth/SetPasswordView";
-import AdminUsersView from "./views/admin/AdminUsersView";
-import AdminUnconfirmedUsersView from "./views/admin/AdminUnconfirmedUsersView";
-import NotFound from "./views/404/NotFound";
-import ResetPasswordView from "./views/auth/ResetPasswordView";
-import ProfileLayout from "./layouts/ProfileLayout";
-import ProfileView from "./views/profile/ProfileView";
-import ChangePasswordView from "./views/profile/ChangePasswordView";
-import ProductsView from "./views/products/ProductsView";
-import CartView from "./views/cart/CartView";
-import OrdersView from "./views/orders/OrdersView";
-import CartCheckoutView from "./views/cart/CartCheckoutView";
-import AdminOrdersView from "./views/admin/AdminOrdersView";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { lazy, Suspense } from "react";
+import Loader from "./components/ui/Loader";
+
+// Lazy load layouts
+const AppLayout = lazy(() => import("./layouts/AppLayout"));
+const AuthLayout = lazy(() => import("./layouts/AuthLayout"));
+const AdminLayout = lazy(() => import("./layouts/AdminLayout"));
+const ProfileLayout = lazy(() => import("./layouts/ProfileLayout"));
+
+// Lazy load views
+// Client views
+const ClientView = lazy(() => import("./views/home/ClientView"));
+const ProductsView = lazy(() => import("./views/products/ProductsView"));
+const CartView = lazy(() => import("./views/cart/CartView"));
+const CartCheckoutView = lazy(() => import("./views/cart/CartCheckoutView"));
+const OrdersView = lazy(() => import("./views/orders/OrdersView"));
+
+// Auth views
+const LoginView = lazy(() => import("./views/auth/LoginView"));
+const RegisterView = lazy(() => import("./views/auth/RegisterView"));
+const ForgotPasswordView = lazy(
+	() => import("./views/auth/ForgotPasswordView")
+);
+const ResetPasswordView = lazy(() => import("./views/auth/ResetPasswordView"));
+const SetPasswordView = lazy(() => import("./views/auth/SetPasswordView"));
+
+// Admin views
+const AdminDashboardView = lazy(
+	() => import("./views/admin/AdminDashboardView")
+);
+const AdminUsersView = lazy(() => import("./views/admin/AdminUsersView"));
+const AdminUnconfirmedUsersView = lazy(
+	() => import("./views/admin/AdminUnconfirmedUsersView")
+);
+const AdminOrdersView = lazy(() => import("./views/admin/AdminOrdersView"));
+
+// Profile views
+const ProfileView = lazy(() => import("./views/profile/ProfileView"));
+const ChangePasswordView = lazy(
+	() => import("./views/profile/ChangePasswordView")
+);
+const ExtraProfileView = lazy(() => import("./views/profile/ExtraProfileView"));
+
+// Error views
+const NotFound = lazy(() => import("./views/404/NotFound"));
+
+// Loading component for Suspense fallback
+const LoadingFallback = () => (
+    <Loader />
+);
 
 export default function Router() {
-    return (
-        <BrowserRouter>
-            <Routes>
-                <Route element={<AppLayout />}>
-                    <Route path="/" element={<ClientView />} index />
+	return (
+		<BrowserRouter>
+			<Suspense fallback={<LoadingFallback />}>
+				<Routes>
+					{/* App Layout Routes */}
+					<Route element={<AppLayout />}>
+						<Route path="/" element={<ClientView />} />
+						<Route path="/products" element={<ProductsView />} />
+						<Route path="/cart" element={<CartView />} />
+						<Route
+							path="/cart/checkout"
+							element={<CartCheckoutView />}
+						/>
+						<Route path="/orders" element={<OrdersView />} />
+						<Route
+							path="/orders/details/:orderId"
+							element={<ProductsView />}
+						/>
 
-                    <Route path="/products" element={<ProductsView />} index />
+						{/* Profile Routes - nested under AppLayout */}
+						<Route path="/profile" element={<ProfileLayout />}>
+							<Route index element={<ProfileView />} />
+							<Route
+								path="password"
+								element={<ChangePasswordView />}
+							/>
+							<Route
+								path="shipping"
+								element={<ExtraProfileView />}
+							/>
+						</Route>
+					</Route>
 
-                    <Route path="/cart" element={<CartView />} />
-                    <Route path="/cart/checkout" element={<CartCheckoutView />} />
+					{/* Auth Layout Routes */}
+					<Route element={<AuthLayout />}>
+						<Route path="/auth/login" element={<LoginView />} />
+						<Route
+							path="/auth/register"
+							element={<RegisterView />}
+						/>
+						<Route
+							path="/auth/forgot-password"
+							element={<ForgotPasswordView />}
+						/>
+						<Route
+							path="/auth/reset-password/:token"
+							element={<ResetPasswordView />}
+						/>
+						<Route
+							path="/auth/set-password/:token"
+							element={<SetPasswordView />}
+						/>
+						<Route path="/404" element={<NotFound />} />
+					</Route>
 
-                    <Route path="/orders" element={<OrdersView />} />
-                    <Route path="/orders/details/:orderId" element={<ProductsView />} />
+					{/* Admin Layout Routes */}
+					<Route element={<AdminLayout />}>
+						<Route
+							path="/admin/dashboard"
+							element={<AdminDashboardView />}
+						/>
+						<Route
+							path="/admin/dashboard/users"
+							element={<AdminUsersView />}
+						/>
+						<Route
+							path="/admin/confirm"
+							element={<AdminUnconfirmedUsersView />}
+						/>
+						<Route
+							path="/admin/orders"
+							element={<AdminOrdersView />}
+						/>
+					</Route>
 
-                    {/*
-                    <Route path="/categories" element={<CategoriesView />} />
-                    <Route path="/categories/products" element={<CategoryProductsView />} />
-                    */}
-
-                    <Route element={<ProfileLayout />}>
-                            <Route path="/profile" element={<ProfileView/>} />
-                            <Route path="/profile/password" element={<ChangePasswordView/>} />
-                    </Route>
-                </Route>
-
-                <Route element={<AuthLayout />}>
-                    <Route path="/auth/login" element={<LoginView />} />
-                    <Route path="/auth/register" element={<RegisterView />} />
-                    <Route path="/auth/forgot-password" element={<ForgotPasswordView />} />
-                    <Route path="/auth/reset-password/:token" element={<ResetPasswordView />} />
-                    <Route path="/auth/set-password/:token" element={<SetPasswordView />} />
-                </Route>
-
-                <Route element={<AdminLayout />}>
-                    <Route path="/admin/dashboard" element={<AdminDashboardView />} />
-                    <Route path="/admin/dashboard/users" element={<AdminUsersView />} />
-                    <Route path="/admin/confirm" element={<AdminUnconfirmedUsersView />} />
-                    <Route path="/admin/orders" element={<AdminOrdersView />} />
-                </Route>
-
-                <Route element={<AuthLayout />}>
-                    <Route path="/404" element={<NotFound />} />
-                </Route>    
-            </Routes>
-        </BrowserRouter>
-    )
+					{/* Catch-all route - redirect to 404 */}
+					<Route path="*" element={<Navigate to="/404" replace />} />
+				</Routes>
+			</Suspense>
+		</BrowserRouter>
+	);
 }

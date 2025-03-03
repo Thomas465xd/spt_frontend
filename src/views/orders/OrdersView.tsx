@@ -178,6 +178,7 @@ export default function OrdersView() {
                         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                             showPendingOnly ? 'bg-yellow-500' : 'bg-gray-300'
                         }`}
+                        aria-label={showPendingOnly ? "Show all orders" : "Show only pending orders"}  // Accessible name for the button
                     >
                         <span
                             className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${

@@ -1,5 +1,4 @@
-import { User, UserProfileForm } from "@/types/index"
-import Heading from "../ui/Heading"
+import { AuthUser, UserProfileForm } from "@/types/index"
 import { useForm } from "react-hook-form"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { updateProfile } from "@/api/ProfileAPI"
@@ -8,7 +7,7 @@ import ErrorMessage from "../ui/ErrorMessage"
 import Swal from "sweetalert2"
 
 type ProfileFormProps = {
-    data: User
+    data: AuthUser
 }
 
 export default function ProfileForm({ data }: ProfileFormProps) {
@@ -92,7 +91,7 @@ export default function ProfileForm({ data }: ProfileFormProps) {
                             disabled 
                             id="rut"
                             placeholder={data.rut}
-                            className="w-full p-3 rounded border border-gray-300 bg-gray-100"
+                            className="w-full p-3 rounded border border-gray-300 bg-gray-100 cursor-not-allowed"
                         />
                     </div>
 
@@ -103,7 +102,7 @@ export default function ProfileForm({ data }: ProfileFormProps) {
                             disabled 
                             id="businessRut"
                             placeholder={data.businessRut}
-                            className="w-full p-3 rounded border border-gray-300 bg-gray-100"
+                            className="w-full p-3 rounded border border-gray-300 bg-gray-100 cursor-not-allowed"
                         />
                     </div>
                 </div>
@@ -154,6 +153,8 @@ export default function ProfileForm({ data }: ProfileFormProps) {
                     {isPending ? "Guardando..." : "Guardar Cambios"}
                 </button>
             </form>
+
+            <p className="text-gray-400 text-sm my-5 text-center">Estos Datos son almacenados de manera segura.</p>
         </div>
     );
 }

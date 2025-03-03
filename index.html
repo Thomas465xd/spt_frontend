@@ -1,14 +1,87 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
     <head>
+        <!-- Basic Meta Tags -->
         <meta charset="UTF-8" />
-        <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link href="/dist/styles.css" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+        
+        <!-- Primary Meta Tags -->
         <title>Portal SPT</title>
+        <meta name="title" content="Portal SPT">
+        <meta name="description" content="Manage your payments, orders, and account securely with Portal SPT. Fast checkout, easy order tracking, and professional admin tools.">
+        <meta name="keywords" content="payment portal, secure transactions, online checkout, order management, product listing">
+        <meta name="author" content="Portal SPT">
+        <meta name="robots" content="index, follow">
+        
+        <!-- Canonical URL -->
+        <link rel="canonical" href="https://www.portalspt.cl">
+        
+        <!-- Favicon and App Icons -->
+        <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+        <link rel="manifest" href="/site.webmanifest">
+        
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://www.portalspt.com">
+        <meta property="og:title" content="Portal SPT - Secure Payment Transaction System">
+        <meta property="og:description" content="Manage your payments, orders, and account securely with Portal SPT. Fast checkout, easy order tracking, and professional admin tools.">
+        <meta property="og:image" content="https://www.portalspt.com/og-image.jpg">
+        
+        <!-- Twitter -->
+        <meta property="twitter:card" content="summary_large_image">
+        <meta property="twitter:url" content="https://www.portalspt.com">
+        <meta property="twitter:title" content="Portal SPT - Secure Payment Transaction System">
+        <meta property="twitter:description" content="Manage your payments, orders, and account securely with Portal SPT. Fast checkout, easy order tracking, and professional admin tools.">
+        <meta property="twitter:image" content="https://www.portalspt.com/twitter-image.jpg">
+        
+        <!-- Preload Critical Resources -->
+        <link rel="preload" href="/dist/styles.css" as="style">
+        <link rel="preload" as="image" href="/logo.svg" type="image/svg+xml">
+        <link rel="preload" href="/src/main.tsx" as="script">
+        <link rel="preload" href="/fonts/main-font.woff2" as="font" type="font/woff2" crossorigin>
+        
+        <!-- Structured Data (JSON-LD) -->
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "WebApplication",
+                "name": "Portal SPT",
+                "applicationCategory": "FinanceApplication",
+                "operatingSystem": "All",
+                "offers": {
+                    "@type": "Offer",
+                    "price": "0",
+                    "priceCurrency": "USD"
+                },
+                "description": "Secure payment transaction portal for managing orders and payments.",
+                "url": "https://www.portalspt.com"
+            }
+        </script>
+        
+        <!-- Styles -->
+        <link href="/dist/styles.css" rel="stylesheet">
+        
+        <!-- DNS Prefetch and Preconnect -->
+        <link rel="preconnect" href="https://api.portalspt.com">
+        <link rel="dns-prefetch" href="https://api.portalspt.com">
+        
+        <!-- Mobile Web App Capability -->
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="theme-color" content="#ffffff">
     </head>
     <body>
         <div id="root"></div>
+        <!-- Application Entry Point -->
         <script type="module" src="/src/main.tsx"></script>
+        <!-- Inline Critical JS for Performance (optional) -->
+        <script>
+            // Performance optimization: Detect user preferences
+            const prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            document.body.classList.toggle('dark-theme', prefersDarkMode);
+        </script>
     </body>
 </html>

@@ -1,0 +1,7 @@
+# Allow all crawlers to access the site
+User-agent: *
+Disallow:
+
+# Block specific directories or pages
+Disallow: /admin/
+Disallow: /private/

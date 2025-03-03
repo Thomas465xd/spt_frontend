@@ -40,10 +40,11 @@ export default function NavMenu ({name} : NavMenuProps) {
     return (
         <Popover className='relative'>
             <PopoverButton
-                onClick={() => setMenuOpen(!menuOpen)} 
+                onClick={() => setMenuOpen(!menuOpen)}
                 className='inline-flex items-center gap-x-1 text-sm font-semibold leading-6 p-1 rounded-lg bg-slate-800'
+                aria-label="Abrir menú de navegación"
             >
-            <Bars3Icon className='w-8 h-8 text-white ' />
+                <Bars3Icon className='w-8 h-8 text-white ' />
             </PopoverButton>
 
             <Transition

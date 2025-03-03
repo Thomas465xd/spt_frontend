@@ -2,6 +2,25 @@ import { z } from "zod";
 
 /** Auth & Admin */
 
+export const regionSchema = z.enum([
+    "Arica y Parinacota", 
+    "Tarapacá", 
+    "Antofagasta", 
+    "Atacama", 
+    "Coquimbo", 
+    "Valparaíso", 
+    "Metropolitana de Santiago", 
+    "O'Higgins", 
+    "Maule", 
+    "Ñuble", 
+    "Biobío", 
+    "La Araucanía", 
+    "Los Ríos", 
+    "Los Lagos", 
+    "Aysén", 
+    "Magallanes"
+]);
+
 export const userSchema = z.object({
 	_id: z.string(),
 	name: z.string(),
@@ -10,11 +29,18 @@ export const userSchema = z.object({
 	businessRut: z.string(),
 	email: z.string().email(),
 	phone: z.string(),
-	address: z.string(),
 	confirmed: z.boolean(),
 	passwordSet: z.boolean(),
 	admin: z.boolean(),
 	password: z.string().min(8),
+	address: z.string(),
+
+    country: z.string().optional(),
+    region: regionSchema.optional(),
+    city: z.string().optional(),
+    province: z.string().optional(),
+    reference: z.string().optional(),
+    postalCode: z.string().optional(),
 });
 
 export const authUserSchema = z.object({
@@ -25,8 +51,15 @@ export const authUserSchema = z.object({
     businessRut: z.string(),
     email: z.string().email(),
     phone: z.string(),
-    address: z.string(),
     admin: z.boolean(),
+    address: z.string(),
+
+    country: z.string().optional(),
+    region: regionSchema.optional(),
+    city: z.string().optional(),
+    province: z.string().optional(),
+    reference: z.string().optional(),
+    postalCode: z.string().optional(),
 })
 
 export const adminTableUserSchema = z.object({
@@ -111,6 +144,10 @@ export type PasswordToken = Pick<Token, "token">;
 export type UserProfileForm = Pick<
 	User,
 	"name" | "businessName" | "email" | "phone" | "address"
+>;
+export type UserShippingForm = Pick<
+    User,
+    "country" | "region" | "city" | "province" | "reference" | "postalCode"
 >;
 export type UserUpdatePasswordForm = z.infer<typeof updatePasswordSchema>;
 
@@ -364,7 +401,7 @@ export const userCheckoutSchema = z.object({
     ptId: z.number(), 
     payProcess: z.string(), 
     clientCountry: z.string(), 
-    clientState: z.string(),
+    clientState: regionSchema,
     clientCityZone: z.string(), 
     clientStreet: z.string(), 
     clientPostcode: z.string(), 
@@ -372,6 +409,7 @@ export const userCheckoutSchema = z.object({
     cartDetails: z.array(detailCartDataSchema),
     extrasUserData: extrasUserDataSchema.optional(),
     isDispatch: z.boolean(),
+    saveUserData: z.boolean(),
 })
 
 export const dispatchCheckoutSchema = z.object({

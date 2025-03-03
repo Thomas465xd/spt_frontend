@@ -6,9 +6,15 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { createDispatchOrder, createWithdrawalOrder, sendOrderEmails } from "@/api/OrderAPI";
+import {
+	createDispatchOrder,
+	createWithdrawalOrder,
+	sendOrderEmails,
+} from "@/api/OrderAPI";
 import { toast } from "react-toastify";
 import { useCart } from "@/hooks/useCart";
+import { updateShippingInfo } from "@/api/ProfileAPI";
+import Loader from "../ui/Loader";
 
 type CheckoutFormProps = {
 	cartDetails: CartDetailData[];
@@ -19,37 +25,44 @@ export default function CheckoutForm({ cartDetails, user }: CheckoutFormProps) {
 	const initialValue: UserCheckoutForm = {
 		code: user.rut,
 		generateDocument: 1,
-        documentData: {
-            emissionDate: new Date().toISOString().split("T")[0],
-        },
+		documentData: {
+			emissionDate: new Date().toISOString().split("T")[0],
+		},
 		clientName: user.name,
 		clientLastName: "...",
 		clientEmail: user.email,
 		clientPhone: user.phone,
-        pickCode: user.rut,
-        pickName: user.name,
-        pickStoreId: 1,
+		pickCode: user.rut,
+		pickName: user.name,
+		pickStoreId: 1,
 		ptId: 2,
 		payProcess: "for_validate",
 		clientCountry: "Chile",
-		clientState: "",
-		clientCityZone: "",
+		clientState: user.region || "Metropolitana de Santiago",
+		clientCityZone: user.city || "",
 		clientStreet: user.address,
-		clientPostcode: "",
-		clientBuildingNumber: "",
+		clientPostcode: user.postalCode || "",
+		clientBuildingNumber: user.reference || "",
 		cartDetails: cartDetails,
 		extrasUserData: {
 			user_rut: user.rut,
 			razon_social: user.businessName,
 			direccion: user.address,
-			comuna: "",
+			comuna: user.province || "",
 		},
 		isDispatch: true,
+		saveUserData: false,
 	};
 
-    const { clearCart } = useCart();
+	const { clearCart } = useCart();
 
-	const { register, handleSubmit, formState: { errors }, watch, setValue} = useForm({
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+		watch,
+		setValue,
+	} = useForm({
 		defaultValues: initialValue,
 	});
 
@@ -61,20 +74,28 @@ export default function CheckoutForm({ cartDetails, user }: CheckoutFormProps) {
 
 	const isDispatch = watch("isDispatch"); // Estado controlado por react-hook-form
 
-    const { mutate: createDispatch, isPending: isPendingDispatch } = useMutation({
-        mutationFn: createDispatchOrder, 
-        onError: (error) => {
-            toast.error(error.message);
-        }
-    });
-    
-    const { mutate: createWithdraw, isPending: isPendingWithdraw } = useMutation({
-        mutationFn: createWithdrawalOrder, 
-        onError: (error) => {
-            toast.error(error.message);
-        }
-    });
-    
+	const { mutate: createDispatch, isPending: isPendingDispatch } =
+		useMutation({
+			mutationFn: createDispatchOrder,
+			onError: (error) => {
+				toast.error(error.message);
+			},
+		});
+
+	const { mutate: createWithdraw, isPending: isPendingWithdraw } =
+		useMutation({
+			mutationFn: createWithdrawalOrder,
+			onError: (error) => {
+				toast.error(error.message);
+			},
+		});
+
+	const { mutate: saveData, isPending: isPendingSave } = useMutation({
+		mutationFn: updateShippingInfo,
+		onError: (error) => {
+			toast.error(error.message);
+		},
+	});
 
 	const handleCancel = () => {
 		Swal.fire({
@@ -93,98 +114,150 @@ export default function CheckoutForm({ cartDetails, user }: CheckoutFormProps) {
 		});
 	};
 
-const handleCheckout = (formData: UserCheckoutForm) => {
-    Swal.fire({
-        title: "¿Todo Listo para Solicitar la Orden? ✅",
-        text: "⚠️ Una vez confirmada la orden no podra ser modificada ⚠️",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Si, Confirmar",
-        cancelButtonText: "No, Volver",
-    }).then(async (result) => {
-        if (result.isConfirmed) {
-            // Convert the submitted value to a boolean
-            //@ts-expect-error //!BUG with Checkboxes
-            const isDispatch = formData.isDispatch === "true";
-            console.log(isDispatch, typeof isDispatch); // ✅ Boolean
-        
-            // Exclude isDispatch before sending data
-            const { isDispatch: _, ...apiData } = formData;
-        
-            const finalData = isDispatch
-                ? { ...apiData, marketId: 1, withdrawStore: 0, shippingCost: 0 } // Dispatch data
-                : { ...apiData, marketId: 1, withdrawStore: 1, shippingCost: 0 }; // Withdrawal data
+	const handleCheckout = (formData: UserCheckoutForm) => {
+		Swal.fire({
+			title: "¿Todo Listo para Solicitar la Orden? ✅",
+			text: "⚠️ Una vez confirmada la orden no podra ser modificada ⚠️",
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonColor: "#3085d6",
+			cancelButtonColor: "#d33",
+			confirmButtonText: "Si, Confirmar",
+			cancelButtonText: "No, Volver",
+		}).then(async (result) => {
+			if (result.isConfirmed) {
+				// Save user data if toggle is checked
+				if (formData.saveUserData) {
+					saveData({
+						country: formData.clientEmail,
+						region: formData.clientState,
+						city: formData.clientCountry,
+						province: formData.extrasUserData?.comuna,
+						reference: formData.clientBuildingNumber,
+						postalCode: formData.clientPostcode,
+					});
+				}
 
-            // Enviar la orden y luego enviar los correos en onSuccess
-            if (isDispatch) {
-                createDispatch(finalData, {
-                    onSuccess: async (orderResponse) => {
-                        if(orderResponse?.data) {
-                            console.log(orderResponse.data);
-                            await sendOrderEmails({
-                                token: orderResponse.data.token,
-                                clientName: orderResponse.data.clientName,
-                                clientEmail: orderResponse.data.clientEmail,
-                                clientPhone: orderResponse.data.clientPhone,
-                                clientCountry: orderResponse.data.clientCountry,
-                                clientState: orderResponse.data.clientState,
-                                clientCityZone: orderResponse.data.clientCityZone,
-                                clientStreet: orderResponse.data.clientStreet,
-                                clientPostcode: orderResponse.data.clientPostcode,
-                                clientBuildingNumber: orderResponse.data.clientBuildingNumber,
-                                shippingCost: orderResponse.data.shippingCost,
-                                total: orderResponse.data.total,
-                                pickCode: orderResponse.data.pickCode,
-                                discountCost: orderResponse.data.discountCost,
-                                cartDetails: cartDetails,
-                            }).then(() => {
-                                navigate("/orders", { state: { message: "Orden con Despacho Creada Correctamente. Revisa tu Email", type: "info" } });
-                                clearCart();
-                            });
-                        }
-                    },
-                    onError: (error) => {
-                        toast.error("❌ Error al crear la orden de despacho.");
-                        console.error("Error:", error);
-                    },
-                });
-            } else {
-                createWithdraw(finalData, {
-                    onSuccess: async (orderResponse) => {
-                        if(orderResponse?.data) {
-                            await sendOrderEmails({
-                                token: orderResponse.data.token,
-                                clientName: orderResponse.data.clientName,
-                                clientEmail: orderResponse.data.clientEmail,
-                                clientPhone: orderResponse.data.clientPhone,
-                                clientCountry: orderResponse.data.clientCountry,
-                                clientState: orderResponse.data.clientState,
-                                clientCityZone: orderResponse.data.clientCityZone,
-                                clientStreet: orderResponse.data.clientStreet,
-                                clientPostcode: orderResponse.data.clientPostcode,
-                                clientBuildingNumber: orderResponse.data.clientBuildingNumber,
-                                shippingCost: orderResponse.data.shippingCost,
-                                total: orderResponse.data.total,
-                                pickCode: orderResponse.data.pickCode,
-                                discountCost: orderResponse.data.discountCost,
-                                cartDetails: cartDetails,
-                            }).then(() => {
-                                navigate("/orders", { state: { message: "Orden con Retiro Creada Correctamente. Revisa tu Email", type: "info" } });
-                                clearCart();
-                            });
-                        }
-                    },
-                    onError: (error) => {
-                        toast.error("❌ Error al crear la orden de retiro.");
-                        console.error("Error:", error);
-                    },
-                });
-            }
-        }
-    })
-};
+				// Convert the submitted value to a boolean
+				//@ts-expect-error //!BUG with Checkboxes
+				const isDispatch = formData.isDispatch === "true";
+				console.log(isDispatch, typeof isDispatch); // ✅ Boolean
+
+				// Exclude isDispatch before sending data
+				const { isDispatch: _, saveUserData, ...apiData } = formData;
+
+				const finalData = isDispatch
+					? {
+							...apiData,
+							marketId: 1,
+							withdrawStore: 0,
+							shippingCost: 0,
+					  } // Dispatch data
+					: {
+							...apiData,
+							marketId: 1,
+							withdrawStore: 1,
+							shippingCost: 0,
+					  }; // Withdrawal data
+
+				// Enviar la orden y luego enviar los correos en onSuccess
+				if (isDispatch) {
+					createDispatch(finalData, {
+						onSuccess: async (orderResponse) => {
+							if (orderResponse?.data) {
+								console.log(orderResponse.data);
+								await sendOrderEmails({
+									token: orderResponse.data.token,
+									clientName: orderResponse.data.clientName,
+									clientEmail: orderResponse.data.clientEmail,
+									clientPhone: orderResponse.data.clientPhone,
+									clientCountry:
+										orderResponse.data.clientCountry,
+									clientState: orderResponse.data.clientState,
+									clientCityZone:
+										orderResponse.data.clientCityZone,
+									clientStreet:
+										orderResponse.data.clientStreet,
+									clientPostcode:
+										orderResponse.data.clientPostcode,
+									clientBuildingNumber:
+										orderResponse.data.clientBuildingNumber,
+									shippingCost:
+										orderResponse.data.shippingCost,
+									total: orderResponse.data.total,
+									pickCode: orderResponse.data.pickCode,
+									discountCost:
+										orderResponse.data.discountCost,
+									cartDetails: cartDetails,
+								}).then(() => {
+									navigate("/orders", {
+										state: {
+											message:
+												"Orden con Despacho Creada Correctamente. Revisa tu Email",
+											type: "info",
+										},
+									});
+									clearCart();
+								});
+							}
+						},
+						onError: (error) => {
+							toast.error(
+								"❌ Error al crear la orden de despacho."
+							);
+							console.error("Error:", error);
+						},
+					});
+				} else {
+					createWithdraw(finalData, {
+						onSuccess: async (orderResponse) => {
+							if (orderResponse?.data) {
+								await sendOrderEmails({
+									token: orderResponse.data.token,
+									clientName: orderResponse.data.clientName,
+									clientEmail: orderResponse.data.clientEmail,
+									clientPhone: orderResponse.data.clientPhone,
+									clientCountry:
+										orderResponse.data.clientCountry,
+									clientState: orderResponse.data.clientState,
+									clientCityZone:
+										orderResponse.data.clientCityZone,
+									clientStreet:
+										orderResponse.data.clientStreet,
+									clientPostcode:
+										orderResponse.data.clientPostcode,
+									clientBuildingNumber:
+										orderResponse.data.clientBuildingNumber,
+									shippingCost:
+										orderResponse.data.shippingCost,
+									total: orderResponse.data.total,
+									pickCode: orderResponse.data.pickCode,
+									discountCost:
+										orderResponse.data.discountCost,
+									cartDetails: cartDetails,
+								}).then(() => {
+									navigate("/orders", {
+										state: {
+											message:
+												"Orden con Retiro Creada Correctamente. Revisa tu Email",
+											type: "info",
+										},
+									});
+									clearCart();
+								});
+							}
+						},
+						onError: (error) => {
+							toast.error(
+								"❌ Error al crear la orden de retiro."
+							);
+							console.error("Error:", error);
+						},
+					});
+				}
+			}
+		});
+	};
 
 	// Calculate order total
 	const subtotal = cartDetails.reduce(
@@ -423,26 +496,6 @@ const handleCheckout = (formData: UserCheckoutForm) => {
 					</div>
 				</div>
 
-				<div className="space-y-2">
-					<label htmlFor="address" className="text-sm font-bold">
-						Dirección
-					</label>
-					<input
-						type="text"
-						id="address"
-						placeholder="Tu Dirección (ej. Calle ### Condominio X Casa 1)"
-						className="w-full p-3 rounded border border-gray-300"
-						{...register("clientStreet", {
-							required: "La Dirección no puede ir vacía (*)",
-						})}
-					/>
-					{errors.clientStreet && (
-						<ErrorMessage mini>
-							{errors.clientStreet.message}
-						</ErrorMessage>
-					)}
-				</div>
-
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 					<div className="space-y-2">
 						<label
@@ -510,7 +563,7 @@ const handleCheckout = (formData: UserCheckoutForm) => {
 								})}
 								checked={isDispatch === false}
 								onChange={() => setValue("isDispatch", false)}
-                                value="false"
+								value="false"
 								className="w-5 h-5 text-blue-500 focus:ring-blue-500 border-gray-300"
 							/>
 							<span
@@ -534,7 +587,7 @@ const handleCheckout = (formData: UserCheckoutForm) => {
 								})}
 								checked={isDispatch === true}
 								onChange={() => setValue("isDispatch", true)}
-                                value="true"
+								value="true"
 								className="w-5 h-5 text-blue-500 focus:ring-blue-500 border-gray-300"
 							/>
 							<span
@@ -572,8 +625,10 @@ const handleCheckout = (formData: UserCheckoutForm) => {
 						)}
 
 						<div className="flex justify-between">
-							<span className="text-sm font-bold">Subtotal</span>
 							<span className="text-sm font-bold">
+								Items ({cartDetails?.length || 0})
+							</span>
+							<span className="font-bold text-sm">
 								{formatToCLP(subtotal)}
 							</span>
 						</div>
@@ -586,8 +641,8 @@ const handleCheckout = (formData: UserCheckoutForm) => {
 						</div>
 
 						<div className="flex justify-between border-t border-gray-300 pt-2">
-							<span className="text-sm font-bold">Total</span>
-							<span className="text-sm font-bold text-orange-500">
+							<span className="font-bold">Total</span>
+							<span className="font-bold text-orange-500">
 								{formatToCLP(total)}
 							</span>
 						</div>
@@ -597,22 +652,60 @@ const handleCheckout = (formData: UserCheckoutForm) => {
 				<input type="hidden" {...register("cartDetails")} />
 
 				<div className="flex-row space-y-5 sm:flex sm:space-y-0 sm:gap-5">
-					<button
-						type="submit"
-						disabled={isPendingDispatch || isPendingWithdraw || cartDetails.length === 0}
-						className="bg-orange-500 w-full rounded p-3 text-white font-bold hover:bg-orange-600 transition-colors disabled:opacity-50"
-					>
-						{false ? "Guardando..." : "Generar Orden"}
-					</button>
+					{isPendingDispatch || isPendingWithdraw || isPendingSave ? (
+                        <div className="flex justify-center items-center">
+                            <Loader />
+                        </div>
+					) : (
+						<>
+							<button
+								type="submit"
+								disabled={
+									isPendingDispatch ||
+									isPendingWithdraw ||
+									isPendingSave ||
+									cartDetails.length === 0
+								}
+								className="bg-orange-500 w-full rounded p-3 text-white font-bold hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+							>
+								Generar Orden
+							</button>
 
-					<button
-						type="button"
-                        disabled={isPendingDispatch || isPendingWithdraw}
-						className="bg-red-600 w-full rounded p-3 text-white font-bold hover:bg-red-700 transition-colors disabled:opacity-50"
-						onClick={handleCancel}
+							<button
+								type="button"
+								disabled={
+									isPendingDispatch ||
+									isPendingWithdraw ||
+									isPendingSave
+								}
+								className="bg-red-600 w-full rounded p-3 text-white font-bold hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+								onClick={handleCancel}
+							>
+								Cancelar
+							</button>
+						</>
+					)}
+				</div>
+
+				<div className="mt-5 flex items-center justify-center">
+					<div className="relative inline-block w-10 mr-2 align-middle select-none">
+						<input
+							type="checkbox"
+							id="saveUserData"
+							{...register("saveUserData")}
+							className="absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer border-gray-400 checked:right-0 checked:border-orange-500"
+						/>
+						<label
+							htmlFor="saveUserData"
+							className="block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"
+						/>
+					</div>
+					<label
+						htmlFor="saveUserData"
+						className="text-sm font-medium cursor-pointer"
 					>
-						Cancelar
-					</button>
+						Guardar mi información para futuras órdenes
+					</label>
 				</div>
 			</form>
 		</div>

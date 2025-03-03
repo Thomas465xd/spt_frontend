@@ -114,9 +114,10 @@ export default function ProductsView() {
 
             <button 
                 className="fixed bottom-5 left-5 bg-orange-600 text-white p-4 rounded-full shadow-lg hover:bg-orange-700 transition-colors"
-                onClick={() => handleClick()}
+                onClick={handleClick}
+                aria-label="Open shopping cart"
             >
-                <ShoppingCartIcon className="w-6 h-6"></ShoppingCartIcon>
+                <ShoppingCartIcon className="w-6 h-6" />
             </button>
 
             {cartModal === "true" && (
