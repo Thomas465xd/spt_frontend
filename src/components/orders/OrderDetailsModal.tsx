@@ -3,15 +3,16 @@ import { Dialog, Transition } from '@headlessui/react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import { CopyIcon, PackageIcon, TruckIcon, UserIcon, MapPinIcon, CreditCardIcon, ReceiptIcon } from 'lucide-react';
-import { CheckoutForm } from '@/types/index';
+import { AdminCheckoutForm, CheckoutForm } from '@/types/index';
 import { copyToClipboard } from '@/utilities/copy';
 import { formatToCLP } from '@/utilities/price';
 
 type OrderDetailsModalProps = {
-    order: CheckoutForm
+    order: CheckoutForm | AdminCheckoutForm
+    admin: Boolean
 }
 
-export default function OrderDetailsModal({ order }: OrderDetailsModalProps) {
+export default function OrderDetailsModal({ order, admin }: OrderDetailsModalProps) {
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -222,7 +223,7 @@ export default function OrderDetailsModal({ order }: OrderDetailsModalProps) {
                                             <div className="space-y-2">
                                                 <div className="flex justify-between text-sm">
                                                     <span className="text-gray-600">Subtotal:</span>
-                                                    <span> {formatToCLP(order.totalCart)}</span>
+                                                    <span> {order.totalCart ? formatToCLP(order.totalCart) : "N/A"}</span>
                                                 </div>
 
                                                 <div className="flex justify-between text-sm">
@@ -230,13 +231,13 @@ export default function OrderDetailsModal({ order }: OrderDetailsModalProps) {
                                                     <span> {formatToCLP(iva)}</span>
                                                 </div>
                                                 
-                                                {order.discountCost > 0 && (
+                                                {order.discountCost != null && order.discountCost > 0 && (
                                                     <div className="flex justify-between text-sm text-green-600">
                                                         <span>Descuento:</span>
-                                                        <span>-  {formatToCLP(order.discountCost)}</span>
+                                                        <span>- {formatToCLP(order.discountCost ?? 0)}</span>
                                                     </div>
                                                 )}
-
+                                                
                                                 <div className="flex justify-between text-sm">
                                                     <span className="text-gray-600">Costo de envío:</span>
                                                     <span> {formatToCLP(order.shippingCost)}</span>
@@ -290,7 +291,7 @@ export default function OrderDetailsModal({ order }: OrderDetailsModalProps) {
                                         rel="noopener noreferrer"
                                         className="px-14 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition opacity-50"
                                     >
-                                        Pagar Ahora
+                                        {admin ? "Cambiar Estado de Pago" : "Pagar Ahora"}
                                     </button>
                                 </div>
                                 <p className='text-gray-400 flex justify-end text-sm'>Esta función no esta disponible <br/> actualmente</p>

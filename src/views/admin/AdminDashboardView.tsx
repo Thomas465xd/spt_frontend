@@ -1,9 +1,7 @@
-import { Shield, UserCheck, ShoppingBag, Users } from "lucide-react";
+import { Shield, UserCheck, ShoppingBag, Users, Users2, LogOutIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function AdminDashboardView() {
-
-
 
 	return (
 		<div className="bg-white min-h-screen">
@@ -28,11 +26,11 @@ export default function AdminDashboardView() {
 									<p className="text-sm">Usuarios Totales</p>
 								</div>
 								<div className="text-center">
-									<p className="text-3xl font-bold">8</p>
+									<p className="text-3xl font-bold"></p>
 									<p className="text-sm">Nuevos Usuarios</p>
 								</div>
 								<div className="text-center">
-									<p className="text-3xl font-bold">17</p>
+									<p className="text-3xl font-bold"></p>
 									<p className="text-sm">
 										Pedidos Pendientes
 									</p>
@@ -46,25 +44,34 @@ export default function AdminDashboardView() {
 							</h2>
 							<div className="grid grid-cols-2 gap-2">
 								<Link 
-                                    className="bg-orange-500 text-white p-2 rounded flex items-center justify-center gap-2"
+                                    className="bg-orange-500 text-white p-2 rounded flex items-center justify-center gap-2 hover:bg-orange-600 transition-colors"
                                     to="/admin/confirm"
                                 >
 									<UserCheck size={20} />
 									Confirmar Usuarios
 								</Link>
 								<Link
-                                    className="bg-orange-500 text-white p-2 rounded flex items-center justify-center gap-2"
+                                    className="bg-orange-500 text-white p-2 rounded flex items-center justify-center gap-2 hover:bg-orange-600 transition-colors"
                                     to="/admin/dashboard/users"
+                                >
+									<Users2 size={20} />
+                                    Ver Usuarios
+								</Link>
+                                <Link
+                                    className="bg-orange-500 text-white p-2 rounded flex items-center justify-center gap-2 hover:bg-orange-600 transition-colors"
+                                    to="/admin/orders"
                                 >
 									<ShoppingBag size={20} />
                                     Ver Pedidos
 								</Link>
                                 <Link
-                                    className="bg-orange-500 text-white p-2 rounded flex items-center justify-center gap-2"
-                                    to="/admin/orders"
+                                    className="bg-slate-700 text-white p-2 rounded flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors"
+                                    rel="noopener noreferrer"
+                                    target="_blank"
+                                    to="/"
                                 >
-									<ShoppingBag size={20} />
-                                    Ver Pedidos
+									<LogOutIcon size={20} />
+                                    Ir al Portal
 								</Link>
 							</div>
 						</div>

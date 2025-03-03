@@ -138,12 +138,11 @@ export default function ProductCard({ product }: ProductCardProps) {
 							</span>
 						</p>
 
-						{/* Product Description */}
-						<p className="text-slate-800 text-sm mt-2 truncate">
-							{product.description
-								? product.description
-								: "No description available..."}
-						</p>
+                        {/* Product Description */}
+                        <p 
+                            className="text-slate-800 text-sm mt-2 truncate" 
+                            dangerouslySetInnerHTML={{ __html: product.description || "No hay descripción disponible..." }} 
+                        />
 
 						<div className="flex justify-center gap-3">
 							<p

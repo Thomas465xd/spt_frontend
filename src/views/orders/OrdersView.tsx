@@ -6,24 +6,22 @@ import Pagination from "@/components/ui/Pagination";
 import SearchBar from "@/components/ui/SearchBar";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, Navigate, useLocation, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 export default function OrdersView() {
-
+    const [showPendingOnly, setShowPendingOnly] = useState(false);
     const { data: user, isLoading: isLoadingUser, isError: isErrorUser } = useAuth();
     const location = useLocation();
 
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
     const searchOrder = searchParams.get("searchOrder") || "";
-    const page = parseInt(searchParams.get("page") || "1", 10); // Default to page 1 if not present
+    const page = parseInt(searchParams.get("page") || "1", 10);
 
     if(page < 1) return <Navigate to={`/orders?page=1`} replace />
 
     const itemsPerPage = 4; 
-
-    // Calculamos el offset
     const offset = (page - 1) * itemsPerPage;
 
     useEffect(() => {
@@ -37,28 +35,48 @@ export default function OrdersView() {
         }    
     }, [location]);
 
+    // Add pendingOnly to queryKey to refetch when toggle changes
     const { data, isLoading, isError } = useQuery({
-        queryKey: ["orders", searchOrder, user?.email, page],
+        queryKey: ["orders", searchOrder, user?.email, page, showPendingOnly],
         queryFn: () => getOrdersByEmail({
             email: user?.email || "",
             token: searchOrder, 
-            limit: itemsPerPage, 
-            offset
+            limit: showPendingOnly ? 50 : itemsPerPage, // Fetch more when filtering
+            offset: showPendingOnly ? 0 : offset, // Start from beginning when filtering
         }),
         staleTime: 1000 * 60 * 5,
         refetchOnWindowFocus: false
-    })
+    });
 
     const orders = data?.data;
     const totalOrders = data?.count || 0;
 
-    const totalPages = Math.ceil(totalOrders / itemsPerPage);
+    // Filter orders if we're showing pending only
+    const filteredOrders = showPendingOnly && orders 
+        ? orders.filter(order => order.active === 1).slice(offset, offset + itemsPerPage)
+        : orders;
+    
+    // Calculate total count for pagination
+    const filteredCount = showPendingOnly && data?.data
+        ? data.data.filter(order => order.active === 1).length
+        : totalOrders;
+
+    const totalPages = Math.ceil(filteredCount / itemsPerPage);
+
+    // Reset to page 1 when toggling filter
+    useEffect(() => {
+        if (page !== 1) {
+            const newParams = new URLSearchParams(searchParams);
+            newParams.set("page", "1");
+            setSearchParams(newParams);
+        }
+    }, [showPendingOnly]);
 
     if(isLoading || isLoadingUser) return <Loader />
 
     if(isError || isErrorUser) return <Navigate to="/404" replace />
 
-    if(orders?.length === 0) return (
+    if(orders?.length === 0 || (filteredOrders && filteredOrders.length === 0)) return (
         <>
             <Heading>{searchOrder ? (
                 `Orden no Encontrada`
@@ -68,7 +86,7 @@ export default function OrdersView() {
 
             {!searchOrder && (
                 <p className="text-gray-700 text-center my-10 ">
-                    Aquí puedes ver los Detalles de tus Ordenes y <span className="font-bold text-orange-500">Realizar Cambios.</span>
+                    Aquí puedes ver los Detalles de tus Ordenes y <span className="font-bold text-orange-500">Realizar Cambios.</span>
                 </p>
             )}
 
@@ -76,9 +94,13 @@ export default function OrdersView() {
                 <p className="text-gray-700 text-center my-10">
                     No se encontraron Ordenes con el Tóken: <span className="font-bold text-orange-500">{searchOrder}</span>
                 </p>
+            ) : showPendingOnly ? (
+                <p className="text-gray-700 text-center my-10">
+                    No tienes Ordenes Pendientes
+                </p>
             ) : (
                 <p className="text-gray-700 text-center my-10">
-                    Aún no tienes Ordenes Registradas
+                    Aún no tienes Ordenes Registradas
                 </p>
             )}
 
@@ -90,7 +112,6 @@ export default function OrdersView() {
                     Ir a tu Carrito
                 </Link>
                 
-
                 {searchOrder && (
                     <Link
                         className=" bg-orange-500 text-white px-5 py-2 rounded-full"
@@ -98,7 +119,15 @@ export default function OrdersView() {
                     >
                         Volver a mis Ordenes
                     </Link>
-                    
+                )}
+
+                {showPendingOnly && !searchOrder && (
+                    <button
+                        className="bg-yellow-500 text-white px-5 py-2 rounded-full"
+                        onClick={() => setShowPendingOnly(false)}
+                    >
+                        Ver Todas las Órdenes
+                    </button>
                 )}
 
                 <Link
@@ -129,14 +158,38 @@ export default function OrdersView() {
     )
 
     // Si la página es mayor que el total de páginas, redirigimos a la última página
-    if(page > totalPages) return <Navigate to={`/orders?page=${totalPages}`} replace />
+    if(page > totalPages && totalPages > 0) return <Navigate to={`/orders?page=${totalPages}`} replace />
 
     if(orders) return (
         <>
             <Heading>Mis Pedidos</Heading>
-            <p className="text-gray-700 text-center my-10">
-                Aquí puedes ver los Detalles de tus Ordenes y <span className="font-bold text-orange-500">Realizar Cambios.</span>
+            <p className="text-gray-700 text-center my-5">
+                Aquí puedes ver los Detalles de tus Ordenes y <span className="font-bold text-orange-500">Realizar Cambios.</span>
             </p>
+
+            {/* Toggle switch for pending orders */}
+            <div className="flex items-center justify-center mb-5">
+                <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 flex items-center space-x-3">
+                    <span className="text-sm font-medium text-gray-700">
+                        {showPendingOnly ? "Mostrando órdenes pendientes" : "Mostrando todas las órdenes"}
+                    </span>
+                    <button
+                        onClick={() => setShowPendingOnly(!showPendingOnly)}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                            showPendingOnly ? 'bg-yellow-500' : 'bg-gray-300'
+                        }`}
+                    >
+                        <span
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                showPendingOnly ? 'translate-x-6' : 'translate-x-1'
+                            }`}
+                        />
+                    </button>
+                    <span className="text-sm text-gray-500">
+                        Solo pendientes
+                    </span>
+                </div>
+            </div>
 
             <SearchBar
                 route="orders"
@@ -148,6 +201,7 @@ export default function OrdersView() {
 
             <p className="text-gray-700 text-center my-10">
                 Puedes copiar el Tóken de la Orden <span className="font-bold text-orange-500">haciendo Click sobre el</span>
+                <br/> El estado de la Orden se actulizará cuando <span className="font-bold text-orange-500">el Pedido sea Confirmado</span>
             </p>
 
             {searchOrder && (
@@ -162,10 +216,11 @@ export default function OrdersView() {
             )}
 
             <div className="grid grid-cols-1 gap-10 md:grid-cols-2 my-10">
-                {orders.map(order => (
+                {filteredOrders && filteredOrders.map(order => (
                     <OrderCard
                         key={order.id}
                         order={order}
+                        admin={false}
                     />
                 ))}
             </div>

@@ -62,6 +62,9 @@ export default function ProductDetailsModal({
     const basePrice = product.variants[0].salePrices.price ?? "N/A"; // Default value if salePrices is undefined
     const finalPrice = product.variants[0].salePrices.finalPrice ?? "N/A"; // Default value if salePrices is undefined
 
+	const hasStock = product.variants[0].stockInfo[0].quantityAvailable > 0;
+    const totalStock = product.variants[0].stockInfo[0].quantityAvailable;
+
     return (
         <Transition appear show={show} as={Fragment}>
             <Dialog as="div" className="relative z-50" onClose={handleClose}>
@@ -121,9 +124,10 @@ export default function ProductDetailsModal({
                                             {capitalizeFirstLetter(product.name) || "Nombre del Producto"}
                                         </Dialog.Title>
     
-                                        <p className="text-lg text-gray-600 mt-2">
-                                            {product?.description || "No hay Descripción Disponible..."}
-                                        </p>
+                                        <p 
+                                            className="text-lg text-gray-600 mt-2"
+                                            dangerouslySetInnerHTML={{ __html: product.description || "No hay descripción disponible..." }} 
+                                        />
                                     </div>
                                 </div>
 
@@ -163,12 +167,12 @@ export default function ProductDetailsModal({
                                         <div className="flex justify-center gap-3 border-b border-gray-300 pb-4">
                                             <p
                                                 className={`${
-                                                    product.baseInfo.stockControl
+                                                    hasStock
                                                         ? "bg-green-200 text-green-800"
                                                         : "bg-red-200 text-red-800"
                                                 } rounded-full w-full text-sm truncate text-center font-semibold`}
                                             >
-                                                {product.baseInfo.stockControl
+                                                {hasStock
                                                     ? "Con Stock"
                                                     : "Sin Stock"}
                                             </p>
@@ -200,6 +204,7 @@ export default function ProductDetailsModal({
                                         />
                                         <button 
                                             onClick={handleIncrease} 
+                                            disabled={totalStock <= quantity}
                                             className="px-3 py-1 bg-gray-300 rounded-r-lg hover:bg-gray-400"
                                         >
                                             +
@@ -208,7 +213,7 @@ export default function ProductDetailsModal({
     
                                     {/* Action Button */}
                                     <button 
-                                        disabled={!product.baseInfo.stockControl}
+                                        disabled={!hasStock}
                                         className="w-full bg-orange-600 text-white py-3 rounded-lg font-semibold hover:bg-orange-700 transition disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
                                         onClick={handleAddToCart}
                                     >

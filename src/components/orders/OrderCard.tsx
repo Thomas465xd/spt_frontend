@@ -1,5 +1,5 @@
 import { changeOrderStatus } from "@/api/OrderAPI";
-import { CheckoutForm } from "@/types/index"
+import { AdminCheckoutForm, CheckoutForm } from "@/types/index"
 import { copyToClipboard } from "@/utilities/copy";
 import { formatPhone } from "@/utilities/phone";
 import { formatToCLP } from "@/utilities/price";
@@ -11,10 +11,11 @@ import OrderDetailsModal from "./OrderDetailsModal";
 import { useLocation, useNavigate } from "react-router-dom";
 
 type OrderCardProps = {
-    order: CheckoutForm
+    order: CheckoutForm | AdminCheckoutForm
+    admin: Boolean
 }
 
-export default function OrderCard({ order }: OrderCardProps) {
+export default function OrderCard({ order, admin } : OrderCardProps) {
 
     const navigate = useNavigate();
 	const location = useLocation();
@@ -44,9 +45,9 @@ export default function OrderCard({ order }: OrderCardProps) {
         }
     })
 
-    const handleDeleteOrder = (orderId: number, active: number) => {
+    const handleStatusOrder = (orderId: number, active: number) => {
 
-        const message = active === 1 ? "¿Deseas Marcar la Orden como Completada? ✅" : "¿Deseas Marcar la Orden como Cancelada? ❌";
+        const message = active === 0 ? "¿Deseas Marcar la Orden como Completada? ✅" : "¿Deseas Marcar la Orden como Cancelada? ❌";
         Swal.fire({
             title: `${message}`,
             text: "Puedes deshacer esta acción cuando quieras. ⚡",
@@ -54,7 +55,7 @@ export default function OrderCard({ order }: OrderCardProps) {
             showCancelButton: true,
             confirmButtonColor: "#3085d6",
             cancelButtonColor: "#d33",
-            confirmButtonText: "Si, Eliminar",
+            confirmButtonText: "Si, Marcar como " + (active === 0 ? "Completada" : "Cancelada"),
             cancelButtonText: "Cancelar"
         }).then((result) => {
             if(result.isConfirmed) {
@@ -144,7 +145,7 @@ export default function OrderCard({ order }: OrderCardProps) {
                         </div>
                         <div className="flex items-center">
                             <Phone className="w-4 h-4 mr-2 text-gray-400" />
-                            <span>{formatPhone(order.clientPhone)}</span>
+                            <span>{order.clientPhone ? formatPhone(order.clientPhone) : "N/A"}</span>
                         </div>
                         <div className="flex items-start">
                             <MapPin className="w-4 h-4 mr-2 text-gray-400 mt-1" />
@@ -175,10 +176,10 @@ export default function OrderCard({ order }: OrderCardProps) {
                                 {order.shippingCost === 0 ? "Gratis" : formatToCLP(order.shippingCost)}
                             </span>
                         </div>
-                        {order.discountCost > 0 && (
+                        {(order.discountCost ?? 0) > 0 && (
                             <div className="flex justify-between">
                                 <span className="text-gray-600">Descuento</span>
-                                <span className="text-green-600">-{formatToCLP(order.discountCost)}</span>
+                                <span className="text-green-600">-{formatToCLP(order.discountCost ?? 0)}</span>
                             </div>
                         )}
                         <div className="border-t border-gray-200 pt-2 mt-2">
@@ -206,44 +207,50 @@ export default function OrderCard({ order }: OrderCardProps) {
 
                     {order.url && (
                         <div>
-                            {orderStatus ? (
+                            {admin && (
                                 <>
-                                    <button
-                                        onClick={() => handleDeleteOrder(order.id, 1)}
-                                        className={`mt-3 block w-full text-center font-medium py-2 px-4 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed
-                                            ${orderStatus ? "bg-green-600 hover:bg-green-700 text-white" : "bg-gray-400 text-gray-700 cursor-not-allowed"}
-                                        `}
-                                    >
-                                        Marcar Orden como Completada
-                                    </button>
-                                </>
-                            ) : (
-                                <>
-                                    <button
-                                        onClick={() => handleDeleteOrder(order.id, 0)}
-                                        className={`mt-3 block w-full text-center font-medium py-2 px-4 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed
-                                            ${!orderStatus ? "bg-yellow-500 hover:bg-yellow-600 text-white" : "bg-gray-400 text-gray-700 cursor-not-allowed"}
-                                        `}
-                                    >
-                                        Marcar Orden como Pendiente
-                                    </button>
+                                    {orderStatus ? (
+                                        <>
+                                            <button
+                                                onClick={() => handleStatusOrder(order.id, 1)}
+                                                className={`mt-3 block w-full text-center font-medium py-2 px-4 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed
+                                                    ${orderStatus ? "bg-yellow-500 hover:bg-yellow-600 text-white" : "bg-gray-400 text-gray-700 cursor-not-allowed"}
+                                                `}
+                                            >
+                                                Marcar Orden como Pendiente
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <button
+                                                onClick={() => handleStatusOrder(order.id, 0)}
+                                                className={`mt-3 block w-full text-center font-medium py-2 px-4 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed
+                                                    ${!orderStatus ? "bg-green-600 hover:bg-green-700 text-white" : "bg-gray-400 text-gray-700 cursor-not-allowed"}
+                                                `}
+                                            >
+                                                Marcar Orden como Completada
+                                            </button>
+                                        </>
+                                    )}
                                 </>
                             )}
 
-                            <button
-                                onClick={handleClick}
-                                className="mt-3 block w-full text-center bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-4 rounded transition-colors"
-                            >
-                                Ver Detalles de la Orden
-                            </button>
+                            {order.url ? (
+                                <button onClick={handleClick} className="mt-3 block w-full text-center bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-4 rounded transition-colors">
+                                    Ver Detalles de la Orden
+                                </button>
+                            ) : (
+                                <p className="text-gray-500 text-sm mt-2">No URL disponible</p>
+                            )}
                         </div>
                     )}
                 </div>
             </div>
-
+            
             {orderDetails === (order.id).toString() && (
                 <OrderDetailsModal
                     order={order}
+                    admin={admin}
                 />
             )}
         </>

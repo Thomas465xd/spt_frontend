@@ -478,6 +478,57 @@ export const checkoutResponseSchema = z.object({
     data: z.array(checkoutSchema).default([]),
 })
 
+export const adminCheckoutSchema = z.object({
+    id: z.number(),
+    token: z.string(),
+    clientName: z.string(),
+    clientEmail: z.string().email(),
+    clientPhone: z.string().optional(),
+    clientCountry: z.string().optional(),
+    clientState: z.string().optional(),
+    clientCityZone: z.string().optional(),
+    clientStreet: z.string().optional(),
+    clientPostcode: z.string().optional(),
+    clientBuildingNumber: z.string().optional(),
+    cartId: z.number(),
+    cartDetails: z.array(detailCartDataSchema),
+    extrasUserData: extrasUserDataSchema.optional(),
+    ptId: z.number(),
+    createAt: z.number(),
+    shippingCost: z.number(),
+    isMafs: z.number(),
+    discountCost: z.number().optional(),
+    active: z.number().optional(),
+    totalCart: z.number().optional(),
+    pickStoreId: z.number().optional(),
+    pickName: z.string().optional(),
+    pickCode: z.string().optional(), 
+    id_venta_documento_tributario: z.number().optional(),
+    documentNumber: z.number().optional(),
+    documentToken: z.string().optional(), 
+    marketId: z.number().optional(), 
+    isService: z.number().optional(),
+    withdrawStore: z.number().optional(),
+    payProcess: z.string(), 
+    nameTypeDocument: z.string().optional(), 
+    total: z.number().optional(), 
+    url: z.string().url().optional(),
+    currency: z.object({
+        decimals: z.number(), 
+        symbol: z.string(), 
+        decimalSeparator: z.string(), 
+    })
+}) 
+
+export const adminCheckoutResponseSchema = z.object({
+    code: z.number(), 
+    href: z.string().url(),
+    count: z.number(), 
+    limit: z.number(), 
+    offset: z.number(), 
+    data: z.array(adminCheckoutSchema).default([]),
+})
+
 //! Email
 export const emailSchema = checkoutSchema.pick({
     token: true,
@@ -514,6 +565,7 @@ export type WithdrawOrderForm = z.infer<typeof withdrawCheckoutSchema>;
 export type UserCheckoutForm = z.infer<typeof userCheckoutSchema>;
 
 export type CheckoutForm = z.infer<typeof checkoutSchema>;
+export type AdminCheckoutForm = z.infer<typeof adminCheckoutSchema>;
 export type CheckoutEmails = z.infer<typeof emailSchema>;
 
 export type SearchFormData = z.infer<typeof searchSchema>
