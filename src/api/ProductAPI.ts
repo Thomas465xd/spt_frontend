@@ -76,9 +76,9 @@ export async function getCartDetailById(cartId : number) {
             throw new Error(error.response?.data?.message || "Ocurrió un error en la API");
         } else {
             console.error("⚠️ Error desconocido:", error);
-            throw new Error("Error inesperado. Intenta nuevamente.");
+            throw new Error("Error inesperado. Intenta nuevamente a.");
         }
-    }
+    }  
 }
 
 //? Add to Cart 

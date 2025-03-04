@@ -45,7 +45,7 @@ export async function getOrdersByEmail({ email, token, limit, offset } : {email:
             console.error("⚠️ Error desconocido:", error);
             throw new Error("Error inesperado. Intenta nuevamente.");
         }
-    }
+    } 
 }
 
 export async function getAllOrders({ email, clientName, token, limit, offset } : {email?: User["email"], clientName?: User["name"], token?: string, limit: number, offset: number}) {

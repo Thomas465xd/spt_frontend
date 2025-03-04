@@ -48,5 +48,5 @@ export async function changePassword(formData: UserUpdatePasswordForm) {
             //console.log(error)
             throw new Error(error.response.data.message);
         }
-    }
+    } 
 }

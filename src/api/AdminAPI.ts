@@ -27,7 +27,7 @@ export async function getConfirmedUsers({ page, perPage, searchRUT, searchEmail 
             console.error("⚠️ Error desconocido:", error);
             throw new Error("Error inesperado. Intenta nuevamente.");
         }
-    }
+    } 
 }
 
 export async function getUnconfirmedUsers({ page, perPage, searchRUT, searchEmail }: { page: number, perPage: number, searchRUT?: string, searchEmail?: string }) {

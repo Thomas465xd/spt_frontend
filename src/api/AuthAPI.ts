@@ -11,7 +11,7 @@ export async function createAccount(formData: UserRegistrationForm) {
 
         //console.log("✅ Respuesta exitosa de la API:", response.data);
 
-        return response.data;
+        return response.data;                   
     } catch (error) {
         console.error("❌ Error en la solicitud:", error);
 
@@ -25,7 +25,7 @@ export async function createAccount(formData: UserRegistrationForm) {
             throw new Error(error.response?.data?.message || "Ocurrió un error en la API");
         } else {
             console.error("⚠️ Error desconocido:", error);
-            throw new Error("Error inesperado. Intenta nuevamente.");
+            throw new Error("Error inesperado. Intenta nuevamente. Si el error persiste, contacta al administrador.");
         }
     }
 }
