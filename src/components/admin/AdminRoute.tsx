@@ -1,5 +1,4 @@
 import { NavLink } from "react-router-dom";
-import { useLocation } from "react-router-dom";
 
 type AdminRouteProps = {
     link: {
@@ -10,9 +9,6 @@ type AdminRouteProps = {
 };
 
 export default function AdminRoute({ link }: AdminRouteProps) {
-    const location = useLocation();
-    const isActive = location.pathname.startsWith(link.url);
-
     return (
         <NavLink
             to={link.url}

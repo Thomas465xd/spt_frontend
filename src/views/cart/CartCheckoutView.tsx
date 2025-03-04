@@ -4,14 +4,13 @@ import Loader from "@/components/ui/Loader";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 import { useQuery } from "@tanstack/react-query";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 export default function CartCheckoutView() {
 
     const { data: user, isError: userIsError, isLoading: userIsLoading } = useAuth();
 
     const { cartId, fetchCartDetails } = useCart();
-    const navigate = useNavigate()
 
     const { data, isLoading, isError } = useQuery({
         queryKey: ["cartDetails", cartId],

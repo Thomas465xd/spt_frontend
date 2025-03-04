@@ -31,7 +31,7 @@ export default function RegisterView() {
         onSuccess: () => {
             Swal.fire({
                 title: "Cuenta Registrada Correctamente",
-                text: "Serás Contactado por el Administrador en caso de ser aprobado",
+                text: "Serás Contactado por el Administrador en caso de ser aprobado. Se ha enviado un correo de seguimiento a tu Email.",
                 icon: "success",
             })
             reset();
@@ -40,6 +40,7 @@ export default function RegisterView() {
     });
 
     const handleRegister =(formData: UserRegistrationForm) => {
+        console.log(formData.email)
         mutate(formData);
     }
 
@@ -144,6 +145,8 @@ export default function RegisterView() {
                                 id="email"
                                 placeholder="Ingresa tu Correo Electrónico"
                                 className="w-full p-3 rounded border border-gray-300"
+                                autoCorrect="off"
+                                autoCapitalize="none"
                                 {...register("email", {
                                     required: "El Correo Electrónico es obligatorio",
                                     pattern: {

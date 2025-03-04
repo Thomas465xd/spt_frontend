@@ -90,10 +90,10 @@ export default function Footer() {
 						<h3 className="text-lg font-bold mb-4">Contacto</h3>
 						<p>
 							<a
-								href="mailto:equipo@administracion.portalspt.cl"
+								href="mailto:equipo@portalspt.cl"
 								className="text-gray-300 hover:text-white transition"
 							>
-								soporte@ayuda.portalspt.cl
+								equipo@portalspt.cl
 							</a>
 						</p>
 						<p>
@@ -139,7 +139,7 @@ export default function Footer() {
 									<Linkedin size={20} />
 								</a>
 								<a
-									href="mailto:soporte@ayuda.portalspt.cl"
+									href="mailto:soporte@portalspt.cl"
 									className="text-gray-300 hover:text-white transition"
 									aria-label="Enviar correo a soporte"
 								>
