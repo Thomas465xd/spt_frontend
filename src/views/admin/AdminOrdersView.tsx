@@ -5,11 +5,12 @@ import Loader from "@/components/ui/Loader";
 import Pagination from "@/components/ui/Pagination";
 import SearchBar from "@/components/ui/SearchBar";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { Link, Navigate, useSearchParams } from "react-router-dom";
 
 export default function AdminOrdersView() {
-
-    const [searchParams] = useSearchParams();
+    const [showPendingOnly, setShowPendingOnly] = useState(false);
+    const [searchParams, setSearchParams] = useSearchParams();
     const searchToken = searchParams.get("searchToken") || "";
     const searchEmail = searchParams.get("searchEmail") || "";
     const searchName = searchParams.get("searchName") || "";
@@ -28,24 +29,43 @@ export default function AdminOrdersView() {
             email: searchEmail,
             clientName: searchName, 
             token: searchToken, 
-            limit: itemsPerPage, 
-            offset
+            limit: itemsPerPage,
+            offset: offset,
         }),
         staleTime: 1000 * 60 * 5,
         refetchOnWindowFocus: false
     })
 
-    const orders = data?.data;
-
+    // Step 1: Fetch orders from API
+    const orders = data?.data || [];
     const totalOrders = data?.count || 0;
 
+    // Step 2: Apply client-side filtering
+    const filteredOrders = showPendingOnly
+        ? orders.filter(order => order.active === 1) // Adjust condition based on actual API response
+        : orders;
+
+    // Step 4: Recalculate pagination
     const totalPages = Math.ceil(totalOrders / itemsPerPage);
+
+
+    // Step 5: Paginate AFTER filtering
+    const paginatedOrders = filteredOrders.slice(0, itemsPerPage);
+
+    // Reset to page 1 when toggling filter
+    useEffect(() => {
+        if (page !== 1) {
+            const newParams = new URLSearchParams(searchParams);
+            newParams.set("page", "1");
+            setSearchParams(newParams);
+        }
+    }, [showPendingOnly]);
 
     if(isLoading) return <Loader />
 
     if(isError) return <Navigate to="/404" replace />
 
-    if(orders?.length === 0) return (
+    if(orders?.length === 0 || (filteredOrders && filteredOrders.length === 0)) return (
         <>
             <Heading>{searchToken ? (
                 `Orden no Encontrada`
@@ -69,15 +89,25 @@ export default function AdminOrdersView() {
                 </p>
             )}
 
+            {showPendingOnly && !searchToken && (
+                <div className="flex gap-5 justify-center my-10">
+                    <button
+                        className="bg-yellow-500 text-white px-5 py-2 rounded-full"
+                        onClick={() => setShowPendingOnly(false)}
+                    >
+                        Ver Todas las Órdenes
+                    </button>
+                </div>
+            )}
+
             <div className="flex gap-5 justify-center my-10">
-                {searchToken && (
+                {searchToken || searchEmail || searchName && (
                     <Link
                         className=" bg-orange-500 text-white px-5 py-2 rounded-full"
                         to="/admin/orders"
                     >
-                        Volver Ordenes
+                        Volver a Ordenes
                     </Link>
-                    
                 )}
             </div>
         </>
@@ -115,6 +145,31 @@ export default function AdminOrdersView() {
                 searchText="Nombre"
             />
 
+            {/* Toggle switch for pending orders */}
+            <div className="flex items-center justify-center my-10">
+                <div className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 flex items-center space-x-3">
+                    <span className="text-sm font-medium text-gray-700">
+                        {showPendingOnly ? "Mostrando órdenes pendientes" : "Mostrando todas las órdenes"}
+                    </span>
+                    <button
+                        onClick={() => setShowPendingOnly(!showPendingOnly)}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                            showPendingOnly ? 'bg-yellow-500' : 'bg-gray-300'
+                        }`}
+                        aria-label={showPendingOnly ? "Show all orders" : "Show only pending orders"}  // Accessible name for the button
+                    >
+                        <span
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                showPendingOnly ? 'translate-x-6' : 'translate-x-1'
+                            }`}
+                        />
+                    </button>
+                    <span className="text-sm text-gray-500">
+                        Solo pendientes
+                    </span>
+                </div>
+            </div>
+
             <p className="text-gray-700 text-center my-10">
                 Puedes copiar el Tóken de la Orden <span className="font-bold text-orange-500">haciendo Click sobre el</span>
                 <br/> Al Cambiar el estado de la Orden el cliente<span className="font-bold text-orange-500"> será notificado</span>
@@ -132,13 +187,14 @@ export default function AdminOrdersView() {
                     </div>
 
                     <p className="text-gray-700 text-center my-10">
-                        Resultados Cargados: <span className="font-bold text-orange-500">{data.count}</span>
+                        Resultados Cargados: <span className="font-bold text-orange-500">{data?.count}</span>
                     </p>
                 </>
             ) : null}
 
             <div className="grid grid-cols-1 gap-10 md:grid-cols-2 my-10 md:px-10 lg:px-20 xl:px-30 2xl:px-40">
-                {orders.map(order => (
+                {paginatedOrders && paginatedOrders.map(order => (
+
                     <OrderCard
                         key={order.id}
                         order={order}

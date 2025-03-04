@@ -126,7 +126,7 @@ export default function ProductDetailsModal({
     
                                         <p 
                                             className="text-lg text-gray-600 mt-2"
-                                            dangerouslySetInnerHTML={{ __html: product.description || "No hay descripción disponible..." }} 
+                                            dangerouslySetInnerHTML={{ __html: capitalizeFirstLetter(product.description || "No hay descripción disponible...") }} 
                                         />
                                     </div>
                                 </div>

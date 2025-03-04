@@ -6,9 +6,16 @@ import { adminCheckoutResponseSchema, CheckoutEmails, checkoutResponseSchema, Di
 export async function getOrdersByEmail({ email, token, limit, offset } : {email: User["email"], token?: string, limit: number, offset: number}) {
     try {
         const url = `/v1/markets/checkout/list.json?clientEmail=${email}&expand=cartDetails&token=${token || ""}&limit=${limit}&offset=${offset}`;
-        //console.log(url)
+        
         const { data } = await api.get(url);
-        //console.log(data)
+
+        // If no data or empty array, return a default structure
+        if (!data || !data.data || data.data.length === 0) {
+            return {
+                data: [],
+                count: 0
+            };
+        }
 
         const response = checkoutResponseSchema.safeParse(data);
         if(response.success) {
@@ -16,7 +23,13 @@ export async function getOrdersByEmail({ email, token, limit, offset } : {email:
             return response.data;
         }
 
-        console.error("Schema Validation Failed", response.error);
+        //console.error("Schema Validation Failed", response.error);
+        
+        // Return a fallback structure if schema validation fails
+        return {
+            data: [],
+            count: 0
+        };
     } catch (error) {
         console.error("❌ Error en la solicitud:", error);
 

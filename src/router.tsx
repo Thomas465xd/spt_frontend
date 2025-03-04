@@ -113,7 +113,7 @@ export default function Router() {
 							element={<AdminDashboardView />}
 						/>
 						<Route
-							path="/admin/dashboard/users"
+							path="/admin/users"
 							element={<AdminUsersView />}
 						/>
 						<Route

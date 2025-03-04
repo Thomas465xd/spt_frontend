@@ -2,9 +2,9 @@ import api from "@/lib/axios";
 import { isAxiosError } from "axios";
 import {authUserSchema, Token, userResponseSchema, usersResponseSchema, UserStatusForm } from "../types";
 
-export async function getConfirmedUsers({ page, perPage }: { page: number, perPage: number }) {
+export async function getConfirmedUsers({ page, perPage, searchRUT, searchEmail }: { page: number, perPage: number, searchRUT?: string, searchEmail?: string }) {
     try {
-        const url = `/auth/admin/users?page=${page}&perPage=${perPage}`;
+        const url = `/auth/admin/users?page=${page}&perPage=${perPage}&searchRUT=${searchRUT || ""}&searchEmail=${searchEmail || ""}`;
         const { data } = await api.get(url);
 
         const response = usersResponseSchema.safeParse(data);
@@ -30,11 +30,10 @@ export async function getConfirmedUsers({ page, perPage }: { page: number, perPa
     }
 }
 
-export async function getUnconfirmedUsers({ page, perPage }: { page: number, perPage: number }) {
+export async function getUnconfirmedUsers({ page, perPage, searchRUT, searchEmail }: { page: number, perPage: number, searchRUT?: string, searchEmail?: string }) {
     try {
-        const url = `/auth/admin/unconfirmed-users?page=${page}&perPage=${perPage}`;
+        const url = `/auth/admin/unconfirmed-users?page=${page}&perPage=${perPage}&searchRUT=${searchRUT || ""}&searchEmail=${searchEmail || ""}`;
         const { data } = await api.get(url);
-        console.log(data)
 
         const response = usersResponseSchema.safeParse(data);
         if (response.success) {

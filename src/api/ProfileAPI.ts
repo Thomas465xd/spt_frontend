@@ -26,9 +26,11 @@ export async function updateShippingInfo(formData: UserShippingForm) {
 
         return data;
     } catch (error) {
-        if (isAxiosError(error) && error.response) {
-            //console.log(error)
-            throw new Error(error.response.data.message);
+        if (isAxiosError(error)) {
+            throw new Error(error.response?.data.errors.msg || "Selecciona una región");
+        } else {
+            console.error("⚠️ Error desconocido:", error);
+            throw new Error("Error inesperado. Intenta nuevamente.");
         }
     }
 }

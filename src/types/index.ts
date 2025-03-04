@@ -520,7 +520,7 @@ export const adminCheckoutSchema = z.object({
     id: z.number(),
     token: z.string(),
     clientName: z.string(),
-    clientEmail: z.string().email(),
+    clientEmail: z.string().email().optional(),
     clientPhone: z.string().optional(),
     clientCountry: z.string().optional(),
     clientState: z.string().optional(),

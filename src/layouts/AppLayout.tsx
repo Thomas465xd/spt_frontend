@@ -19,7 +19,7 @@ export default function AppLayout() {
             <header className="bg-gradient-to-r from-orange-600 to-orange-400 shadow-lg">
                 <div className="max-w-screen-2xl mx-auto px-5 py-4 flex flex-col md:flex-row items-center justify-between">
                     <div className="flex items-center space-x-4">
-                        <Link to={"/"} className="transform hover:scale-105 transition-transform duration-200">
+                        <Link to={"/"} className="transform hover:scale-101 transition-transform duration-200">
                             <Logo />
                         </Link>
                     </div>

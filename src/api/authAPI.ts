@@ -9,7 +9,7 @@ export async function createAccount(formData: UserRegistrationForm) {
         const url = "/auth/create-account";
         const response = await api.post(url, formData);
 
-        console.log("✅ Respuesta exitosa de la API:", response.data);
+        //console.log("✅ Respuesta exitosa de la API:", response.data);
 
         return response.data;
     } catch (error) {

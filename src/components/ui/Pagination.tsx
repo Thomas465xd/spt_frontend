@@ -57,7 +57,7 @@ export default function Pagination({ route, page, totalPages, maxPageButtons = 5
         
         return visiblePages;
     };
-
+    
     const visiblePages = getVisiblePages();
 
     return (

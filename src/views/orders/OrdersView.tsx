@@ -41,8 +41,18 @@ export default function OrdersView() {
         queryFn: () => getOrdersByEmail({
             email: user?.email || "",
             token: searchOrder, 
-            limit: showPendingOnly ? 50 : itemsPerPage, // Fetch more when filtering
-            offset: showPendingOnly ? 0 : offset, // Start from beginning when filtering
+            limit: showPendingOnly ? 12 : itemsPerPage,
+            offset: showPendingOnly ? 6 : offset,
+        }),
+        // Add a select to ensure data is always in a safe format
+        select: (responseData) => ({
+            data: responseData?.data?.map(order => ({
+                ...order,
+                pickName: order.pickName || '',
+                pickCode: order.pickCode || '',
+                // Add other fields with safe defaults
+            })) || [],
+            count: responseData?.count || 0
         }),
         staleTime: 1000 * 60 * 5,
         refetchOnWindowFocus: false

@@ -146,7 +146,7 @@ export default function ExtraProfileForm({ data }: ProfileFormProps) {
                         <input 
                             type="text" 
                             id="postalCode"
-                            placeholder="Tu Comuna"
+                            placeholder="Tu Código Postal"
                             className="w-full p-3 rounded border border-gray-300"
                             {...register("postalCode", {
                                 required: false,

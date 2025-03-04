@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { UserRegistrationForm } from "@/types/index";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
@@ -21,6 +21,7 @@ export default function RegisterView() {
     }
 
     const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<UserRegistrationForm>({defaultValues: initialValues});
+    const navigate = useNavigate();
 
     const { mutate } = useMutation({
         mutationFn: createAccount, 
@@ -34,6 +35,7 @@ export default function RegisterView() {
                 icon: "success",
             })
             reset();
+            navigate("/auth/login");
         }
     });
 
@@ -43,200 +45,158 @@ export default function RegisterView() {
 
     return (
         <>
-            <h1 className="text-5xl font-black text-white">Registrar Cuenta</h1>
-            <p className="text-2xl font-light text-white mt-5">
-                Bienvenido a Portal Spare Parts Trade, por favor ingresa tus datos {''}
-                <span className="font-bold">en el formulario</span>
-            </p>
-
-            <form
-                className="space-y-8 p-10 bg-white shadow-md rounded mt-10"
-                onSubmit={handleSubmit(handleRegister)}
-                noValidate
-            >
-                <div className="flex flex-col gap-5">
-                    <label 
-                        htmlFor="nombre"
-                        className="font-normal text-2xl"
-                    >
-                        Nombre
-                    </label>
-                    <input 
-                        type="text"
-                        id="nombre"
-                        placeholder="Ingresa tu Nombre"
-                        className="border border-gray-300 w-full p-3 mt-3 bg-gray-50 rounded"
-                        {...register('name', {
-                            required: 'El Nombre es obligatorio'
-                        })}
-                    />
-                    {errors.name && (
-                        <ErrorMessage>{errors.name.message}</ErrorMessage>
-                    )}
-                </div>
-
-                <div className="flex flex-col gap-5">
-                    <label 
-                        htmlFor="empresa"
-                        className="font-normal text-2xl"
-                    >
-                        Nombre de la Empresa
-                    </label>
-                    <input 
-                        type="text"
-                        id="empresa"
-                        placeholder="Ingresa el nombre de tu Empresa"
-                        className="border border-gray-300 w-full p-3 mt-3 bg-gray-50 rounded"
-                        {...register('businessName', {
-                            required: 'El Nombre de la Empresa es obligatorio'
-                        })}
-                        />
-                        {errors.businessName && (
-                            <ErrorMessage>{errors.businessName.message}</ErrorMessage>
-                        )}
-                </div>
-
-                <div className="flex flex-col gap-5">
-                    <label 
-                        htmlFor="rut"
-                        className="font-normal text-2xl"
-                    >
-                        RUT
-                    </label>
-                    <input 
-                        type="text"
-                        id="rut"
-                        placeholder="Ingresa tu RUT personal (ej. 12.345.678-9)"
-                        className="border border-gray-300 w-full p-3 mt-3 bg-gray-50 rounded"
-                        maxLength={12}
-                        {...register("rut", {
-                            required: "El RUT es obligatorio",
-                            pattern: {
-                                value: /^\d{1,2}\.?\d{3}\.?\d{3}-[\dkK]$/,
-                                message: "Formato de RUT inválido. Ejemplo: 12.345.678-9"
-                            },
-                            onChange: (e) => {
-                                const formattedRUT = formatRUT(e.target.value);
-                                setValue("rut", formattedRUT, { shouldValidate: true });
-                            }
-                        })}
-                    />
-                    {errors.rut && (
-                        <ErrorMessage>{errors.rut.message}</ErrorMessage>
-                    )}
-                </div>
-
-                <div className="flex flex-col gap-5">
-                    <label 
-                        htmlFor="rutempresa"
-                        className="font-normal text-2xl"
-                    >
-                        RUT de la Empresa
-                    </label>
-                    <input 
-                        type="text"
-                        id="rutempresa"
-                        placeholder="Ingresa el RUT de la Empresa (ej. 12.345.678-9)"
-                        className="border border-gray-300 w-full p-3 mt-3 bg-gray-50 rounded"
-                        maxLength={12}
-                        {...register("businessRut", {
-                            required: "El RUT de la Empresa es obligatorio",
-                            pattern: {
-                                value: /^\d{1,2}\.?\d{3}\.?\d{3}-[\dkK]$/,
-                                message: "Formato de RUT inválido. Ejemplo: 12.345.678-9"
-                            },
-                            onChange: (e) => {
-                                const formattedRUT = formatRUT(e.target.value);
-                                setValue("businessRut", formattedRUT, { shouldValidate: true });
-                            }
-                        })}
-                    />
-                    {errors.businessRut && (
-                        <ErrorMessage>{errors.businessRut.message}</ErrorMessage>
-                    )}
-                </div>
-
-                <div className="flex flex-col gap-5">
-                    <label 
-                        htmlFor="telefono"
-                        className="font-normal text-2xl"
-                    >
-                        Teléfono
-                    </label>
-                    <input 
-                        type="text"
-                        id="telefono"
-                        placeholder="Ingresa tu número de teléfono (ej. +56912345678)"
-                        className="border border-gray-300 w-full p-3 mt-3 bg-gray-50 rounded"
-                        {...register("phone", {
-                            required: "El Teléfono es obligatorio",
-                            pattern: {
-                                value: /^(\+56\s?9\d{8}|9\d{8})$/,
-                                message: "Formato de teléfono inválido. Ejemplo: +56912345678 o 912345678"
-                            }
-                        })}
-                    />
-                    {errors.phone && (
-                        <ErrorMessage>{errors.phone.message}</ErrorMessage>
-                    )}
-                </div>
-
-                <div className="flex flex-col gap-5">
-                    <label 
-                        htmlFor="email"
-                        className="font-normal text-2xl"
-                    >
-                        Email
-                    </label>
-                    <input 
-                        type="email"
-                        id="email"
-                        placeholder="Ingresa tu correo electrónico"
-                        className="border border-gray-300 w-full p-3 mt-3 bg-gray-50 rounded"
-                        {...register("email", {
-                            required: "El Correo Electrónico es obligatorio",
-                            pattern: {
-                                value: /\S+@\S+\.\S+/,
-                                message: "El Email no es válido"
-                            }
-                        })}
-                    />
-                    {errors.email && (
-                        <ErrorMessage>{errors.email.message}</ErrorMessage>
-                    )}
-                </div>
-
-                <div className="flex flex-col gap-5 border-b border-gray-400 pb-8">
-                    <label 
-                        htmlFor="direccion"
-                        className="font-normal text-2xl"
-                    >
-                        Dirección
-                    </label>
-                    <input 
-                        type="text"
-                        id="direccion"
-                        placeholder="Ingresa tu Dirección (ej. Calle 1 # 2 - 3)"
-                        className="border border-gray-300 w-full p-3 mt-3 bg-gray-50 rounded"
-                        {...register("address", {
-                            required: "La Dirección no puede ir vacía"
-                        })}
-                    />
-                    {errors.address && (
-                        <ErrorMessage>{errors.address.message}</ErrorMessage>
-                    )}
-                </div>
-
-                <p className="text-sm text-gray-400">
-                    <span className="text-red-500">*</span> Estos datos serán enviados al equipo administrativo de SPT para la verificación de sus datos.
+            <div className="mx-auto max-w-xl px-4 lg:px-0">
+                <h1 className="text-5xl font-black text-white">Registrar Cuenta</h1>
+                <p className="text-2xl font-light text-white mt-5">
+                    Bienvenido a Portal Spare Parts Trade, por favor ingresa tus datos {''}
+                    <span className="font-bold">en el formulario</span>
                 </p>
 
-                <input
-                    type="submit"
-                    value='Solicitar Cuenta'
-                    className="bg-slate-800 hover:bg-slate-900 w-full p-3  text-white font-black  text-md cursor-pointer rounded"
-                />
-            </form>
+                <form 
+                    className="mt-10 space-y-5 bg-white shadow-lg rounded-lg p-6 lg:p-10 border border-gray-200"
+                    noValidate
+                    onSubmit={handleSubmit(handleRegister)}
+                >
+                    {/* Agrupamos los inputs en un grid para mayor responsividad */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div className="space-y-2">
+                            <label htmlFor="name" className="text-sm font-bold">Nombre</label>
+                            <input 
+                                type="text" 
+                                id="name"
+                                placeholder="Ingresa tu Nombre"
+                                className="w-full p-3 rounded border border-gray-300"
+                                {...register("name", { required: "El Nombre no puede ir vacío" })}
+                            />
+                            {errors.name && <ErrorMessage mini >{errors.name.message}</ErrorMessage>}
+                        </div>
+
+                        <div className="space-y-2">
+                            <label htmlFor="businessName" className="text-sm font-bold">Nombre de la Empresa</label>
+                            <input 
+                                type="text" 
+                                id="businessName"
+                                placeholder="Ingresa el Nombre de la Empresa"
+                                className="w-full p-3 rounded border border-gray-300"
+                                {...register("businessName", { required: "El Nombre de la Empresa no puede ir vacío" })}
+                            />
+                            {errors.businessName && <ErrorMessage mini >{errors.businessName.message}</ErrorMessage>}
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div className="space-y-2">
+                            <label htmlFor="rut" className="text-sm font-bold">RUT de registro</label>
+                            <input 
+                                type="text"
+                                id="rut"
+                                placeholder="Ingresa tu RUT personal (ej. 12.345.678-9)"
+                                className="w-full p-3 rounded border border-gray-300"
+                                maxLength={12}
+                                {...register("rut", {
+                                    required: "El RUT es obligatorio",
+                                    pattern: {
+                                        value: /^\d{1,2}\.?\d{3}\.?\d{3}-[\dkK]$/,
+                                        message: "Formato de RUT inválido. Ejemplo: 12.345.678-9"
+                                    },
+                                    onChange: (e) => {
+                                        const formattedRUT = formatRUT(e.target.value);
+                                        setValue("rut", formattedRUT, { shouldValidate: true });
+                                    }
+                                })}
+                            />
+                            {errors.rut && (
+                                <ErrorMessage mini >{errors.rut.message}</ErrorMessage>
+                            )}
+                        </div>
+
+                        <div className="space-y-2">
+                            <label htmlFor="businessRut" className="text-sm font-bold">RUT de la Empresa</label>
+                            <input 
+                                type="text"
+                                id="businessRut"
+                                placeholder="Ingresa el RUT de la Empresa (ej. 12.345.678-9)"
+                                className="w-full p-3 rounded border border-gray-300"
+                                maxLength={12}
+                                {...register("businessRut", {
+                                    required: "El RUT de la Empresa es obligatorio",
+                                    pattern: {
+                                        value: /^\d{1,2}\.?\d{3}\.?\d{3}-[\dkK]$/,
+                                        message: "Formato de RUT inválido. Ejemplo: 12.345.678-9"
+                                    },
+                                    onChange: (e) => {
+                                        const formattedRUT = formatRUT(e.target.value);
+                                        setValue("businessRut", formattedRUT, { shouldValidate: true });
+                                    }
+                                })}
+                            />
+                            {errors.businessRut && (
+                                <ErrorMessage mini >{errors.businessRut.message}</ErrorMessage>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div className="space-y-2">
+                            <label htmlFor="email" className="text-sm font-bold">Email</label>
+                            <input 
+                                type="email" 
+                                id="email"
+                                placeholder="Ingresa tu Correo Electrónico"
+                                className="w-full p-3 rounded border border-gray-300"
+                                {...register("email", {
+                                    required: "El Correo Electrónico es obligatorio",
+                                    pattern: {
+                                        value: /\S+@\S+\.\S+/,
+                                        message: "El Email no es válido"
+                                    }
+                                })}
+                            />
+                            {errors.email && <ErrorMessage mini >{errors.email.message}</ErrorMessage>}
+                        </div>
+
+                        <div className="space-y-2">
+                            <label htmlFor="phone" className="text-sm font-bold">Número de Teléfono</label>
+                            <input 
+                                type="text" 
+                                id="phone"
+                                placeholder="Tu Número de Teléfono (ej. +56912345678)"
+                                className="w-full p-3 rounded border border-gray-300"
+                                {...register("phone", {
+                                    required: "El Teléfono es obligatorio",
+                                    pattern: {
+                                        value: /^(\+56\s?9\d{8}|9\d{8})$/,
+                                        message: "Formato de teléfono inválido. Ejemplo: +56912345678 o 912345678"
+                                    }
+                                })}
+                            />
+                            {errors.phone && <ErrorMessage mini >{errors.phone.message}</ErrorMessage>}
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label htmlFor="address" className="text-sm font-bold">Dirección</label>
+                        <input 
+                            type="text" 
+                            id="address"
+                            placeholder="Tu Dirección (ej. Calle 2901 Condominio Del Bosque Casa 1)"
+                            className="w-full p-3 rounded border border-gray-300"
+                            {...register("address", { required: "Tu Dirección no puede ir vacía" })}
+                        />
+                        {errors.address && <ErrorMessage mini >{errors.address.message}</ErrorMessage>}
+                    </div>
+
+                    <p className="text-sm text-gray-400">
+                        <span className="text-red-500">*</span> Estos datos serán enviados al equipo administrativo de SPT para la verificación de sus datos.
+                    </p>
+
+                    <input
+                        type="submit"
+                        value='Solicitar Cuenta'
+                        className="bg-slate-800 hover:bg-slate-900 w-full p-3  text-white font-black  text-md cursor-pointer rounded"
+                    />
+                </form>
+            </div>
 
             <nav className="mt-10 flex flex-col space-y-4">
                 <Link

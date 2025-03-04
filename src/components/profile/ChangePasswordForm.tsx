@@ -14,7 +14,7 @@ export default function ChangePasswordForm() {
         confirmPassword: ""
     }
 
-    const { register, handleSubmit, watch, formState: { errors } } = useForm({
+    const { register, handleSubmit, watch, formState: { errors }, reset } = useForm({
         defaultValues: initialValues
     })
 
@@ -25,6 +25,7 @@ export default function ChangePasswordForm() {
         },
         onSuccess: (data) =>{
             toast.success(data.message)
+            reset()
         }
     })
 
