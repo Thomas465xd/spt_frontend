@@ -165,6 +165,9 @@ export default function Footer() {
 								Exequiel Fernández 3461, 7821207 Macul, Región
 								Metropolitana
 							</p>
+                            <p className="text-xs text-gray-400">
+                                Developed by: <a href="https://github.com/Thomas465xd" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition">Iñigo Del Campo</a>
+                            </p>
 						</div>
 					</div>
 				</div>
