@@ -41,7 +41,7 @@ export default function ProductDetailsModal({
         const discount =
         product.variants[0].discounts.length > 0 
             ? product.variants[0].discounts[0] // O usar reduce() si los descuentos se suman
-            : 0; // Si no hay descuentos, asignar 0
+            : 20; // Si no hay descuentos, asignar 0
 
         const formData = { cartDetails: [
                 {
@@ -61,6 +61,8 @@ export default function ProductDetailsModal({
 
     const basePrice = product.variants[0].salePrices.price ?? "N/A"; // Default value if salePrices is undefined
     const finalPrice = product.variants[0].salePrices.finalPrice ?? "N/A"; // Default value if salePrices is undefined
+
+    const discount = product.variants[0].discounts.length > 0 ? product.variants[0].discounts[0] : 20;
 
 	const hasStock = product.variants[0].stockInfo[0].quantityAvailable > 0;
     const totalStock = product.variants[0].stockInfo[0].quantityAvailable;
@@ -150,19 +152,47 @@ export default function ProductDetailsModal({
                                             {product.variants[0].description || "N/A"}
                                         </p>
                                         
-                                        <p className="text-gray-700">
-                                            <strong>Precio Base:</strong>{" "}
-                                            {basePrice ? formatToCLP(parseInt(basePrice)) : "N/A"}
-                                        </p>
-    
-                                        <div>
-                                            <p className="text-orange-500">
-                                                <strong>Precio de Venta:</strong>{" "}
-                                                {finalPrice ? formatToCLP(parseInt(finalPrice)) : "N/A"}
-                                            </p>
+                                        {/* Product Prices in Modal */}
+                                        <div className="mt-4 space-y-2">
+                                            {/* Base Price */}
+                                            {basePrice && (
+                                                <p className="text-gray-700 text-sm font-medium">
+                                                    <strong>Precio Base:</strong> {formatToCLP(parseInt(basePrice))}
+                                                </p>
+                                            )}
 
-                                            <p className="text-gray-400 text-sm space-y-0">IVA incluido</p>
+                                            {/* Price Section */}
+                                            <div className="mt-1">
+                                                {!discount ? (
+                                                    // No Discount: Show Final Price Normally
+                                                    <p className="text-orange-500 text-lg font-bold">
+                                                        <strong>Precio de Venta:</strong> {finalPrice ? formatToCLP(parseInt(finalPrice)) : "N/A"}
+                                                    </p>
+                                                ) : (
+                                                    // Discounted Price
+                                                    <div>
+                                                        {/* Strikethrough Original Price */}
+                                                        <p className="text-gray-500 text-sm line-through">
+                                                            <strong>Antes:</strong> {finalPrice ? formatToCLP(parseInt(finalPrice)) : "N/A"}
+                                                        </p>
+
+                                                        {/* New Discounted Price */}
+                                                        <p className="text-orange-500 text-xl font-extrabold">
+                                                            <strong>Ahora:</strong> {finalPrice ? formatToCLP(parseInt(finalPrice) * 0.80) : "N/A"}
+                                                        </p>
+
+                                                        {/* Discount Percentage */}
+                                                        <p className="text-green-600 text-sm font-semibold">
+                                                            🔥 {discount}% OFF
+                                                        </p>
+                                                    </div>
+                                                )}
+
+                                                {/* IVA Included */}
+                                                <p className="text-gray-400 text-xs italic mt-1">IVA incluido</p>
+                                            </div>
                                         </div>
+
                                         <p className="text-center font-semibold text-slate-600 border-t border-gray-300 pt-2">Disponibilidad:</p>
                                         <div className="flex justify-center gap-3 border-b border-gray-300 pb-4">
                                             <p

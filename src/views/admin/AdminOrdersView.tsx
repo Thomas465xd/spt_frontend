@@ -26,16 +26,17 @@ export default function AdminOrdersView() {
     const { data, isLoading, isError } = useQuery({
         queryKey: ["orders", searchToken, searchEmail, searchName, page],
         queryFn: () => getAllOrders({
-            email: searchEmail,
+            email: searchEmail || "",
             clientName: searchName, 
             token: searchToken, 
             limit: itemsPerPage,
             offset: offset,
         }),
         staleTime: 1000 * 60 * 5,
-        refetchOnWindowFocus: false
-    })
-
+        refetchOnWindowFocus: false,
+        enabled: !!searchToken || !!searchEmail // Runs only when searchToken or searchEmail has a value
+    });
+    
     // Step 1: Fetch orders from API
     const orders = data?.data || [];
     const totalOrders = data?.count || 0;
@@ -70,13 +71,39 @@ export default function AdminOrdersView() {
             <Heading>{searchToken ? (
                 `Orden no Encontrada`
             ) : (
-                `Mis Pedidos`
+                `Administrar Ordenes`
             )}</Heading>
 
             {!searchToken && (
-                <p className="text-gray-700 text-center my-10 ">
-                    Aquí puedes ver los Detalles de las Ordenes y <span className="font-bold text-orange-500">Administrarlas.</span>
-                </p>
+                <>
+                    <p className="text-gray-700 text-center my-10 ">
+                        Aquí puedes ver los Detalles de las Ordenes y <span className="font-bold text-orange-500">Administrarlas.</span>
+                    </p>
+                
+                    <SearchBar
+                        route="admin/orders"
+                        param="searchToken"
+                        inputType="text"
+                        formText="Buscar Pedido por Tóken de la Orden. Ej. #ce5839f2"
+                        searchText="Tóken"
+                    />
+
+                    <SearchBar
+                        route="admin/orders"
+                        param="searchEmail"
+                        inputType="email"
+                        formText="Buscar Pedido por Correo del Cliente. Ej. test@example.com"
+                        searchText="Email"
+                    />
+
+                    <SearchBar
+                        route="admin/orders"
+                        param="searchName"
+                        inputType="text"
+                        formText="Buscar Pedido por Nombre del Cliente. Ej. Jhon Doe"
+                        searchText="Nombre"
+                    />
+                </>
             )}
 
             {searchToken ? (
@@ -84,9 +111,11 @@ export default function AdminOrdersView() {
                     No se encontraron Ordenes con el Tóken: <span className="font-bold text-orange-500">{searchToken}</span>
                 </p>
             ) : (
-                <p className="text-gray-700 text-center my-10">
-                    No se encontraron Ordenes Registradas
-                </p>
+                <div className="flex gap-5 justify-center">
+                    <p className="text-gray-700 text-center my-10 border-b border-gray-300">
+                        Realiza una Busqueda de Orden por Tóken, Email del Cliente o Nombre del Cliente
+                    </p>
+                </div>
             )}
 
             {showPendingOnly && !searchToken && (

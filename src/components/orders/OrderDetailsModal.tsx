@@ -6,6 +6,7 @@ import { CopyIcon, PackageIcon, TruckIcon, UserIcon, MapPinIcon, CreditCardIcon,
 import { AdminCheckoutForm, CheckoutForm } from '@/types/index';
 import { copyToClipboard } from '@/utilities/copy';
 import { formatToCLP } from '@/utilities/price';
+import { capitalizeFirstLetter } from '@/utilities/text';
 
 type OrderDetailsModalProps = {
     order: CheckoutForm | AdminCheckoutForm
@@ -44,13 +45,20 @@ export default function OrderDetailsModal({ order, admin }: OrderDetailsModalPro
         });
     };
 
-    // Calculate order total
-	const subtotal = order.cartDetails.reduce(
-		(sum, item) => sum + item.cd_sub_total,
-		0
-	);
-	const iva = Math.round(subtotal * 0.19); // 19% IVA in Chile
-	const total = subtotal + iva;
+    // Calculate order total with discount support
+    const subtotalWithoutDiscounts = order.cartDetails.reduce(
+        (sum, item) => sum + (item.cd_unit_value * item.quantity), 0);
+    
+    const totalDiscount = order.cartDetails.reduce((sum, item) => 
+        sum + ((item.cd_unit_value * 0.20) * item.quantity), 0);
+
+    const subtotal = subtotalWithoutDiscounts - totalDiscount;
+    
+    const iva = Math.round(subtotalWithoutDiscounts * 0.19); // 19% IVA in Chile
+    const total = subtotal + iva;
+
+    // Check if any items have discounts
+    const hasAnyDiscount = order.cartDetails.some(item => (item.cd_discount || item.discount || 0) > 0);
 
     return (
         <Transition appear show={show} as={Fragment}>
@@ -123,55 +131,137 @@ export default function OrderDetailsModal({ order, admin }: OrderDetailsModalPro
                                         <PackageIcon className="mr-2 h-5 w-5 text-orange-600" />
                                         Productos
                                     </h4>
-                                    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                                        <div className="overflow-x-auto">
-                                            <table className="min-w-full divide-y divide-gray-200">
+                                    <div className="w-full bg-white rounded-lg border border-gray-200 shadow overflow-hidden">
+                                        <div className="max-w-full overflow-x-auto">
+                                            <table className="w-full min-w-full divide-y divide-gray-200">
                                                 <thead className="bg-gray-50">
                                                     <tr>
-                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                                             Producto
                                                         </th>
-                                                        <th scope="col" className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        <th scope="col" className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                                            Precio Unidad
+                                                        </th>
+                                                        {hasAnyDiscount && (
+                                                            <th scope="col" className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                                                Descuento
+                                                            </th>
+                                                        )}
+                                                        <th scope="col" className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                                             Cantidad
                                                         </th>
-                                                        <th scope="col" className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                            Precio Unitario
-                                                        </th>
-                                                        <th scope="col" className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        <th scope="col" className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                                             Subtotal
                                                         </th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="bg-white divide-y divide-gray-200">
-                                                    {order.cartDetails.map((item) => (
-                                                        <tr key={item.id} className="hover:bg-gray-50">
-                                                            <td className="px-4 py-4 whitespace-nowrap">
-                                                                <div className="flex items-center">
-                                                                    <div className="h-12 w-12 flex-shrink-0 mr-4">
-                                                                        <img 
-                                                                            className="h-12 w-12 rounded-md object-cover border border-gray-200" 
-                                                                            src={item.image || item.cd_image} 
-                                                                            alt={item.itemName} 
-                                                                        />
+                                                    {order.cartDetails.map((item) => {
+                                                        const itemDiscount = item.cd_discount || item.discount || 0;
+                                                        const hasDiscount = itemDiscount > 0;
+                                                        const discountPercentage = itemDiscount;
+                                                        
+                                                        return (
+                                                            <tr key={item.id} className="hover:bg-gray-50">
+                                                                <td className="px-4 py-4 whitespace-nowrap">
+                                                                    <div className="flex items-center">
+                                                                        <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-md border border-gray-200 mr-4">
+                                                                            <img 
+                                                                                className="h-full w-full object-contain object-center" 
+                                                                                src={item.image || item.cd_image} 
+                                                                                alt={item.itemName}
+                                                                                onError={(e) => {
+                                                                                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150?text=Sin+Imagen';
+                                                                                }}
+                                                                            />
+                                                                        </div>
+                                                                        <div className="overflow-hidden">
+                                                                            <p className="text-sm font-medium text-gray-900 truncate max-w-[200px]">
+                                                                                {capitalizeFirstLetter(item.itemName)}
+                                                                            </p>
+                                                                            <p 
+                                                                                className="text-xs text-gray-500 hover:underline hover:text-orange-600 transition-colors"
+                                                                                onClick={() => copyToClipboard(item.sku || item.codigo_variante_producto)}
+                                                                            >
+                                                                                SKU: {item.sku || item.codigo_variante_producto}
+                                                                            </p>
+                                                                            {hasDiscount && (
+                                                                                <div className="mt-1">
+                                                                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                                                                                        {discountPercentage}% descuento
+                                                                                    </span>
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
                                                                     </div>
-                                                                    <div>
-                                                                        <p className="text-sm font-medium text-gray-900">{item.itemName}</p>
-                                                                        <p className="text-xs text-gray-500">SKU: {item.sku || item.codigo_variante_producto}</p>
-                                                                    </div>
-                                                                </div>
+                                                                </td>
+                                                                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                                    {hasDiscount ? (
+                                                                        <div>
+                                                                            <span className="line-through text-gray-400 mr-2">
+                                                                                {formatToCLP(item.unitValue || item.cd_unit_value)}
+                                                                            </span>
+                                                                            <span className="font-medium text-gray-900">
+                                                                                {formatToCLP((item.unitValue || item.cd_unit_value) * (1 - discountPercentage / 100))}
+                                                                            </span>
+                                                                        </div>
+                                                                    ) : (
+                                                                        formatToCLP(item.unitValue || item.cd_unit_value)
+                                                                    )}
+                                                                </td>
+                                                                {hasAnyDiscount && (
+                                                                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-green-600">
+                                                                        {hasDiscount ? `-${formatToCLP((item.unitValue || item.cd_unit_value) * discountPercentage / 100)}` : "-"}
+                                                                    </td>
+                                                                )}
+                                                                <td className="px-4 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                                                                    {item.quantity || item.cd_q}
+                                                                </td>
+                                                                <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium text-gray-900">
+                                                                    {formatToCLP(item.total || item.cd_sub_total)}
+                                                                </td>
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody>
+                                                {order.cartDetails.length > 0 && (
+                                                    <tfoot>
+                                                        <tr className="bg-gray-50">
+                                                            <td colSpan={hasAnyDiscount ? 4 : 3} className="px-4 py-4 text-sm text-right font-medium text-gray-900">
+                                                                Subtotal:
                                                             </td>
-                                                            <td className="px-4 py-4 whitespace-nowrap text-center text-sm text-gray-500">
-                                                                {item.quantity || item.cd_q}
-                                                            </td>
-                                                            <td className="px-4 py-4 whitespace-nowrap text-right text-sm text-gray-500">
-                                                                 {formatToCLP(item.unitValue || item.cd_unit_value)}
-                                                            </td>
-                                                            <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium text-gray-900">
-                                                                 {formatToCLP(item.total || item.cd_sub_total)}
+                                                            <td className="px-4 py-4 text-right text-sm font-medium text-gray-900">
+                                                                {formatToCLP(subtotal)}
                                                             </td>
                                                         </tr>
-                                                    ))}
-                                                </tbody>
+                                                        <tr className="bg-gray-50">
+                                                            <td colSpan={hasAnyDiscount ? 4 : 3} className="px-4 py-2 text-sm text-right font-medium text-gray-900">
+                                                                IVA (19%):
+                                                            </td>
+                                                            <td className="px-4 py-2 text-right text-sm font-medium text-gray-900">
+                                                                {formatToCLP(iva)}
+                                                            </td>
+                                                        </tr>
+                                                        {(totalDiscount > 0 || order.cartDetails.length > 0) && (
+                                                            <tr className="bg-gray-50">
+                                                                <td colSpan={hasAnyDiscount ? 4 : 3} className="px-4 py-2 text-sm text-right font-medium text-green-600">
+                                                                    Descuento Total:
+                                                                </td>
+                                                                <td className="px-4 py-2 text-right text-sm font-medium text-green-600">
+                                                                    -{formatToCLP(totalDiscount)}
+                                                                </td>
+                                                            </tr>
+                                                        )}
+                                                        <tr className="bg-gray-100">
+                                                            <td colSpan={hasAnyDiscount ? 4 : 3} className="px-4 py-4 text-right font-semibold text-gray-900 text-base">
+                                                                Total:
+                                                            </td>
+                                                            <td className="px-4 py-4 text-right font-bold text-lg text-gray-900">
+                                                                {formatToCLP(total)}
+                                                            </td>
+                                                        </tr>
+                                                    </tfoot>
+                                                )}
                                             </table>
                                         </div>
                                     </div>
@@ -279,7 +369,7 @@ export default function OrderDetailsModal({ order, admin }: OrderDetailsModalPro
                                 </div>
                                 
                                 {/* Action buttons */}
-                                <div className="mt-8 flex justify-between">
+                                <div className="mt-8 flex justify-between gap-2">
                                     <button 
                                         onClick={handleClose}
                                         className="px-6 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition"

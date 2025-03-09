@@ -11,7 +11,7 @@ import { Link, Navigate, useLocation, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 export default function OrdersView() {
-    const [showPendingOnly, setShowPendingOnly] = useState(false);
+    const [showPendingOnly, setShowPendingOnly] = useState(true);
     const { data: user, isLoading: isLoadingUser, isError: isErrorUser } = useAuth();
     const location = useLocation();
 
@@ -37,12 +37,12 @@ export default function OrdersView() {
 
     // Add pendingOnly to queryKey to refetch when toggle changes
     const { data, isLoading, isError } = useQuery({
-        queryKey: ["orders", searchOrder, user?.email, page, showPendingOnly],
+        queryKey: ["orders", searchOrder, user?.email, page],
         queryFn: () => getOrdersByEmail({
             email: user?.email || "",
             token: searchOrder, 
-            limit: showPendingOnly ? 12 : itemsPerPage,
-            offset: showPendingOnly ? 6 : offset,
+            limit: itemsPerPage,
+            offset: offset,
         }),
         // Add a select to ensure data is always in a safe format
         select: (responseData) => ({

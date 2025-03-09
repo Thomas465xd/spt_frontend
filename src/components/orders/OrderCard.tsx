@@ -82,13 +82,20 @@ export default function OrderCard({ order, admin } : OrderCardProps) {
     const orderStatus = order.active === 1 ? false : true;
     //console.log(orderStatus)
 
-    // Calculate order total
-	const subtotal = order.cartDetails.reduce(
-		(sum, item) => sum + item.cd_sub_total,
-		0
-	);
-	const iva = Math.round(subtotal * 0.19); // 19% IVA in Chile
-	const total = subtotal + iva;
+    // Calculate order total with discount support
+    const subtotalWithoutDiscounts = order.cartDetails.reduce(
+        (sum, item) => sum + (item.cd_unit_value * item.quantity), 0);
+    
+    const totalDiscount = order.cartDetails.reduce((sum, item) => 
+        sum + ((item.cd_unit_value * 0.20) * item.quantity), 0);
+
+    const subtotal = subtotalWithoutDiscounts - totalDiscount;
+    
+    const iva = Math.round(subtotalWithoutDiscounts * 0.19); // 19% IVA in Chile
+    const total = subtotal + iva;
+
+    // Check if any items have discounts
+    const hasAnyDiscount = order.cartDetails.some(item => (item.cd_discount || item.discount || 0) > 0);
 
     return (
         <>
@@ -163,23 +170,23 @@ export default function OrderCard({ order, admin } : OrderCardProps) {
                     <h3 className="text-sm font-medium text-gray-500 mb-2">Resúmen de la Orden</h3>
                     <div className="space-y-1 text-sm">
                         <div className="flex justify-between">
-                            <span className="text-gray-600">Items ({order.cartDetails?.length || 0})</span>
+                            <span className="text-gray-600">Envío</span>
+                            <span className={`${order.shippingCost === 0 ? "text-green-500 font-bold" : "text-orange-500 font-bold"}`}>
+                                {order.shippingCost === 0 ? "Gratis" : formatToCLP(order.shippingCost)}
+                            </span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="text-gray-600">Items ({order.cartDetails?.length || 0}) (con descuento)</span>
                             <span>{formatToCLP(subtotal)}</span>
                         </div>
                         <div className="flex justify-between">
                             <span className="text-gray-600">IVA</span>
                             <span>{formatToCLP(iva)}</span>
                         </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-600">Envío</span>
-                            <span className={`${order.shippingCost === 0 ? "text-green-500 font-bold" : "text-orange-500 font-bold"}`}>
-                                {order.shippingCost === 0 ? "Gratis" : formatToCLP(order.shippingCost)}
-                            </span>
-                        </div>
-                        {(order.discountCost ?? 0) > 0 && (
+                        {(hasAnyDiscount) && (
                             <div className="flex justify-between">
                                 <span className="text-gray-600">Descuento</span>
-                                <span className="text-green-600">-{formatToCLP(order.discountCost ?? 0)}</span>
+                                <span className="text-green-600 font-semibold bg-green-100 rounded">-{formatToCLP(totalDiscount)}</span>
                             </div>
                         )}
                         <div className="border-t border-gray-200 pt-2 mt-2">

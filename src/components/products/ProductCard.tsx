@@ -39,13 +39,13 @@ export default function ProductCard({ product }: ProductCardProps) {
 		const discount =
 			product.variants[0].discounts.length > 0
 				? product.variants[0].discounts[0] // O usar reduce() si los descuentos se suman
-				: 0; // Si no hay descuentos, asignar 0
+				: 20; // Si no hay descuentos, asignar 0
 
 		const formData = {
 			cartDetails: [
 				{
 					quantity: 1,
-					unitValue: parseInt(basePrice),
+					unitValue: parseInt(finalPrice),
 					image: product.urlImg,
 					idVarianteProducto: product.variants[0].id,
 					itemName: product.name,
@@ -62,6 +62,9 @@ export default function ProductCard({ product }: ProductCardProps) {
 	const finalPrice = product.variants[0].salePrices.finalPrice ?? "N/A"; // Default value if salePrices is undefined
 
 	const hasStock = product.variants[0].stockInfo?.[0]?.quantityAvailable > 0;
+
+    //! Hardcoded discount value | it will be gone once discounts are configured
+    const discount = product.variants[0].discounts.length > 0 ? product.variants[0].discounts[0] : 20;
 
 	return (
 		<>
@@ -105,18 +108,41 @@ export default function ProductCard({ product }: ProductCardProps) {
 							</span>
 						</p>
 
-						{/* Product Prices */}
-						<p className="text-gray-400 text-sm font-semibold mt-2">
-							{basePrice
-								? formatToCLP(parseInt(basePrice))
-								: "N/A"}
-						</p>
+                        {/* Product Prices */}
+                        <div className="mt-2">
+                            {/* Base Price (Subtle Gray) */}
+                            {basePrice && (
+                                <p className="text-gray-400 text-sm font-medium">
+                                    Precio Base: {formatToCLP(parseInt(basePrice))}
+                                </p>
+                            )}
 
-						<p className="text-orange-600 text-lg font-bold mt-2">
-							{finalPrice
-								? formatToCLP(parseInt(finalPrice))
-								: "N/A"}
-						</p>
+                            {/* Price Display */}
+                            {!discount ? (
+                                // Final Price (No Discount)
+                                <p className="text-orange-600 text-xl font-bold mt-1">
+                                    {finalPrice ? formatToCLP(parseInt(finalPrice)) : "N/A"}
+                                </p>
+                            ) : (
+                                // Discounted Price
+                                <div className="mt-1">
+                                    {/* Original Price (Strikethrough) */}
+                                    <p className="text-gray-500 text-sm font-medium line-through">
+                                        {finalPrice ? formatToCLP(parseInt(finalPrice)) : "N/A"}
+                                    </p>
+
+                                    {/* Discounted Price (Bold & Highlighted) */}
+                                    <p className="text-orange-600 text-2xl font-bold">
+                                        {finalPrice ? formatToCLP(parseInt(finalPrice) * 0.80) : "N/A"}
+                                    </p>
+
+                                    {/* Discount Percentage */}
+                                    <p className="text-green-600 text-sm font-semibold">
+                                        🔥 {discount}% OFF
+                                    </p>
+                                </div>
+                            )}
+                        </div>
 
 						{/* Product Category */}
 						<p className="text-slate-800 text-sm mt-2 truncate">

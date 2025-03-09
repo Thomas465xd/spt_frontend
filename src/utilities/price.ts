@@ -1,3 +1,3 @@
 export function formatToCLP(value: number): string {
-    return `$ ${value.toLocaleString("es-CL")}`;
+    return `$ ${Math.round(value).toLocaleString("es-CL")}`;
 }

@@ -62,6 +62,7 @@ export default function CheckoutForm({ cartDetails, user }: CheckoutFormProps) {
 		formState: { errors },
 		watch,
 		setValue,
+        reset,
 	} = useForm({
 		defaultValues: initialValue,
 	});
@@ -141,7 +142,6 @@ export default function CheckoutForm({ cartDetails, user }: CheckoutFormProps) {
 				// Convert the submitted value to a boolean
 				//@ts-expect-error //!BUG with Checkboxes
 				const isDispatch = formData.isDispatch === "true";
-				console.log(isDispatch, typeof isDispatch); // ✅ Boolean
 
 				// Exclude isDispatch before sending data
 				const { isDispatch: _, saveUserData, ...apiData } = formData;
@@ -164,6 +164,7 @@ export default function CheckoutForm({ cartDetails, user }: CheckoutFormProps) {
 				if (isDispatch) {
 					createDispatch(finalData, {
 						onSuccess: async (orderResponse) => {
+                            reset()
 							if (orderResponse?.data) {
 								console.log(orderResponse.data);
 								await sendOrderEmails({
@@ -211,6 +212,7 @@ export default function CheckoutForm({ cartDetails, user }: CheckoutFormProps) {
 				} else {
 					createWithdraw(finalData, {
 						onSuccess: async (orderResponse) => {
+                            reset()
 							if (orderResponse?.data) {
 								await sendOrderEmails({
 									token: orderResponse.data.token,
@@ -259,13 +261,17 @@ export default function CheckoutForm({ cartDetails, user }: CheckoutFormProps) {
 		});
 	};
 
-	// Calculate order total
-	const subtotal = cartDetails.reduce(
-		(sum, item) => sum + item.cd_sub_total,
-		0
-	);
-	const iva = Math.round(subtotal * 0.19); // 19% IVA in Chile
-	const total = subtotal + iva;
+    // Calculate order total with discount support
+    const subtotalWithoutDiscounts = cartDetails.reduce(
+        (sum, item) => sum + (item.cd_unit_value * item.quantity), 0);
+    
+    const totalDiscount = cartDetails.reduce((sum, item) => 
+        sum + ((item.cd_unit_value * 0.20) * item.quantity), 0);
+
+    const subtotal = subtotalWithoutDiscounts - totalDiscount;
+    
+    const iva = Math.round(subtotalWithoutDiscounts * 0.19); // 19% IVA in Chile
+    const total = subtotal + iva;
 
 	return (
 		<div className="mx-auto max-w-2xl  px-4 lg:px-0">
@@ -610,44 +616,74 @@ export default function CheckoutForm({ cartDetails, user }: CheckoutFormProps) {
 					)}
 				</div>
 
-				<div className="space-y-2">
-					<h3 className="text-sm font-bold text-orange-500 underline">
-						Resumen:{" "}
-					</h3>
-					<div className="space-y-2 border border-gray-300 p-2 rounded">
-						{isDispatch && (
-							<div className="flex justify-between">
-								<span className="text-sm font-bold">Envio</span>
-								<span className="text-sm font-bold text-green-500">
-									Gratis
-								</span>
-							</div>
-						)}
+                <div className="space-y-2">
+                    <h3 className="text-sm font-bold text-orange-500 underline">
+                        Resumen:{" "}
+                    </h3>
+                    <div className="space-y-3 border border-gray-300 p-3 rounded shadow-sm bg-gray-50">
+                        {isDispatch && (
+                            <div className="flex justify-between items-center">
+                                <span className="text-sm font-medium">Envío</span>
+                                <span className="text-sm font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded">
+                                    Gratis
+                                </span>
+                            </div>
+                        )}
 
-						<div className="flex justify-between">
-							<span className="text-sm font-bold">
-								Items ({cartDetails?.length || 0})
-							</span>
-							<span className="font-bold text-sm">
-								{formatToCLP(subtotal)}
-							</span>
-						</div>
+                        <div className="flex justify-between items-center">
+                            <span className="text-sm font-medium">
+                                Items ({cartDetails?.length || 0})
+                            </span>
+                            <span className="font-medium text-sm">
+                                {formatToCLP(subtotalWithoutDiscounts)}
+                            </span>
+                        </div>
 
-						<div className="flex justify-between">
-							<span className="text-sm font-bold">IVA</span>
-							<span className="text-sm font-bold">
-								{formatToCLP(iva)}
-							</span>
-						</div>
+                        {totalDiscount > 0 && (
+                            <div className="flex justify-between items-center">
+                                <span className="text-sm font-medium text-green-600 flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Descuentos
+                                </span>
+                                <span className="text-sm font-medium text-green-600">
+                                    -{formatToCLP(totalDiscount)}
+                                </span>
+                            </div>
+                        )}
 
-						<div className="flex justify-between border-t border-gray-300 pt-2">
-							<span className="font-bold">Total</span>
-							<span className="font-bold text-orange-500">
-								{formatToCLP(total)}
-							</span>
-						</div>
-					</div>
-				</div>
+                        <div className="flex justify-between items-center">
+                            <span className="text-sm font-medium">IVA (19%)</span>
+                            <span className="text-sm font-medium">
+                                {formatToCLP(iva)}
+                            </span>
+                        </div>
+
+                        {totalDiscount > 0 && (
+                            <div className="flex justify-between items-center pt-2 border-t border-dashed border-gray-300">
+                                <span className="text-sm font-medium">Subtotal</span>
+                                <span className="text-sm font-medium">
+                                    {formatToCLP(subtotal)}
+                                </span>
+                            </div>
+                        )}
+
+                        <div className="flex justify-between items-center border-t border-gray-300 pt-2">
+                            <span className="font-bold">Total a pagar</span>
+                            <div className="text-right">
+                                {totalDiscount > 0 && (
+                                    <div className="text-xs text-green-600 mb-1">
+                                        Ahorro: {formatToCLP(totalDiscount)}
+                                    </div>
+                                )}
+                                <span className="font-bold text-orange-500">
+                                    {formatToCLP(total)}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
 				<input type="hidden" {...register("cartDetails")} />
 
