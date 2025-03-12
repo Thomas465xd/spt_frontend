@@ -1,12 +1,9 @@
 {
-	"rewrites": [
+	"routes": [
 		{
-			"source": "/api/(.*)",
-			"destination": "/api/$1"
-		},
-		{
-			"source": "/auth/set-password/:token",
-			"destination": "/auth/set-password/:token"
+			"src": "/(.*)",
+			"dest": "/",
+			"status": 200
 		}
 	]
 }
