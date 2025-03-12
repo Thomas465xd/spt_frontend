@@ -108,14 +108,17 @@ export default function ProductDetailsModal({
                             <div className="flex flex-col md:flex-row h-full overflow-y-auto">
                                 {/* Left Column: Image + Name & Description */}
                                 <div className="flex flex-col items-center w-full md:w-1/2 p-4">
-                                    {/* Product Image */}
-                                    <div className="w-full bg-gray-100 rounded-lg overflow-hidden">
-                                        <img
-                                            src={product.urlImg || "/placeholder.jpg"}
-                                            alt={product.name || "Producto"}
-                                            className="w-full h-80 object-cover"
-                                        />
-                                    </div>
+                                <div className="relative w-full bg-gray-100 rounded-lg overflow-hidden">
+                                    <img
+                                        src={product.urlImg || "/placeholder.jpg"}
+                                        alt={product.name || "Producto"}
+                                        className="w-full h-80 object-cover pointer-events-none"  // Prevents interactions
+                                        onContextMenu={(e) => e.preventDefault()}  // Disables right-click
+                                        onDragStart={(e) => e.preventDefault()}    // Disables drag-and-drop
+                                    />
+                                    {/* Transparent Overlay */}
+                                    <div className="absolute inset-0 bg-transparent"></div>
+                                </div>
 
                                     {/* Name & Description */}
                                     <div className="mt-4 text-center md:text-left">

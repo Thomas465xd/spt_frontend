@@ -23,8 +23,9 @@ export default function SetPasswordView() {
     }, [token]);
 
     if (isValidToken === null) {
-        <Loader />
+        return <Loader />;
     }
+    
 
     if(!isValidToken) {
         return (
