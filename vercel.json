@@ -1,15 +1,8 @@
 {
 	"rewrites": [
 		{
-			"source": "/api/:path*",
-			"destination": "https://spt-backend.onrender.com/api/:path*"
-		}
-	],
-	"routes": [
-		{
-			"src": "/[^.]+",
-			"dest": "/",
-			"status": 200
+			"source": "/auth/validate-token/:token",
+			"destination": "https://spt-backend.onrender.com/api/auth/validate-token/:token"
 		}
 	]
 }
