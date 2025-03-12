@@ -1,8 +1,5 @@
 {
-	"rewrites": [
-		{
-			"source": "/auth/validate-token/:token",
-			"destination": "https://spt-backend.onrender.com/api/auth/validate-token/:token"
-		}
-	]
+	"src": "/[^.]+",
+	"dest": "/",
+	"status": 200
 }
