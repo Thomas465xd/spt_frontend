@@ -1,33 +1,16 @@
 {
 	"routes": [
 		{
-			"src": "/auth/set-password/(.*)",
-			"dest": "/",
-			"status": 200
+			"src": "/api/(.*)",
+			"dest": "/api/$1"
 		},
 		{
-			"src": "/auth/reset-password/(.*)",
-			"dest": "/",
-			"status": 200
+			"handle": "filesystem"
 		},
 		{
-			"src": "/orders/details/(.*)",
-			"dest": "/",
+			"src": "/(.*)",
+			"dest": "/index.html",
 			"status": 200
-		},
-		{
-			"src": "/admin/confirm(.*)",
-			"dest": "/",
-			"status": 200
-		},
-		{
-			"src": "/auth/(.*)",
-			"dest": "/",
-			"status": 200
-		},
-		{
-			"src": "/((?!\\.).*)",
-			"dest": "/$1"
 		}
 	]
 }
