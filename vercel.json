@@ -1,9 +1,33 @@
 {
 	"routes": [
 		{
-			"src": "/[^|]+",
+			"src": "/auth/set-password/(.*)",
 			"dest": "/",
 			"status": 200
+		},
+		{
+			"src": "/auth/reset-password/(.*)",
+			"dest": "/",
+			"status": 200
+		},
+		{
+			"src": "/orders/details/(.*)",
+			"dest": "/",
+			"status": 200
+		},
+		{
+			"src": "/admin/confirm(.*)",
+			"dest": "/",
+			"status": 200
+		},
+		{
+			"src": "/auth/(.*)",
+			"dest": "/",
+			"status": 200
+		},
+		{
+			"src": "/((?!\\.).*)",
+			"dest": "/$1"
 		}
 	]
 }
