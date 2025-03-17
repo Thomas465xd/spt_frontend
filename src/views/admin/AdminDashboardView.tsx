@@ -52,7 +52,7 @@ export default function AdminDashboardView() {
 								</Link>
 								<Link
                                     className="bg-orange-500 text-white p-2 rounded flex items-center justify-center gap-2 hover:bg-orange-600 transition-colors"
-                                    to="/admin/dashboard/users"
+                                    to="/admin/users"
                                 >
 									<Users2 size={20} />
                                     Ver Usuarios
