@@ -152,7 +152,7 @@ export default function ProductDetailsModal({
 
                                         <p className="text-gray-700">
                                             <strong>Marca:</strong>{" "}
-                                            {product.variants[0].description || "N/A"}
+                                            {capitalizeFirstLetter(product.variants[0].description || "N/A")}
                                         </p>
                                         
                                         {/* Product Prices in Modal */}

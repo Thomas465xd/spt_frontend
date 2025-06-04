@@ -27,8 +27,6 @@ export default function ProductsView() {
 		navigate(`${location.pathname}?${queryParams.toString()}`); // Navigate with the updated URL
 	};
 
-    if(page < 1) return <Navigate to={`/products?page=1`} replace />
-
     const itemsPerPage = 20;
 
     // Calculamos el offset
@@ -39,7 +37,9 @@ export default function ProductsView() {
         queryFn: () => getAllProductDescription({ limit: itemsPerPage, offset, name: searchQuery, code: searchCode }), 
         staleTime: 1000 * 60 * 5,
         refetchOnWindowFocus: false,
-    })
+    });
+
+    if(page < 1) return <Navigate to={`/products?page=1`} replace />
 
     const products = productsData?.data || [];
     const totalProducts = productsData?.count || 0;
@@ -110,6 +110,7 @@ export default function ProductsView() {
                 route="products"
                 page={page}
                 totalPages={totalPages}
+                searchQuery={searchQuery}
             />
 
             <button 
