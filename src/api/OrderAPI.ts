@@ -19,7 +19,7 @@ export async function getOrdersByEmail({ email, token, limit, offset } : {email:
 
         const response = checkoutResponseSchema.safeParse(data);
         if(response.success) {
-            console.log("✅ Respuesta exitosa de la API:", response.data);
+            //console.log("✅ Respuesta exitosa de la API:", response.data);
             return response.data;
         }
 
@@ -58,7 +58,7 @@ export async function getAllOrders({ email, clientName, token, limit, offset } :
         const response = adminCheckoutResponseSchema.safeParse(data);
         //console.log(response)
         if(response.success) {
-            console.log("✅ Respuesta exitosa de la API:", response.data);
+            //console.log("✅ Respuesta exitosa de la API:", response.data);
             return response.data;
         }
 
@@ -137,7 +137,7 @@ export async function sendOrderEmails(emailData: CheckoutEmails) {
 
         const response = emailSchema.safeParse(data);
         if (response.success) {
-            console.log("✅ Respuesta exitosa de la API:", response.data);
+            //console.log("✅ Respuesta exitosa de la API:", response.data);
             return response.data;
         }
 

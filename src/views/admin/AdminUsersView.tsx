@@ -14,16 +14,16 @@ export default function AdminUsersView() {
     const searchRUT = searchParams.get("searchRUT") || ""; // Obtener el término de búsqueda
     const searchEmail = searchParams.get("searchEmail") || ""; 
 
-    if(page < 1) return <Navigate to={`/admin/users?page=1`} replace />
-
-    const itemsPerPage = 5; 
-
     const { data, isLoading, isError, error } = useQuery({
         queryKey: ['confirmedUsers', page, searchRUT, searchEmail], // Ensure 'page' is passed as part of the queryKey
         queryFn: () => getConfirmedUsers({ page, perPage: itemsPerPage, searchRUT, searchEmail }), // Send page and perPage to the API
         staleTime: 1000 * 60 * 5,
         refetchOnWindowFocus: false,
     });
+
+    if(page < 1) return <Navigate to={`/admin/users?page=1`} replace />
+
+    const itemsPerPage = 5; 
 
     const users = data?.users || [];
     const totalUsers = data?.totalUsers || 0; // Assuming totalUsers is returned from the API

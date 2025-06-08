@@ -19,11 +19,7 @@ export default function OrdersView() {
     const searchOrder = searchParams.get("searchOrder") || "";
     const page = parseInt(searchParams.get("page") || "1", 10);
 
-    if(page < 1) return <Navigate to={`/orders?page=1`} replace />
-
-    const itemsPerPage = 4; 
-    const offset = (page - 1) * itemsPerPage;
-
+    
     useEffect(() => {
         if (location.state?.message) {
             const { message, type } = location.state;
@@ -34,7 +30,7 @@ export default function OrdersView() {
             }
         }    
     }, [location]);
-
+    
     // Add pendingOnly to queryKey to refetch when toggle changes
     const { data, isLoading, isError } = useQuery({
         queryKey: ["orders", searchOrder, user?.email, page],
@@ -58,6 +54,20 @@ export default function OrdersView() {
         refetchOnWindowFocus: false
     });
 
+    useEffect(() => {
+        if (page !== 1) {
+            const newParams = new URLSearchParams(searchParams);
+            newParams.set("page", "1");
+            setSearchParams(newParams);
+        }
+    }, [showPendingOnly]);
+    
+    if(page < 1) return <Navigate to={`/orders?page=1`} replace />
+
+    const itemsPerPage = 4; 
+    const offset = (page - 1) * itemsPerPage;
+    
+
     const orders = data?.data;
     const totalOrders = data?.count || 0;
 
@@ -74,13 +84,6 @@ export default function OrdersView() {
     const totalPages = Math.ceil(filteredCount / itemsPerPage);
 
     // Reset to page 1 when toggling filter
-    useEffect(() => {
-        if (page !== 1) {
-            const newParams = new URLSearchParams(searchParams);
-            newParams.set("page", "1");
-            setSearchParams(newParams);
-        }
-    }, [showPendingOnly]);
 
     if(isLoading || isLoadingUser) return <Loader />
 

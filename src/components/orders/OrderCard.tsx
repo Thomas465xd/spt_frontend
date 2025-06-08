@@ -12,7 +12,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 type OrderCardProps = {
     order: CheckoutForm | AdminCheckoutForm
-    admin: Boolean
+    admin: boolean
 }
 
 export default function OrderCard({ order, admin } : OrderCardProps) {
@@ -104,11 +104,15 @@ export default function OrderCard({ order, admin } : OrderCardProps) {
                 <div className="bg-gradient-to-r from-orange-400 to-red-600 p-4 text-white">
                     <div className="flex justify-between items-center">
                         <h2 
-                            className="text-xl font-bold truncate max-w-[200px]"
+                            className="text-xl font-bold truncate max-w-[200px] overflow-hidden whitespace-nowrap"
                             onClick={() => copyToClipboard(order.token)}
                         >
-                            Tóken <span className="hover:cursor-pointer hover:underline hover:text-yellow-500 transition-colors">#{order.documentToken}</span>
+                            Tóken{" "}
+                            <span className="hover:cursor-pointer hover:underline hover:text-yellow-500 transition-colors">
+                                #{order.documentToken}
+                            </span>
                         </h2>
+
                         <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                             order.active ? "bg-yellow-500" : "bg-green-500"
                         }`}>
@@ -169,30 +173,45 @@ export default function OrderCard({ order, admin } : OrderCardProps) {
                 <div className="p-4 border-b border-gray-200">
                     <h3 className="text-sm font-medium text-gray-500 mb-2">Resúmen de la Orden</h3>
                     <div className="space-y-1 text-sm">
+                        {/* Subtotal before discounts */}
+                        <div className="flex justify-between">
+                            <span className="text-gray-600">Subtotal ({order.cartDetails.length} items)</span>
+                            <span>{formatToCLP(subtotalWithoutDiscounts)}</span>
+                        </div>
+
+                        {/* Discounts */}
+                        {hasAnyDiscount && (
+                            <div className="flex justify-between">
+                            <span className="text-gray-600">Descuentos aplicados</span>
+                            <span className="text-green-600 font-semibold bg-green-100 rounded px-2">- {formatToCLP(totalDiscount)}</span>
+                            </div>
+                        )}
+
+                        {/* Subtotal after discounts */}
+                        <div className="flex justify-between">
+                            <span className="text-gray-600">Subtotal (con descuento)</span>
+                            <span>{formatToCLP(subtotal)}</span>
+                        </div>
+
+                        {/* Shipping */}
                         <div className="flex justify-between">
                             <span className="text-gray-600">Envío</span>
                             <span className={`${order.shippingCost === 0 ? "text-green-500 font-bold" : "text-orange-500 font-bold"}`}>
-                                {order.shippingCost === 0 ? "Gratis" : formatToCLP(order.shippingCost)}
+                            {order.shippingCost === 0 ? "Gratis" : formatToCLP(order.shippingCost)}
                             </span>
                         </div>
+
+                        {/* IVA */}
                         <div className="flex justify-between">
-                            <span className="text-gray-600">Items ({order.cartDetails?.length || 0}) (con descuento)</span>
-                            <span>{formatToCLP(subtotal)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-600">IVA</span>
+                            <span className="text-gray-600">IVA (19%)</span>
                             <span>{formatToCLP(iva)}</span>
                         </div>
-                        {(hasAnyDiscount) && (
-                            <div className="flex justify-between">
-                                <span className="text-gray-600">Descuento</span>
-                                <span className="text-green-600 font-semibold bg-green-100 rounded">-{formatToCLP(totalDiscount)}</span>
-                            </div>
-                        )}
+
+                        {/* Total */}
                         <div className="border-t border-gray-200 pt-2 mt-2">
                             <div className="flex justify-between font-bold">
-                                <span>Total</span>
-                                <span className="text-orange-700">{formatToCLP(total)}</span>
+                            <span>Total a Pagar</span>
+                            <span className="text-orange-700">{formatToCLP(total)}</span>
                             </div>
                         </div>
                     </div>

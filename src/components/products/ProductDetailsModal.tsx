@@ -6,6 +6,7 @@ import { ProductWebType } from "@/types/index";
 import { formatToCLP } from "@/utilities/price";
 import { capitalizeFirstLetter } from "@/utilities/text";
 import { useCart } from "@/hooks/useCart";
+import { copyToClipboard } from "@/utilities/copy";
 
 type ProductDetailsModalProps = {
 	product: ProductWebType;
@@ -150,18 +151,32 @@ export default function ProductDetailsModal({
                                             </span>
                                         </p>
 
-                                        <p className="text-gray-700">
-                                            <strong>Marca:</strong>{" "}
-                                            {capitalizeFirstLetter(product.variants[0].description || "N/A")}
-                                        </p>
+                                        <div className="">
+                                            <p className="text-gray-700">
+                                                <strong>Marca:</strong>{" "}
+                                                {capitalizeFirstLetter(product.variants[0].description || "N/A")}
+                                            </p>
+
+                                            <p 
+                                                className="text-gray-700"
+                                                onClick={() => copyToClipboard(product.variant?.code || "")}
+                                            >
+                                                <strong>SKU:</strong>{" "}
+                                                <span className="hover:underline hover:text-orange-600 transition-colors duratoin-100">{product.variant?.code}</span>
+                                            </p>
+                                        </div>
                                         
                                         {/* Product Prices in Modal */}
                                         <div className="mt-4 space-y-2">
                                             {/* Base Price */}
                                             {basePrice && (
-                                                <p className="text-gray-700 text-sm font-medium">
-                                                    <strong>Precio Base:</strong> {formatToCLP(parseInt(basePrice))}
-                                                </p>
+                                                <div>
+                                                    <p className="text-gray-700 text-sm font-medium">
+                                                        <strong>Precio Neto:</strong> {formatToCLP(parseInt(basePrice))}
+                                                    </p>
+
+                                                    <p className="text-gray-400 text-xs italic">IVA no incluido</p>
+                                                </div>
                                             )}
 
                                             {/* Price Section */}
@@ -174,10 +189,11 @@ export default function ProductDetailsModal({
                                                 ) : (
                                                     // Discounted Price
                                                     <div>
-                                                        {/* Strikethrough Original Price */}
+                                                        {/* Strikethrough Original Price
                                                         <p className="text-gray-500 text-sm line-through">
                                                             <strong>Antes:</strong> {finalPrice ? formatToCLP(parseInt(finalPrice)) : "N/A"}
                                                         </p>
+                                                        */}
 
                                                         {/* New Discounted Price */}
                                                         <p className="text-orange-500 text-xl font-extrabold">
@@ -191,8 +207,9 @@ export default function ProductDetailsModal({
                                                     </div>
                                                 )}
 
-                                                {/* IVA Included */}
+                                                {/* IVA Included
                                                 <p className="text-gray-400 text-xs italic mt-1">IVA incluido</p>
+                                                */}
                                             </div>
                                         </div>
 
@@ -222,7 +239,7 @@ export default function ProductDetailsModal({
                                     </div>
 
                                     {/* Quantity Selector */}
-                                    <div className="flex items-center justify-center my-0 sm:my-10">
+                                    <div className="flex items-center justify-center my-5 sm:my-10">
                                         <button 
                                             onClick={handleDecrease} 
                                             className="px-3 py-1 bg-gray-300 rounded-l-lg hover:bg-gray-400"

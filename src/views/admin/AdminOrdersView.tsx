@@ -16,13 +16,6 @@ export default function AdminOrdersView() {
     const searchName = searchParams.get("searchName") || "";
     const page = parseInt(searchParams.get("page") || "1", 10); // Default to page 1 if not present
 
-    if(page < 1) return <Navigate to={`/orders?page=1`} replace />
-
-    const itemsPerPage = 4; 
-
-    // Calculamos el offset
-    const offset = (page - 1) * itemsPerPage;
-
     const { data, isLoading, isError } = useQuery({
         queryKey: ["orders", searchToken, searchEmail, searchName, page],
         queryFn: () => getAllOrders({
@@ -36,6 +29,23 @@ export default function AdminOrdersView() {
         refetchOnWindowFocus: false,
         enabled: !!searchToken || !!searchEmail // Runs only when searchToken or searchEmail has a value
     });
+
+    // Reset to page 1 when toggling filter
+    useEffect(() => {
+        if (page !== 1) {
+            const newParams = new URLSearchParams(searchParams);
+            newParams.set("page", "1");
+            setSearchParams(newParams);
+        }
+    }, [showPendingOnly]);
+    
+    if(page < 1) return <Navigate to={`/orders?page=1`} replace />
+
+    const itemsPerPage = 4; 
+
+    // Calculamos el offset
+    const offset = (page - 1) * itemsPerPage;
+
     
     // Step 1: Fetch orders from API
     const orders = data?.data || [];
@@ -53,14 +63,6 @@ export default function AdminOrdersView() {
     // Step 5: Paginate AFTER filtering
     const paginatedOrders = filteredOrders.slice(0, itemsPerPage);
 
-    // Reset to page 1 when toggling filter
-    useEffect(() => {
-        if (page !== 1) {
-            const newParams = new URLSearchParams(searchParams);
-            newParams.set("page", "1");
-            setSearchParams(newParams);
-        }
-    }, [showPendingOnly]);
 
     if(isLoading) return <Loader />
 

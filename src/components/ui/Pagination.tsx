@@ -61,8 +61,6 @@ export default function Pagination({ route, page, totalPages, maxPageButtons = 5
     
     const visiblePages = getVisiblePages();
 
-    console.log(searchQuery)
-
     return (
         <nav className="flex flex-wrap justify-center items-center gap-2 py-10">
             {/* Previous page button */}

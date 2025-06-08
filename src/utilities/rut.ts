@@ -1,6 +1,6 @@
 export function formatRUT(value: string): string {
     // Remove all non-numeric characters except 'K' or 'k'
-    let cleaned = value.replace(/[^0-9kK]/g, '').toUpperCase();
+    const cleaned = value.replace(/[^0-9kK]/g, '').toUpperCase();
 
     if (cleaned.length <= 1) return cleaned;
 

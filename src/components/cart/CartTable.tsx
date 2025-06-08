@@ -197,7 +197,7 @@ export default function CartTable({cartDetails}: CartTableProps) {
                             <>
                                 <tr className="bg-gray-50">
                                     <td colSpan={hasAnyDiscount ? 4 : 3} className="py-4 pl-4 pr-3 text-left sm:text-right font-medium text-gray-900 sm:pl-6">
-                                        Subtotal:
+                                        Subtotal (con descuentos):
                                     </td>
                                     <td className="whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900">
                                         {formatToCLP(subtotal)}
@@ -213,26 +213,26 @@ export default function CartTable({cartDetails}: CartTableProps) {
                                     </td>
                                     <td></td>
                                 </tr>
-                                {totalDiscount > 0 && (
+                                <tr className="bg-gray-100">
+                                    <td colSpan={hasAnyDiscount ? 4 : 3} className="py-4 pl-4 pr-3 text-left sm:text-right font-semibold text-gray-900 sm:pl-6 text-base">
+                                        Total a pagar:
+                                    </td>
+                                    <td className="whitespace-nowrap px-3 py-4 font-bold text-lg text-orange-500">
+                                        {formatToCLP(total)}
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                {/*totalDiscount > 0 && (
                                     <tr className="bg-gray-50">
                                         <td colSpan={hasAnyDiscount ? 4 : 3} className="py-2 pl-4 pr-3 text-left sm:text-right font-medium text-green-600 sm:pl-6">
-                                            Descuento Total:
+                                            Descuentos:
                                         </td>
                                         <td className="whitespace-nowrap px-3 py-2 text-sm font-medium text-green-600">
                                             -{formatToCLP(totalDiscount )}
                                         </td>
                                         <td></td>
                                     </tr>
-                                )}
-                                <tr className="bg-gray-100">
-                                    <td colSpan={hasAnyDiscount ? 4 : 3} className="py-4 pl-4 pr-3 text-left sm:text-right font-semibold text-gray-900 sm:pl-6 text-base">
-                                        Total a pagar:
-                                    </td>
-                                    <td className="whitespace-nowrap px-3 py-4 font-bold text-lg text-gray-900">
-                                        {formatToCLP(total)}
-                                    </td>
-                                    <td></td>
-                                </tr>
+                                )*/}
                             </>
                         )}
                     </tbody>

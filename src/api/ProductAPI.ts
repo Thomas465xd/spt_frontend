@@ -26,7 +26,7 @@ export async function getAllProductDescription({limit, offset, name, code} : {li
         
         const response = productWebDescriptionResponseSchema.safeParse(data);
         if(response.success) {
-            console.log("✅ Respuesta exitosa de la API:", response.data);
+            //console.log("✅ Respuesta exitosa de la API:", response.data);
             return response.data;
         }
 
@@ -58,7 +58,7 @@ export async function getCartDetailById(cartId : number) {
 
         const response = detailCartSchema.safeParse(data);
         if(response.success) {
-            //console.log("✅ Respuesta exitosa de la API:", response.data);
+            ////console.log("✅ Respuesta exitosa de la API:", response.data);
             return response.data;
         }
 

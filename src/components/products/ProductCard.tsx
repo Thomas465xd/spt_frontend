@@ -113,7 +113,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                             {/* Base Price (Subtle Gray) */}
                             {basePrice && (
                                 <p className="text-gray-400 text-sm font-medium">
-                                    Precio Base: {formatToCLP(parseInt(basePrice))}
+                                    Precio Neto: {formatToCLP(parseInt(basePrice))}
                                 </p>
                             )}
 
@@ -121,19 +121,20 @@ export default function ProductCard({ product }: ProductCardProps) {
                             {!discount ? (
                                 // Final Price (No Discount)
                                 <p className="text-orange-600 text-xl font-bold mt-1">
-                                    {finalPrice ? formatToCLP(parseInt(finalPrice)) : "N/A"}
+                                    {basePrice ? formatToCLP(parseInt(basePrice)) : "N/A"}
                                 </p>
                             ) : (
                                 // Discounted Price
                                 <div className="mt-1">
-                                    {/* Original Price (Strikethrough) */}
+                                    {/* Original Price (Strikethrough)
                                     <p className="text-gray-500 text-sm font-medium line-through">
                                         {finalPrice ? formatToCLP(parseInt(finalPrice)) : "N/A"}
                                     </p>
+                                    */}
 
                                     {/* Discounted Price (Bold & Highlighted) */}
                                     <p className="text-orange-600 text-2xl font-bold">
-                                        {finalPrice ? formatToCLP(parseInt(finalPrice) * 0.80) : "N/A"}
+                                        {basePrice ? formatToCLP(parseInt(basePrice) * 0.80) : "N/A"}
                                     </p>
 
                                     {/* Discount Percentage */}

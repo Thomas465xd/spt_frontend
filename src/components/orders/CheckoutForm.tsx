@@ -653,6 +653,17 @@ export default function CheckoutForm({ cartDetails, user }: CheckoutFormProps) {
                             </div>
                         )}
 
+                        {totalDiscount > 0 && (
+                            <div className="flex justify-between items-center pt-2 border-t border-dashed border-gray-300">
+                                <span className="text-sm font-medium">
+                                    Subtotal (con descuentos)
+                                </span>
+                                <span className="font-medium text-sm">
+                                    {formatToCLP(subtotalWithoutDiscounts - totalDiscount)}
+                                </span>
+                            </div>
+                        )}
+
                         <div className="flex justify-between items-center">
                             <span className="text-sm font-medium">IVA (19%)</span>
                             <span className="text-sm font-medium">
@@ -660,7 +671,7 @@ export default function CheckoutForm({ cartDetails, user }: CheckoutFormProps) {
                             </span>
                         </div>
 
-                        {totalDiscount > 0 && (
+                        {!totalDiscount && (
                             <div className="flex justify-between items-center pt-2 border-t border-dashed border-gray-300">
                                 <span className="text-sm font-medium">Subtotal</span>
                                 <span className="text-sm font-medium">
