@@ -184,7 +184,7 @@ export default function ProductDetailsModal({
                                                 {!discount ? (
                                                     // No Discount: Show Final Price Normally
                                                     <p className="text-orange-500 text-lg font-bold">
-                                                        <strong>Precio de Venta:</strong> {finalPrice ? formatToCLP(parseInt(finalPrice)) : "N/A"}
+                                                        <strong>Precio de Venta (IVA):</strong> {finalPrice ? formatToCLP(parseInt(finalPrice)) : "N/A"}
                                                     </p>
                                                 ) : (
                                                     // Discounted Price
@@ -197,7 +197,7 @@ export default function ProductDetailsModal({
 
                                                         {/* New Discounted Price */}
                                                         <p className="text-orange-500 text-xl font-extrabold">
-                                                            <strong>Ahora:</strong> {finalPrice ? formatToCLP(parseInt(finalPrice) * 0.80) : "N/A"}
+                                                            <strong>Ahora:</strong> {basePrice ? formatToCLP(parseInt(basePrice) * 0.80) : "N/A"}
                                                         </p>
 
                                                         {/* Discount Percentage */}
