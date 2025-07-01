@@ -35,6 +35,8 @@ export const userSchema = z.object({
     password: z.string().min(8),
     address: z.string(),
 
+    discount: z.number().min(0).max(100).optional(),
+
     country: z.string().optional(),
     region: regionSchema.optional(),
     city: z.string().optional(),
@@ -45,6 +47,7 @@ export const userSchema = z.object({
 
 export const authUserSchema = z.object({
     _id: z.string(),
+
     name: z.string(),
     businessName: z.string(),
     rut: z.string(),
@@ -53,6 +56,8 @@ export const authUserSchema = z.object({
     phone: z.string(),
     admin: z.boolean(),
     address: z.string(),
+
+    discount: z.number().min(0).max(100).optional(),
 
     country: z.string().optional(),
     region: regionSchema.optional(),

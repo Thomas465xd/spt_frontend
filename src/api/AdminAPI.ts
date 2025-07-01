@@ -1,6 +1,6 @@
 import api from "@/lib/axios";
 import { isAxiosError } from "axios";
-import {authUserSchema, Token, UserDiscountForm, userResponseSchema, usersResponseSchema, UserStatusForm } from "../types";
+import {authUserSchema, Token, UserDiscountForm, UserDiscountSearch, userResponseSchema, usersResponseSchema, UserStatusForm } from "../types";
 
 export async function getConfirmedUsers({ page, perPage, searchRUT, searchEmail }: { page: number, perPage: number, searchRUT?: string, searchEmail?: string }) {
     try {
@@ -58,6 +58,7 @@ export async function getUnconfirmedUsers({ page, perPage, searchRUT, searchEmai
     }
 }
 
+// Get an user by its ObjectId
 export async function getUserById({ userId } : UserStatusForm) {
     try {
         const url = `/auth/admin/user/${userId}`;
@@ -78,6 +79,39 @@ export async function getUserById({ userId } : UserStatusForm) {
             console.error("➡️ Código de estado:", error.response?.status);
             console.error("➡️ Mensaje de error:", error.response?.data?.error || error.message);
             console.error("➡️ Respuesta completa:", error.response?.data);
+            throw new Error(error.response?.data?.message || "Ocurrió un error en la API");
+        } else {
+            console.error("⚠️ Error desconocido:", error);
+            throw new Error("Error inesperado. Intenta nuevamente.");
+        }
+    }
+}
+
+//TODO Get user by RUT
+export async function getUserByRut({ rut } : UserDiscountSearch) {
+    try {
+        const url = `/auth/admin/user/rut/${rut}`;
+        const { data } = await api.get(url);
+        console.log(data)
+
+        const response = authUserSchema.safeParse(data);
+        if (response.success) {
+            console.log("✅ Respuesta exitosa de la API:", response.data);
+            return response.data; // ✅ Valid return
+        }
+
+        console.warn("⚠️ Error al validar esquema con Zod:", response.error.format());
+        throw new Error("Respuesta de la API inválida");
+    } catch (error) {
+        console.error("❌ Error en la solicitud:", error);
+
+        if (isAxiosError(error)) {
+            console.error("🔍 Error de Axios detectado:");
+            console.error("➡️ Código de estado:", error.response?.status);
+            console.error("➡️ Mensaje de error:", error.response?.data?.error || error.message);
+            console.error("➡️ Respuesta completa:", error.response?.data);
+
+            // Lanzamos un error más detallado para que pueda ser manejado correctamente
             throw new Error(error.response?.data?.message || "Ocurrió un error en la API");
         } else {
             console.error("⚠️ Error desconocido:", error);
@@ -138,10 +172,10 @@ export async function updateUserStatus({ userId } : UserStatusForm) {
     }
 }
 
-//? Set the user custom discount attribute to a number from 1 to 100
-export async function asignUserDiscount({ userId, discount } : UserDiscountForm) {
+//TODO Set the user custom discount attribute to a number from 1 to 100
+export async function setUserDiscount({ userId, discount } : UserDiscountForm) {
     try {
-        const url = `/auth/admin/users/${userId}/discount`;
+        const url = `/auth/admin/user/${userId}/discount`;
         const response = await api.patch(url, { discount });
     
         return response.data; 
