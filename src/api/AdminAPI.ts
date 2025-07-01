@@ -1,6 +1,6 @@
 import api from "@/lib/axios";
 import { isAxiosError } from "axios";
-import {authUserSchema, Token, userResponseSchema, usersResponseSchema, UserStatusForm } from "../types";
+import {authUserSchema, Token, UserDiscountForm, userResponseSchema, usersResponseSchema, UserStatusForm } from "../types";
 
 export async function getConfirmedUsers({ page, perPage, searchRUT, searchEmail }: { page: number, perPage: number, searchRUT?: string, searchEmail?: string }) {
     try {
@@ -118,6 +118,31 @@ export async function updateUserStatus({ userId } : UserStatusForm) {
     try {
         const url = `/auth/admin/update-status/${userId}`;
         const response = await api.patch(url);
+    
+        return response.data; 
+    } catch (error) {
+        console.error("❌ Error en la solicitud:", error);
+
+        if (isAxiosError(error)) {
+            console.error("🔍 Error de Axios detectado:");
+            console.error("➡️ Código de estado:", error.response?.status);
+            console.error("➡️ Mensaje de error:", error.response?.data?.error || error.message);
+            console.error("➡️ Respuesta completa:", error.response?.data);
+
+            // Lanzamos un error más detallado para que pueda ser manejado correctamente
+            throw new Error(error.response?.data?.message || "Ocurrió un error en la API");
+        } else {
+            console.error("⚠️ Error desconocido:", error);
+            throw new Error("Error inesperado. Intenta nuevamente.");
+        }
+    }
+}
+
+//? Set the user custom discount attribute to a number from 1 to 100
+export async function asignUserDiscount({ userId, discount } : UserDiscountForm) {
+    try {
+        const url = `/auth/admin/users/${userId}/discount`;
+        const response = await api.patch(url, { discount });
     
         return response.data; 
     } catch (error) {
