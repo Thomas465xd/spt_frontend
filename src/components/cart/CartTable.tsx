@@ -11,7 +11,6 @@ import { Navigate } from "react-router-dom"
 
 type CartTableProps = {
     cartDetails: CartDetailData[];
-    customDiscount: number; 
 }
 
 export default function CartTable({cartDetails}: CartTableProps) {
