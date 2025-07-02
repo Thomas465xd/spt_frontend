@@ -2,7 +2,7 @@ import { AuthUser, CartDetailData, UserCheckoutForm } from "@/types/index";
 import { useForm } from "react-hook-form";
 import ErrorMessage from "../ui/ErrorMessage";
 import { formatToCLP } from "@/utilities/price";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 import { useCart } from "@/hooks/useCart";
 import { updateShippingInfo } from "@/api/ProfileAPI";
 import Loader from "../ui/Loader";
+import { useAuth } from "@/hooks/useAuth";
 
 type CheckoutFormProps = {
 	cartDetails: CartDetailData[];
@@ -55,6 +56,7 @@ export default function CheckoutForm({ cartDetails, user }: CheckoutFormProps) {
 	};
 
 	const { clearCart } = useCart();
+    const { data, isError, isLoading } = useAuth();
 
 	const {
 		register,
@@ -130,9 +132,9 @@ export default function CheckoutForm({ cartDetails, user }: CheckoutFormProps) {
 				// Save user data if toggle is checked
 				if (formData.saveUserData) {
 					saveData({
-						country: formData.clientEmail,
+						country: formData.clientCountry,
 						region: formData.clientState,
-						city: formData.clientCountry,
+						city: formData.clientCityZone,
 						province: formData.extrasUserData?.comuna,
 						reference: formData.clientBuildingNumber,
 						postalCode: formData.clientPostcode,
@@ -143,22 +145,36 @@ export default function CheckoutForm({ cartDetails, user }: CheckoutFormProps) {
 				//@ts-expect-error //!BUG with Checkboxes
 				const isDispatch = formData.isDispatch === "true";
 
-				// Exclude isDispatch before sending data
-				const { isDispatch: _, saveUserData, ...apiData } = formData;
+                // Create clean API data - SAFER EXCLUSION
+                const apiData = {
+                    code: formData.code,
+                    generateDocument: formData.generateDocument,
+                    documentData: formData.documentData,
+                    clientName: formData.clientName,
+                    clientLastName: formData.clientLastName,
+                    clientEmail: formData.clientEmail,
+                    clientPhone: formData.clientPhone,
+                    pickCode: formData.pickCode,
+                    pickName: formData.pickName,
+                    pickStoreId: formData.pickStoreId,
+                    ptId: formData.ptId,
+                    payProcess: formData.payProcess,
+                    clientCountry: formData.clientCountry,
+                    clientState: formData.clientState,
+                    clientCityZone: formData.clientCityZone,
+                    clientStreet: formData.clientStreet,
+                    clientPostcode: formData.clientPostcode,
+                    clientBuildingNumber: formData.clientBuildingNumber,
+                    cartDetails: formData.cartDetails,
+                    extrasUserData: formData.extrasUserData,
+                };
 
-				const finalData = isDispatch
-					? {
-							...apiData,
-							marketId: 1,
-							withdrawStore: 0,
-							shippingCost: 0,
-					  } // Dispatch data
-					: {
-							...apiData,
-							marketId: 1,
-							withdrawStore: 1,
-							shippingCost: 0,
-					  }; // Withdrawal data
+                const finalData = {
+                    ...apiData,
+                    marketId: 1,
+                    withdrawStore: isDispatch ? 0 : 1,
+                    shippingCost: 0,
+                };
 
 				// Enviar la orden y luego enviar los correos en onSuccess
 				if (isDispatch) {
@@ -261,19 +277,29 @@ export default function CheckoutForm({ cartDetails, user }: CheckoutFormProps) {
 		});
 	};
 
+    const discount = ((data?.discount || 20) / 100) // Discount in decimal
+
     // Calculate order total with discount support
     const subtotalWithoutDiscounts = cartDetails.reduce(
         (sum, item) => sum + (item.cd_unit_value * item.quantity), 0);
     
     const totalDiscount = cartDetails.reduce((sum, item) => 
-        sum + ((item.cd_unit_value * 0.20) * item.quantity), 0);
+        sum + ((item.cd_unit_value * discount) * item.quantity), 0);
+
+    // Calculate total items 
+    const totalItems = cartDetails.reduce((sum, item) => sum + item.quantity, 0);
 
     const subtotal = subtotalWithoutDiscounts - totalDiscount;
     
     const iva = Math.round(subtotalWithoutDiscounts * 0.19); // 19% IVA in Chile
     const total = subtotal + iva;
 
-	return (
+
+    if(isLoading) return <Loader />;
+
+    if(isError) return <Navigate to="/auth/login" replace />;
+
+	if(data) return (
 		<div className="mx-auto max-w-2xl  px-4 lg:px-0">
 			<form
 				className="mt-10 space-y-5 bg-white shadow-lg rounded-lg p-6 lg:p-10 border border-gray-200"
@@ -632,7 +658,7 @@ export default function CheckoutForm({ cartDetails, user }: CheckoutFormProps) {
 
                         <div className="flex justify-between items-center">
                             <span className="text-sm font-medium">
-                                Items ({cartDetails?.length || 0})
+                                Items ({totalItems})
                             </span>
                             <span className="font-medium text-sm">
                                 {formatToCLP(subtotalWithoutDiscounts)}
@@ -705,18 +731,31 @@ export default function CheckoutForm({ cartDetails, user }: CheckoutFormProps) {
                         </div>
 					) : (
 						<>
-							<button
-								type="submit"
-								disabled={
-									isPendingDispatch ||
-									isPendingWithdraw ||
-									isPendingSave ||
-									cartDetails.length === 0
-								}
-								className="bg-orange-500 w-full rounded p-3 text-white font-bold hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-							>
-								Generar Orden
-							</button>
+                            <button
+                                type="submit"
+                                disabled={
+                                    isPendingDispatch ||
+                                    isPendingWithdraw ||
+                                    isPendingSave ||
+                                    cartDetails.length === 0
+                                }
+                                className={`
+                                    w-full 
+                                    rounded 
+                                    p-3 
+                                    font-bold 
+                                    text-white 
+                                    transition-colors 
+                                    bg-orange-500 
+                                    hover:bg-orange-600 
+                                    disabled:bg-orange-300 
+                                    disabled:cursor-not-allowed 
+                                    disabled:hover:bg-orange-300
+                                `}
+                            >
+                                Generar Orden
+                            </button>
+
 
 							<button
 								type="button"

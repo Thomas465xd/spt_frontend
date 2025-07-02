@@ -10,10 +10,12 @@ import { copyToClipboard } from "@/utilities/copy";
 
 type ProductDetailsModalProps = {
 	product: ProductWebType;
+    customDiscount: number; 
 };
 
 export default function ProductDetailsModal({
 	product,
+    customDiscount
 }: ProductDetailsModalProps) {
 	const location = useLocation();
 	const navigate = useNavigate();
@@ -42,7 +44,7 @@ export default function ProductDetailsModal({
         const discount =
         product.variants[0].discounts.length > 0 
             ? product.variants[0].discounts[0] // O usar reduce() si los descuentos se suman
-            : 20; // Si no hay descuentos, asignar 0
+            : customDiscount; // Si no hay descuentos, asignar 0
 
         const formData = { cartDetails: [
                 {
@@ -63,7 +65,7 @@ export default function ProductDetailsModal({
     const basePrice = product.variants[0].salePrices.price ?? "N/A"; // Default value if salePrices is undefined
     const finalPrice = product.variants[0].salePrices.finalPrice ?? "N/A"; // Default value if salePrices is undefined
 
-    const discount = product.variants[0].discounts.length > 0 ? product.variants[0].discounts[0] : 20;
+    const discount = product.variants[0].discounts.length > 0 ? product.variants[0].discounts[0] : customDiscount;
 
 	const hasStock = product.variants[0].stockInfo[0].quantityAvailable > 0;
     const totalStock = product.variants[0].stockInfo[0].quantityAvailable;
@@ -197,7 +199,7 @@ export default function ProductDetailsModal({
 
                                                         {/* New Discounted Price */}
                                                         <p className="text-orange-500 text-xl font-extrabold">
-                                                            <strong>Ahora:</strong> {basePrice ? formatToCLP(parseInt(basePrice) * 0.80) : "N/A"}
+                                                            <strong>Ahora:</strong> {basePrice ? formatToCLP(parseInt(basePrice) * (1 - (customDiscount / 100))) : "N/A"}
                                                         </p>
 
                                                         {/* Discount Percentage */}
