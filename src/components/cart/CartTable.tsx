@@ -5,15 +5,23 @@ import { capitalizeFirstLetter } from "@/utilities/text"
 import { useQueryClient } from "@tanstack/react-query"
 import { updateCart } from "@/api/ProductAPI"
 import { useState } from "react"
+import { useAuth } from "@/hooks/useAuth"
+import Loader from "../ui/Loader"
+import { Navigate } from "react-router-dom"
 
 type CartTableProps = {
-    cartDetails: CartDetailData[]
+    cartDetails: CartDetailData[];
+    customDiscount: number; 
 }
 
 export default function CartTable({cartDetails}: CartTableProps) {
+    const { data, isLoading, isError } = useAuth()
     const { cartId, deleteItemFromCart } = useCart();
     const queryClient = useQueryClient();
     const [isUpdating, setIsUpdating] = useState<Record<number, boolean>>({});
+
+    const discount = ((data?.discount || 20) / 100) // Discount in decimal
+    //console.log(discount)
 
     const handleDeleteItem = async (detailId: number) => {
         await deleteItemFromCart(detailId);
@@ -57,9 +65,10 @@ export default function CartTable({cartDetails}: CartTableProps) {
     // Calculate order total with discount support
     const subtotalWithoutDiscounts = cartDetails.reduce(
         (sum, item) => sum + (item.cd_unit_value * item.quantity), 0);
+    //console.log(subtotalWithoutDiscounts)
     
     const totalDiscount = cartDetails.reduce((sum, item) => 
-        sum + ((item.cd_unit_value * 0.20) * item.quantity), 0);
+        sum + ((item.cd_unit_value * discount) * item.quantity), 0);
 
     const subtotal = subtotalWithoutDiscounts - totalDiscount;
     
@@ -69,7 +78,11 @@ export default function CartTable({cartDetails}: CartTableProps) {
     // Check if any items have discounts
     const hasAnyDiscount = cartDetails.some(item => (item.cd_discount || item.discount || 0) > 0);
 
-    return (
+    if(isLoading) return <Loader />;
+
+    if(isError) return <Navigate to="/auth/login" replace />;
+
+    if(data) return (
         <div className="w-full bg-white rounded-lg shadow overflow-hidden">
             <div className="max-w-full overflow-x-auto">
                 <table className="w-full min-w-[700px] divide-y divide-gray-300">

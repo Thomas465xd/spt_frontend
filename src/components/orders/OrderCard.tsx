@@ -8,7 +8,9 @@ import { CalendarDays, Package, CreditCard, MapPin, Phone, Mail, User } from "lu
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import OrderDetailsModal from "./OrderDetailsModal";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import Loader from "../ui/Loader";
 
 type OrderCardProps = {
     order: CheckoutForm | AdminCheckoutForm
@@ -16,7 +18,7 @@ type OrderCardProps = {
 }
 
 export default function OrderCard({ order, admin } : OrderCardProps) {
-
+    const { data, isError, isLoading } = useAuth();
     const navigate = useNavigate();
 	const location = useLocation();
 
@@ -79,6 +81,9 @@ export default function OrderCard({ order, admin } : OrderCardProps) {
         });
     };
 
+    const customDiscount = ((data?.discount || 20) / 100) // Discount in decimal
+    //console.log(discount)
+
     const orderStatus = order.active === 1 ? false : true;
     //console.log(orderStatus)
 
@@ -87,7 +92,9 @@ export default function OrderCard({ order, admin } : OrderCardProps) {
         (sum, item) => sum + (item.cd_unit_value * item.quantity), 0);
     
     const totalDiscount = order.cartDetails.reduce((sum, item) => 
-        sum + ((item.cd_unit_value * 0.20) * item.quantity), 0);
+        sum + ((item.cd_unit_value * customDiscount) * item.quantity), 0);
+
+    const totalItems = order.cartDetails.reduce((sum, item) => sum + item.quantity, 0);
 
     const subtotal = subtotalWithoutDiscounts - totalDiscount;
     
@@ -97,7 +104,11 @@ export default function OrderCard({ order, admin } : OrderCardProps) {
     // Check if any items have discounts
     const hasAnyDiscount = order.cartDetails.some(item => (item.cd_discount || item.discount || 0) > 0);
 
-    return (
+    if(isLoading) return <Loader />;
+
+    if(isError) return <Navigate to="/auth/login" replace />;
+
+    if(data) return (
         <>
             <div className="border border-gray-200 rounded-lg shadow-md overflow-hidden bg-white">
                 {/* Header */}
@@ -175,7 +186,7 @@ export default function OrderCard({ order, admin } : OrderCardProps) {
                     <div className="space-y-1 text-sm">
                         {/* Subtotal before discounts */}
                         <div className="flex justify-between">
-                            <span className="text-gray-600">Subtotal ({order.cartDetails.length} items)</span>
+                            <span className="text-gray-600">Subtotal ({totalItems} items)</span>
                             <span>{formatToCLP(subtotalWithoutDiscounts)}</span>
                         </div>
 

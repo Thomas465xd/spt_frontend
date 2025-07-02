@@ -1,5 +1,8 @@
 import { ProductWebType } from "@/types/index";
 import ProductCard from "./ProductCard";
+import { useAuth } from "@/hooks/useAuth";
+import Loader from "../ui/Loader";
+import { Navigate } from "react-router-dom";
 
 type ProductsTableProps = {
     products: ProductWebType[];
@@ -7,7 +10,13 @@ type ProductsTableProps = {
 
 export default function ProductsTable({ products } : ProductsTableProps) {
 
-    if(products) return (
+    const { data, isError, isLoading } = useAuth();
+
+    if(isLoading) return <Loader />;
+
+    if(isError) return <Navigate to="/auth/login" replace />;
+
+    if(products && data) return (
         <>
             <div className="container mx-auto p-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 my-10 gap-10">
@@ -15,6 +24,7 @@ export default function ProductsTable({ products } : ProductsTableProps) {
                         <ProductCard
                             key={product.id}
                             product={product}
+                            customDiscount={data.discount || 20}
                         />
                     ))}
                 </div>
