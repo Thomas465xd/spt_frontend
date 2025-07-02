@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import Loader from "./components/ui/Loader";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react"
 
 // Lazy load layouts
 const AppLayout = lazy(() => import("./layouts/AppLayout"));
@@ -134,6 +135,7 @@ export default function Router() {
             
             {/* Place Vercel Analytics outside <Routes> to track all pages */}
 			<Analytics />
+            <SpeedInsights />
 		</BrowserRouter>
 	);
 }
