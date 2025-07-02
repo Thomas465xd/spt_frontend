@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Navigate } from "react-router-dom";
 import { XMarkIcon } from "@heroicons/react/20/solid";
 import {
 	CopyIcon,
@@ -15,6 +15,8 @@ import { AdminCheckoutForm, CheckoutForm } from "@/types/index";
 import { copyToClipboard } from "@/utilities/copy";
 import { formatToCLP } from "@/utilities/price";
 import { capitalizeFirstLetter } from "@/utilities/text";
+import Loader from "../ui/Loader";
+import { useAuth } from "@/hooks/useAuth";
 
 type OrderDetailsModalProps = {
 	order: CheckoutForm | AdminCheckoutForm;
@@ -25,6 +27,7 @@ export default function OrderDetailsModal({
 	order,
 	admin,
 }: OrderDetailsModalProps) {
+    const { data, isError, isLoading } = useAuth();
 	const location = useLocation();
 	const navigate = useNavigate();
 
@@ -56,6 +59,9 @@ export default function OrderDetailsModal({
 		});
 	};
 
+    const customDiscount = ((data?.discount || 20) / 100) // Discount in decimal
+    //console.log(discount)
+
 	// Calculate order total with discount support
 	const subtotalWithoutDiscounts = order.cartDetails.reduce(
 		(sum, item) => sum + item.cd_unit_value * item.quantity,
@@ -63,7 +69,7 @@ export default function OrderDetailsModal({
 	);
 
 	const totalDiscount = order.cartDetails.reduce(
-		(sum, item) => sum + item.cd_unit_value * 0.2 * item.quantity,
+		(sum, item) => sum + item.cd_unit_value * customDiscount * item.quantity,
 		0
 	);
 
@@ -77,7 +83,11 @@ export default function OrderDetailsModal({
 		(item) => (item.cd_discount || item.discount || 0) > 0
 	);
 
-	return (
+	if(isLoading) return <Loader />;
+
+    if(isError) return <Navigate to="/auth/login" replace />;
+
+    if(data) return (
 		<Transition appear show={show} as={Fragment}>
 			<Dialog as="div" className="relative z-10" onClose={handleClose}>
 				<Transition.Child

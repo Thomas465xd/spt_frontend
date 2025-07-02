@@ -11,7 +11,7 @@ import { Link, Navigate, useLocation, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 export default function OrdersView() {
-    const [showPendingOnly, setShowPendingOnly] = useState(true);
+    const [showPendingOnly, setShowPendingOnly] = useState(false);
     const { data: user, isLoading: isLoadingUser, isError: isErrorUser } = useAuth();
     const location = useLocation();
 
@@ -64,7 +64,7 @@ export default function OrdersView() {
     
     if(page < 1) return <Navigate to={`/orders?page=1`} replace />
 
-    const itemsPerPage = 4; 
+    const itemsPerPage = 6; 
     const offset = (page - 1) * itemsPerPage;
     
 
@@ -229,7 +229,7 @@ export default function OrdersView() {
                 </div>
             )}
 
-            <div className="grid grid-cols-1 gap-10 md:grid-cols-2 my-10">
+            <div className="grid grid-cols-1 gap-10 md:grid-cols-2 xl:grid-cols-3 my-10">
                 {filteredOrders && filteredOrders.map(order => (
                     <OrderCard
                         key={order.id}

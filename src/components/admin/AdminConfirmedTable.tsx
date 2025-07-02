@@ -13,7 +13,7 @@ type AdminConfirmedTableProps = {
     type: "confirmed" | "unconfirmed",
     users: UsersResponse['users'],
     isLoading: boolean, 
-    error: any
+    error: null
 }
 
 const AdminConfirmedTable: FC<AdminConfirmedTableProps> = ({ type, users, isLoading, error }) => {

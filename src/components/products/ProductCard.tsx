@@ -9,9 +9,10 @@ import { copyToClipboard } from "@/utilities/copy";
 
 type ProductCardProps = {
 	product: ProductWebType;
+    customDiscount: number; 
 };
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, customDiscount }: ProductCardProps) {
 	const navigate = useNavigate();
 	const location = useLocation();
 
@@ -39,7 +40,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 		const discount =
 			product.variants[0].discounts.length > 0
 				? product.variants[0].discounts[0] // O usar reduce() si los descuentos se suman
-				: 20; // Si no hay descuentos, asignar 0
+				: customDiscount; // Si no hay descuentos, asignar 0
 
 		const formData = {
 			cartDetails: [
@@ -64,7 +65,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 	const hasStock = product.variants[0].stockInfo?.[0]?.quantityAvailable > 0;
 
     //! Hardcoded discount value | it will be gone once discounts are configured
-    const discount = product.variants[0].discounts.length > 0 ? product.variants[0].discounts[0] : 20;
+    const discount = product.variants[0].discounts.length > 0 ? product.variants[0].discounts[0] : customDiscount;
 
 	return (
 		<>
@@ -134,7 +135,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
                                     {/* Discounted Price (Bold & Highlighted) */}
                                     <p className="text-orange-600 text-2xl font-bold">
-                                        {basePrice ? formatToCLP(parseInt(basePrice) * 0.80) : "N/A"}
+                                        {basePrice ? formatToCLP(parseInt(basePrice) * (1 - (customDiscount / 100))) : "N/A"}
                                     </p>
 
                                     {/* Discount Percentage */}
@@ -218,7 +219,10 @@ export default function ProductCard({ product }: ProductCardProps) {
 
 			{/* Conditionally render the ProductDetailsModal */}
 			{productDetails === product.variants?.[0]?.code && (
-				<ProductDetailsModal product={product} />
+				<ProductDetailsModal
+                    product={product} 
+                    customDiscount={customDiscount}
+                />
 			)}
 		</>
 	);
