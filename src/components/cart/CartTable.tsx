@@ -71,7 +71,7 @@ export default function CartTable({cartDetails}: CartTableProps) {
 
     const subtotal = subtotalWithoutDiscounts - totalDiscount;
     
-    const iva = Math.round(subtotalWithoutDiscounts * 0.19); // 19% IVA in Chile
+    const iva = Math.round(subtotal * 0.19); // 19% IVA in Chile
     const total = subtotal + iva;
 
     // Check if any items have discounts
