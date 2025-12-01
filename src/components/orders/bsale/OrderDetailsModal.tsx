@@ -15,7 +15,7 @@ import { AdminCheckoutForm, CheckoutForm } from "@/types/index";
 import { copyToClipboard } from "@/utilities/copy";
 import { formatToCLP } from "@/utilities/price";
 import { capitalizeFirstLetter } from "@/utilities/text";
-import Loader from "../ui/Loader";
+import Loader from "../../ui/Loader";
 import { useAuth } from "@/hooks/useAuth";
 
 type OrderDetailsModalProps = {

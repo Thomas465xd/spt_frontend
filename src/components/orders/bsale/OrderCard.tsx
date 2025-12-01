@@ -1,4 +1,4 @@
-import { changeOrderStatus } from "@/api/OrderAPI";
+import { changeOrderStatus } from "@/api/BsaleOrderAPI";
 import { AdminCheckoutForm, CheckoutForm } from "@/types/index"
 import { copyToClipboard } from "@/utilities/copy";
 import { formatPhone } from "@/utilities/phone";
@@ -10,7 +10,7 @@ import Swal from "sweetalert2";
 import OrderDetailsModal from "./OrderDetailsModal";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import Loader from "../ui/Loader";
+import Loader from "../../ui/Loader";
 
 type OrderCardProps = {
     order: CheckoutForm | AdminCheckoutForm

@@ -1,6 +1,6 @@
 import { AuthUser, CartDetailData, UserCheckoutForm } from "@/types/index";
 import { useForm } from "react-hook-form";
-import ErrorMessage from "../ui/ErrorMessage";
+import ErrorMessage from "../../ui/ErrorMessage";
 import { formatToCLP } from "@/utilities/price";
 import { Navigate, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -10,11 +10,11 @@ import {
 	createDispatchOrder,
 	createWithdrawalOrder,
 	sendOrderEmails,
-} from "@/api/OrderAPI";
+} from "@/api/BsaleOrderAPI";
 import { toast } from "react-toastify";
 import { useCart } from "@/hooks/useCart";
 import { updateShippingInfo } from "@/api/ProfileAPI";
-import Loader from "../ui/Loader";
+import Loader from "../../ui/Loader";
 import { useAuth } from "@/hooks/useAuth";
 
 type CheckoutFormProps = {

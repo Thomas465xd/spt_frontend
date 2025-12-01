@@ -1,4 +1,4 @@
-import CheckoutForm from "@/components/orders/CheckoutForm";
+import CheckoutForm from "@/components/orders/bsale/CheckoutForm";
 import Heading from "@/components/ui/Heading";
 import Loader from "@/components/ui/Loader";
 import { useAuth } from "@/hooks/useAuth";

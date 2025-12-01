@@ -1,5 +1,5 @@
-import { getOrdersByEmail } from "@/api/OrderAPI";
-import OrderCard from "@/components/orders/OrderCard";
+import { getOrdersByEmail } from "@/api/BsaleOrderAPI";
+import OrderCard from "@/components/orders/bsale/OrderCard";
 import Heading from "@/components/ui/Heading";
 import Loader from "@/components/ui/Loader";
 import Pagination from "@/components/ui/Pagination";
