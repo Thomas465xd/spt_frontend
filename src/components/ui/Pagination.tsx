@@ -1,3 +1,4 @@
+import { ArrowLongLeftIcon, ArrowLongRightIcon } from "@heroicons/react/20/solid";
 import { Link } from "react-router-dom";
 
 type PaginationProps = {
@@ -62,16 +63,19 @@ export default function Pagination({ route, page, totalPages, maxPageButtons = 5
     const visiblePages = getVisiblePages();
 
     return (
-        <nav className="flex flex-wrap justify-center items-center gap-2 py-10">
+        <nav className="flex items-center justify-between border-t border-gray-200 px-4 my-12">
             {/* Previous page button */}
             {page > 1 && (
-                <Link
-                    to={`${searchQuery ? `/${route}?page=${page - 1}&searchName=${searchQuery}` : `/${route}?page=${page - 1}`}`}
-                    aria-label="Previous page"
-                    className="flex items-center justify-center w-10 h-10 bg-white text-gray-900 text-lg font-bold rounded-md shadow-md ring-1 ring-gray-300 hover:bg-gray-100 transition-all"
-                >
-                    &laquo;
-                </Link>
+                <div className="-mt-px flex w-0 flex-1">
+                    <Link
+                        to={`${searchQuery ? `/${route}?page=${page - 1}&searchName=${searchQuery}` : `/${route}?page=${page - 1}`}`}
+                        aria-label="Previous page"
+                        className="inline-flex items-center border-t-2 border-transparent pt-4 pr-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                    >
+                        <ArrowLongLeftIcon aria-hidden="true" className="mr-3 size-5 text-gray-400" />
+                        Anterior
+                    </Link>
+                </div>
             )}
 
             {/* Page buttons */}
@@ -93,10 +97,10 @@ export default function Pagination({ route, page, totalPages, maxPageButtons = 5
                     <Link
                         key={`page-${pageNum}`}
                         to={`${searchQuery ? `/${route}?page=${pageNum}&searchName=${searchQuery}` : `/${route}?page=${pageNum}`}`}
-                        className={`flex items-center justify-center w-10 h-10 text-sm font-bold rounded-md shadow-md ring-1 ring-gray-300 transition-all ${
+                        className={`inline-flex items-center border-t-2 px-4 pt-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 ${
                             page === pageNum
-                                ? "bg-orange-500 text-white ring-orange-500"
-                                : "bg-white text-gray-900 hover:bg-gray-100"
+                                ? "border-orange-500 text-orange-600 ring-orange-500"
+                                : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                         }`}
                     >
                         {pageNum}
@@ -106,13 +110,16 @@ export default function Pagination({ route, page, totalPages, maxPageButtons = 5
 
             {/* Next page button */}
             {page < totalPages && (
-                <Link
-                    to={`${searchQuery ? `/${route}?page=${page + 1}&searchName=${searchQuery}` : `/${route}?page=${page + 1}`}`}
-                    aria-label="Next page"
-                    className="flex items-center justify-center w-10 h-10 bg-white text-gray-900 text-lg font-bold rounded-md shadow-md ring-1 ring-gray-300 hover:bg-gray-100 transition-all"
-                >
-                    &raquo;
-                </Link>
+                <div className="-mt-px flex w-0 flex-1 justify-end">
+                    <Link
+                        to={`${searchQuery ? `/${route}?page=${page + 1}&searchName=${searchQuery}` : `/${route}?page=${page + 1}`}`}
+                        aria-label="Next page"
+                        className="inline-flex items-center border-t-2 border-transparent pt-4 pl-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                    >
+                        Siguiente
+                        <ArrowLongRightIcon aria-hidden="true" className="ml-3 size-5 text-gray-400" />
+                    </Link>
+                </div>
             )}
         </nav>
     );

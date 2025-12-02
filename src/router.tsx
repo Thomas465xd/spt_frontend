@@ -3,6 +3,8 @@ import { lazy, Suspense } from "react";
 import Loader from "./components/ui/Loader";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react"
+import CreateOrderView from "./views/admin/orders/CreateOrderView";
+import UpdateOrderView from "./views/admin/orders/UpdateOrderView";
 
 // Lazy load layouts
 const AppLayout = lazy(() => import("./layouts/AppLayout"));
@@ -16,7 +18,7 @@ const ClientView = lazy(() => import("./views/home/ClientView"));
 const ProductsView = lazy(() => import("./views/products/ProductsView"));
 const CartView = lazy(() => import("./views/cart/CartView"));
 const CartCheckoutView = lazy(() => import("./views/cart/CartCheckoutView"));
-const OrdersView = lazy(() => import("./views/orders/OrdersView"));
+const OrdersView = lazy(() => import("./views/orders/deprecated/OrdersView"));
 
 // Auth views
 const LoginView = lazy(() => import("./views/auth/LoginView"));
@@ -31,11 +33,11 @@ const SetPasswordView = lazy(() => import("./views/auth/SetPasswordView"));
 const AdminDashboardView = lazy(
 	() => import("./views/admin/AdminDashboardView")
 );
-const AdminUsersView = lazy(() => import("./views/admin/AdminUsersView"));
+const AdminUsersView = lazy(() => import("./views/admin/users/AdminUsersView"));
 const AdminUnconfirmedUsersView = lazy(
-	() => import("./views/admin/AdminUnconfirmedUsersView")
+	() => import("./views/admin/users/AdminUnconfirmedUsersView")
 );
-const AdminOrdersView = lazy(() => import("./views/admin/AdminOrdersView"));
+const AdminOrdersView = lazy(() => import("./views/admin/orders/AdminOrderView"));
 
 // Profile views
 const ProfileView = lazy(() => import("./views/profile/ProfileView"));
@@ -125,6 +127,14 @@ export default function Router() {
 						<Route
 							path="/admin/orders"
 							element={<AdminOrdersView />}
+						/>
+						<Route
+							path="/admin/orders/create"
+							element={<CreateOrderView />}
+						/>
+						<Route
+							path="/admin/orders/edit/:orderId"
+							element={<UpdateOrderView />}
 						/>
 					</Route>
 

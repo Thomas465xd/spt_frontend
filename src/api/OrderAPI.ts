@@ -1,91 +1,30 @@
-import api from "@/lib/bsale";
-import axiosApi from "@/lib/axios";
+import api from "@/lib/axios";
 import { isAxiosError } from "axios";
-import { adminCheckoutResponseSchema, CheckoutEmails, checkoutResponseSchema, DispatchOrderForm, emailSchema, User, WithdrawOrderForm } from "../types";
+import { getOrdersResponseSchema, Order, OrderForm, orderSchema, OrderStatusForm, updateOrderResponseSchema } from "../types";
 
-export async function getOrdersByEmail({ email, token, limit, offset } : {email: User["email"], token?: string, limit: number, offset: number}) {
+//TODO: Work on API Calls to the /orders endpoints
+
+export async function getOrdersAdmin({ page, perPage, status, businessRut, country } : { page: number, perPage: number, status: string, businessRut: string, country: string }) {
     try {
-        const url = `/v1/markets/checkout/list.json?clientEmail=${email}&expand=cartDetails&token=${token || ""}&limit=${limit}&offset=${offset}`;
+        // Base url
+        let url = `/orders?page=${page}&perPage=${perPage}`;
+
+        // Conditionally add filters to search url if they exists and are not empty
+        if(country) {
+            url += `&code=${encodeURIComponent(country)}`
+        }
         
+        if(status) {
+            url += `&status=${encodeURIComponent(status)}`
+        }
+
+        if(businessRut) {
+            url += `&businessRut=${encodeURIComponent(businessRut)}`
+        }
+
         const { data } = await api.get(url);
 
-        // If no data or empty array, return a default structure
-        if (!data || !data.data || data.data.length === 0) {
-            return {
-                data: [],
-                count: 0
-            };
-        }
-
-        const response = checkoutResponseSchema.safeParse(data);
-        if(response.success) {
-            //console.log("✅ Respuesta exitosa de la API:", response.data);
-            return response.data;
-        }
-
-        //console.error("Schema Validation Failed", response.error);
-        
-        // Return a fallback structure if schema validation fails
-        return {
-            data: [],
-            count: 0
-        };
-    } catch (error) {
-        console.error("❌ Error en la solicitud:", error);
-
-        if (isAxiosError(error)) {
-            console.error("🔍 Error de Axios detectado:");
-            console.error("➡️ Código de estado:", error.response?.status);
-            console.error("➡️ Mensaje de error:", error.response?.data?.error || error.message);
-            console.error("➡️ Respuesta completa:", error.response?.data);
-
-            // Lanzamos un error más detallado para que pueda ser manejado correctamente
-            throw new Error(error.response?.data?.message || "Ocurrió un error en la API");
-        } else {
-            console.error("⚠️ Error desconocido:", error);
-            throw new Error("Error inesperado. Intenta nuevamente.");
-        }
-    } 
-}
-
-export async function getAllOrders({ email, clientName, token, limit, offset } : {email?: User["email"], clientName?: User["name"], token?: string, limit: number, offset: number}) {
-    try {
-        const url = `/v1/markets/checkout/list.json?clientEmail=${email || ""}&expand=cartDetails&token=${token || ""}&clientName=${clientName || ""}&limit=${limit}&offset=${offset}`;
-        //console.log(url)
-        const { data } = await api.get(url);
-        //console.log(data)
-
-        const response = adminCheckoutResponseSchema.safeParse(data);
-        //console.log(response)
-        if(response.success) {
-            //console.log("✅ Respuesta exitosa de la API:", response.data);
-            return response.data;
-        }
-
-        console.error("Schema Validation Failed", response.error);
-    } catch (error) {
-        console.error("❌ Error en la solicitud:", error);
-
-        if (isAxiosError(error)) {
-            console.error("🔍 Error de Axios detectado:");
-            console.error("➡️ Código de estado:", error.response?.status);
-            console.error("➡️ Mensaje de error:", error.response?.data?.error || error.message);
-            console.error("➡️ Respuesta completa:", error.response?.data);
-
-            // Lanzamos un error más detallado para que pueda ser manejado correctamente
-            throw new Error(error.response?.data?.message || "Ocurrió un error en la API");
-        } else {
-            console.error("⚠️ Error desconocido:", error);
-            throw new Error("Error inesperado. Intenta nuevamente.");
-        }
-    }
-}
-
-export async function createDispatchOrder(finalData: DispatchOrderForm) {
-    try {
-        console.log(finalData)
-        const url = "/v1/markets/checkout.json";
-        const response = await api.post(url, finalData);
+        const response = getOrdersResponseSchema.safeParse(data);
 
         return response.data;
     } catch (error) {
@@ -106,10 +45,49 @@ export async function createDispatchOrder(finalData: DispatchOrderForm) {
     }
 }
 
-export async function createWithdrawalOrder(finalData: WithdrawOrderForm) {
+export async function getOrderByIdAdmin(orderId: Order["_id"]) {
     try {
-        const url = "/v1/markets/checkout.json";
-        const response = await api.post(url, finalData);
+        const url = `/orders/${orderId}`;
+        const { data } = await api.get(url);
+
+        const response = orderSchema.safeParse(data);
+
+        return response.data;                  
+    } catch (error) {
+        console.error("❌ Error en la solicitud:", error);
+
+        if (isAxiosError(error)) {
+            console.error("🔍 Error de Axios detectado:");
+            console.error("➡️ Código de estado:", error.response?.status);
+            console.error("➡️ Mensaje de error:", error.response?.data?.error || error.message);
+            console.error("➡️ Respuesta completa:", error.response?.data);
+
+            // Lanzamos un error más detallado para que pueda ser manejado correctamente
+            throw new Error(error.response?.data?.message || "Ocurrió un error en la API");
+        } else {
+            console.error("⚠️ Error desconocido:", error);
+            throw new Error("Error inesperado. Intenta nuevamente. Si el error persiste, contacta al administrador.");
+        }
+    }
+}
+
+export async function getOrdersUser({ page, perPage, status, country } : { page: number, perPage: number, status: string, country: string }) {
+    try {
+        // Base url
+        let url = `/orders/user?page=${page}&perPage=${perPage}`;
+
+        // Conditionally add filters to search url if they exists and are not empty
+        if(country) {
+            url += `&code=${encodeURIComponent(country)}`
+        }
+        
+        if(status) {
+            url += `&status=${encodeURIComponent(status)}`
+        }
+
+        const { data } = await api.get(url);
+
+        const response = getOrdersResponseSchema.safeParse(data);
 
         return response.data;
     } catch (error) {
@@ -130,18 +108,14 @@ export async function createWithdrawalOrder(finalData: WithdrawOrderForm) {
     }
 }
 
-export async function sendOrderEmails(emailData: CheckoutEmails) {
+export async function getOrderByIdUser(orderId: Order["_id"]) {
     try {
-        const url = "/order/send";
-        const { data } = await axiosApi.post(url, emailData);
+        const url = `/orders/user/${orderId}`;
+        const { data } = await api.get(url);
 
-        const response = emailSchema.safeParse(data);
-        if (response.success) {
-            //console.log("✅ Respuesta exitosa de la API:", response.data);
-            return response.data;
-        }
+        const response = orderSchema.safeParse(data);
 
-        console.error("Schema Validation Failed", response.error);
+        return response.data;                  
     } catch (error) {
         console.error("❌ Error en la solicitud:", error);
 
@@ -155,19 +129,19 @@ export async function sendOrderEmails(emailData: CheckoutEmails) {
             throw new Error(error.response?.data?.message || "Ocurrió un error en la API");
         } else {
             console.error("⚠️ Error desconocido:", error);
-            throw new Error("Error inesperado. Intenta nuevamente.");
+            throw new Error("Error inesperado. Intenta nuevamente. Si el error persiste, contacta al administrador.");
         }
     }
 }
 
-export async function changeOrderStatus({ orderId, active}: { orderId: number, active: number } ) {
+export async function createOrder(formData: OrderForm) {
     try {
-        console.log(orderId, active)
-        const url = `/v1/checkout/${orderId}.json`
-        const response = await api.put(url, { active: active });
-        console.log(response)
+        const url = `/orders`;
+        const { data } = await api.post(url, formData);
 
-        return response.data
+        const response = orderSchema.safeParse(data);
+
+        return response.data;                  
     } catch (error) {
         console.error("❌ Error en la solicitud:", error);
 
@@ -181,7 +155,57 @@ export async function changeOrderStatus({ orderId, active}: { orderId: number, a
             throw new Error(error.response?.data?.message || "Ocurrió un error en la API");
         } else {
             console.error("⚠️ Error desconocido:", error);
-            throw new Error("Error inesperado. Intenta nuevamente.");
+            throw new Error("Error inesperado. Intenta nuevamente. Si el error persiste, contacta al administrador.");
+        }
+    }
+}
+
+export async function updateOrderStatus({ orderId, formData } : {orderId: string, formData: OrderStatusForm }) {
+    try {
+        const url = `/orders/status/${orderId}`;
+        const { data } = await api.patch(url, formData);
+
+        const response = updateOrderResponseSchema.safeParse(data);
+
+        return response.data;                  
+    } catch (error) {
+        console.error("❌ Error en la solicitud:", error);
+
+        if (isAxiosError(error)) {
+            console.error("🔍 Error de Axios detectado:");
+            console.error("➡️ Código de estado:", error.response?.status);
+            console.error("➡️ Mensaje de error:", error.response?.data?.error || error.message);
+            console.error("➡️ Respuesta completa:", error.response?.data);
+
+            // Lanzamos un error más detallado para que pueda ser manejado correctamente
+            throw new Error(error.response?.data?.message || "Ocurrió un error en la API");
+        } else {
+            console.error("⚠️ Error desconocido:", error);
+            throw new Error("Error inesperado. Intenta nuevamente. Si el error persiste, contacta al administrador.");
+        }
+    }
+}
+
+export async function deleteOrder(orderId: string) {
+    try {
+        const url = `/orders/${orderId}`;
+        const response = await api.delete(url);
+
+        return response.data;                  
+    } catch (error) {
+        console.error("❌ Error en la solicitud:", error);
+
+        if (isAxiosError(error)) {
+            console.error("🔍 Error de Axios detectado:");
+            console.error("➡️ Código de estado:", error.response?.status);
+            console.error("➡️ Mensaje de error:", error.response?.data?.error || error.message);
+            console.error("➡️ Respuesta completa:", error.response?.data);
+
+            // Lanzamos un error más detallado para que pueda ser manejado correctamente
+            throw new Error(error.response?.data?.message || "Ocurrió un error en la API");
+        } else {
+            console.error("⚠️ Error desconocido:", error);
+            throw new Error("Error inesperado. Intenta nuevamente. Si el error persiste, contacta al administrador.");
         }
     }
 }
