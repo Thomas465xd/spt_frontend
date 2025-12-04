@@ -11,7 +11,7 @@ export async function getOrdersAdmin({ page, perPage, status, businessRut, count
 
         // Conditionally add filters to search url if they exists and are not empty
         if(country) {
-            url += `&code=${encodeURIComponent(country)}`
+            url += `&country=${encodeURIComponent(country)}`
         }
         
         if(status) {
@@ -23,10 +23,14 @@ export async function getOrdersAdmin({ page, perPage, status, businessRut, count
         }
 
         const { data } = await api.get(url);
-
+        
         const response = getOrdersResponseSchema.safeParse(data);
+        if (!response.success) {
+            console.error("❌ Zod validation failed:", response.error);
+            throw new Error("Invalid API response format");
+        }
 
-        return response.data;
+        return response.success ? response.data : null;
     } catch (error) {
         console.error("❌ Error en la solicitud:", error);
 
@@ -45,14 +49,18 @@ export async function getOrdersAdmin({ page, perPage, status, businessRut, count
     }
 }
 
-export async function getOrderByIdAdmin(orderId: Order["_id"]) {
+export async function getOrderByIdAdmin(orderId: string) {
+    if (!orderId) return null; // Prevent undefined
     try {
-        const url = `/orders/${orderId}`;
-        const { data } = await api.get(url);
+        const { data } = await api.get(`/orders/${orderId}`);
 
-        const response = orderSchema.safeParse(data);
+        const result = orderSchema.safeParse(data);
+        if (!result.success) {
+            console.error("❌ Zod validation error:", result.error);
+            return null; // <-- ALWAYS return something
+        }
 
-        return response.data;                  
+        return result.data; // Parsed & valid                 
     } catch (error) {
         console.error("❌ Error en la solicitud:", error);
 
@@ -71,18 +79,22 @@ export async function getOrderByIdAdmin(orderId: Order["_id"]) {
     }
 }
 
-export async function getOrdersUser({ page, perPage, status, country } : { page: number, perPage: number, status: string, country: string }) {
+export async function getOrdersUser({ page, perPage, status, country, orderId } : { page: number, perPage: number, status: string, country: string, orderId: string }) {
     try {
         // Base url
         let url = `/orders/user?page=${page}&perPage=${perPage}`;
 
         // Conditionally add filters to search url if they exists and are not empty
         if(country) {
-            url += `&code=${encodeURIComponent(country)}`
+            url += `&country=${encodeURIComponent(country)}`
         }
         
         if(status) {
             url += `&status=${encodeURIComponent(status)}`
+        }
+
+        if(orderId) {
+            url += `&orderId=${encodeURIComponent(orderId)}`
         }
 
         const { data } = await api.get(url);
@@ -140,6 +152,32 @@ export async function createOrder(formData: OrderForm) {
         const { data } = await api.post(url, formData);
 
         const response = orderSchema.safeParse(data);
+
+        return response.data;                  
+    } catch (error) {
+        console.error("❌ Error en la solicitud:", error);
+
+        if (isAxiosError(error)) {
+            console.error("🔍 Error de Axios detectado:");
+            console.error("➡️ Código de estado:", error.response?.status);
+            console.error("➡️ Mensaje de error:", error.response?.data?.error || error.message);
+            console.error("➡️ Respuesta completa:", error.response?.data);
+
+            // Lanzamos un error más detallado para que pueda ser manejado correctamente
+            throw new Error(error.response?.data?.message || "Ocurrió un error en la API");
+        } else {
+            console.error("⚠️ Error desconocido:", error);
+            throw new Error("Error inesperado. Intenta nuevamente. Si el error persiste, contacta al administrador.");
+        }
+    }
+}
+
+export async function updateOrder({ orderId, formData } : {orderId: string, formData: OrderForm }) {
+    try {
+        const url = `/orders/${orderId}`;
+        const { data } = await api.patch(url, formData);
+
+        const response = updateOrderResponseSchema.safeParse(data);
 
         return response.data;                  
     } catch (error) {

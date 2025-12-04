@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { userSchema } from "./auth";
+import { authUserSchema } from "./auth";
 
 // TODO: Work on Types regarding Orders
 export const orderStatusSchema = z.enum([
@@ -34,7 +34,7 @@ export const orderSchema = z.object({
     total: z.number().min(0, "El total debe ser mayor o igual a 0"),
     businessName: z.string().min(1, "Nombre del negocio es requerido"), 
     businessRut: z.string().min(1, "RUT del negocio es requerido"), 
-    user: z.union([userSchema, z.string()]), // For populated or unpopulated
+    user: z.union([z.string(), authUserSchema]), // For populated or unpopulated
 
     createdAt: z.string().or(z.date()), // ✅ API returns ISO string, but could be Date
     updatedAt: z.string().or(z.date())  // ✅ Same here
@@ -68,6 +68,6 @@ export const updateOrderStatusSchema = z.object({
 export type Order = z.infer<typeof orderSchema>;
 export type OrderStatusEnum = z.infer<typeof orderStatusSchema>;
 export type OrderItem = z.infer<typeof orderItemSchema>
-export type OrderForm = Pick<Order, "items" | "businessName" | "businessRut" | "payment" | "shipper" | "country" | "total" | "user">;
+export type OrderForm = Pick<Order, "items" | "businessName" | "businessRut" | "payment" | "shipper" | "country" | "total" | "user" | "status">;
 export type OrderStatusForm = z.infer<typeof updateOrderStatusSchema>;
 export type GetOrdersResponse = z.infer<typeof getOrdersResponseSchema>;
