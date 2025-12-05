@@ -5,7 +5,7 @@ import Loader from "@/components/ui/Loader";
 import Pagination from "@/components/ui/Pagination";
 import SearchBar from "@/components/ui/SearchBar";
 import { useQuery } from "@tanstack/react-query";
-import { CheckCircle, Package, Truck, XCircle } from "lucide-react";
+import { CheckCircle, Package, Pen, Truck, XCircle } from "lucide-react";
 import { useEffect } from "react";
 import { Link, Navigate, useSearchParams } from "react-router-dom";
 
@@ -105,30 +105,44 @@ export default function AdminOrdersView() {
                 searchText="Orden"
             />
             
-            <SearchBar
-                route="admin/orders"
-                param="businessRut"
-                inputType="text"
-                formText="Buscar Orden por RUT del Negocio. Ej. 12.345.678-9"
-                searchText="Empresa"
-            />
+            {hasActiveSearch && (
+                <>
+                    <SearchBar
+                        route="admin/orders"
+                        param="businessRut"
+                        inputType="text"
+                        formText="Buscar Orden por RUT del Negocio. Ej. 12.345.678-9"
+                        searchText="Empresa"
+                    />
+        
+                    <SearchBar
+                        route="admin/orders"
+                        param="country"
+                        inputType="text"
+                        formText="Buscar Orden por País. Ej. Chile"
+                        searchText="País"
+                    />
+        
+                    <SearchBar
+                        route="admin/orders"
+                        param="status"
+                        inputType="select"
+                        formText="Buscar Orden por su Estado. Ej. Pendiente"
+                        searchText="Estado"
+                        options={orderStatusOptions}
+                    />
+                </>
+            )}
 
-            <SearchBar
-                route="admin/orders"
-                param="country"
-                inputType="text"
-                formText="Buscar Orden por País. Ej. Chile"
-                searchText="País"
-            />
-
-            <SearchBar
-                route="admin/orders"
-                param="status"
-                inputType="select"
-                formText="Buscar Orden por su Estado. Ej. Pendiente"
-                searchText="Estado"
-                options={orderStatusOptions}
-            />
+            <div className="flex justify-center mt-8">
+                <Link
+                    to={"/admin/orders/create"}
+                    className="flex items-center gap-2 rounded-md bg-orange-600 px-8 py-3 text-sm text-center font-bold text-white shadow-xs transition-colors duration-200 hover:bg-orange-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+                >
+                    <Pen size={16} />
+                    Registrar Orden
+                </Link>
+            </div>
 
             {hasActiveSearch ? (
                 <p className="text-gray-700 text-center my-10">
@@ -136,7 +150,7 @@ export default function AdminOrdersView() {
                 </p>
             ) : (
                 <p className="text-gray-700 text-center my-10 border-b border-gray-300 pb-5">
-                    No hay órdenes registradas. Realiza una búsqueda o espera a que se registren nuevas órdenes.
+                    No hay órdenes registradas. Realiza una búsqueda o comienza a registrar nuevas ordenes.
                 </p>
             )}
 
