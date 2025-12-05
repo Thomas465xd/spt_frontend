@@ -2,6 +2,12 @@ import AdminDiscount from "@/components/admin/AdminUserSearch";
 import { Shield, UserCheck, ShoppingBag, Users, Users2, LogOutIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 
+const stats = [
+    { name: 'Pendientes', stat: '58' },
+    { name: 'En Transito', stat: '7' },
+    { name: 'Completadas', stat: '11' },
+]
+
 export default function AdminDashboardView() {
 	return (
 		<div className="bg-white min-h-screen">
@@ -16,27 +22,20 @@ export default function AdminDashboardView() {
 					</p>
 
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-						<div className="bg-slate-600 p-4 rounded-lg">
-							<h2 className="text-xl font-semibold mb-2">
-								Resumen
-							</h2>
-							<div className="flex justify-between">
-								<div className="text-center">
-									<p className="text-3xl font-bold"></p>
-									<p className="text-sm">Usuarios Totales</p>
-								</div>
-								<div className="text-center">
-									<p className="text-3xl font-bold"></p>
-									<p className="text-sm">Nuevos Usuarios</p>
-								</div>
-								<div className="text-center">
-									<p className="text-3xl font-bold"></p>
-									<p className="text-sm">
-										Pedidos Pendientes
-									</p>
-								</div>
-							</div>
-						</div>
+                        <div className="bg-slate-700 rounded-md px-6">
+                            <h3 className="text-base font-semibold text-white my-4">Resumen de Ordenes</h3>
+                            <dl className="mb-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
+                                {stats.map((item) => (
+                                <div
+                                    key={item.name}
+                                    className="overflow-hidden rounded-lg bg-gray-800/75 px-4 py-5 shadow-sm inset-ring inset-ring-white/10 sm:p-6"
+                                >
+                                    <dt className="truncate text-sm font-medium text-gray-400">{item.name}</dt>
+                                    <dd className="mt-1 text-3xl font-semibold tracking-tight text-white">{item.stat}</dd>
+                                </div>
+                                ))}
+                            </dl>
+                        </div>
 
 						<div className="bg-white text-slate-700 p-4 rounded-lg">
 							<h2 className="text-xl font-semibold mb-2">
@@ -140,8 +139,16 @@ export default function AdminDashboardView() {
 				</div>
 			</div>
 
+            <div className="flex items-center my-12">
+                <div aria-hidden="true" className="w-full border-t border-gray-300" />
+                    <div className="relative flex justify-center">
+                        <span className="bg-white px-2 text-sm text-gray-500">Descuentos</span>
+                    </div>
+                <div aria-hidden="true" className="w-full border-t border-gray-300" />
+            </div>
+
             <div className="max-w-7xl mx-auto p-6">
-				<h2 className="text-center text-3xl font-bold text-slate-700 mb-6 pt-8 border-t border-gray-300">
+				<h2 className="text-center text-3xl font-bold text-slate-700 mb-6 pt-8">
 					Asignar Descuentos exclusivos
 				</h2>
 

@@ -64,7 +64,8 @@ export default function CartView() {
             {cartDetails ? (
                 <div className="flex justify-center mt-10">
                     <button 
-                        className="px-4 py-2 bg-orange-600 text-white rounded-full hover:bg-orange-700 transition duration-300"
+                        disabled
+                        className="px-4 py-2 bg-orange-600 text-white rounded-full hover:bg-orange-700 transition duration-300 disabled:opacity-50 disabled:hover:bg-orange-600 disabled:cursor-not-allowed"
                         onClick={() =>  navigate(`/cart/checkout`) }
                     >
                         Ir a Emitir Orden

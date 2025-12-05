@@ -40,6 +40,7 @@ export const userDiscountSchema = z.object({
     discount: z.number().default(20), 
 })
 
+export type AdminTableUser = z.infer<typeof adminTableUserSchema>
 export type UserStatusForm = z.infer<typeof userStatusSchema>;
 export type UserDiscountForm = z.infer<typeof userDiscountSchema>;
 export type UserDiscountSearch = z.infer<typeof userDiscountSearchSchema>;

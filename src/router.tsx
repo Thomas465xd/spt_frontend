@@ -15,7 +15,7 @@ const ProfileLayout = lazy(() => import("./layouts/ProfileLayout"));
 const ClientView = lazy(() => import("./views/home/ClientView"));
 const ProductsView = lazy(() => import("./views/products/ProductsView"));
 const CartView = lazy(() => import("./views/cart/CartView"));
-const CartCheckoutView = lazy(() => import("./views/cart/CartCheckoutView"));
+//const CartCheckoutView = lazy(() => import("./views/cart/deprecated/CartCheckoutView"));
 const OrdersView = lazy(() => import("./views/orders/OrdersView"));
 
 // Auth views
@@ -31,11 +31,13 @@ const SetPasswordView = lazy(() => import("./views/auth/SetPasswordView"));
 const AdminDashboardView = lazy(
 	() => import("./views/admin/AdminDashboardView")
 );
-const AdminUsersView = lazy(() => import("./views/admin/AdminUsersView"));
+const AdminUsersView = lazy(() => import("./views/admin/users/AdminUsersView"));
 const AdminUnconfirmedUsersView = lazy(
-	() => import("./views/admin/AdminUnconfirmedUsersView")
+	() => import("./views/admin/users/AdminUnconfirmedUsersView")
 );
-const AdminOrdersView = lazy(() => import("./views/admin/AdminOrdersView"));
+const AdminOrdersView = lazy(() => import("./views/admin/orders/AdminOrderView"));
+const CreateOrderView = lazy(() => import("./views/admin/orders/CreateOrderView"))
+const UpdateOrderView = lazy(() => import("./views/admin/orders/UpdateOrderView"))
 
 // Profile views
 const ProfileView = lazy(() => import("./views/profile/ProfileView"));
@@ -62,15 +64,15 @@ export default function Router() {
 						<Route path="/" element={<ClientView />} />
 						<Route path="/products" element={<ProductsView />} />
 						<Route path="/cart" element={<CartView />} />
-						<Route
+						{/* <Route
 							path="/cart/checkout"
 							element={<CartCheckoutView />}
-						/>
+						/> */}
 						<Route path="/orders" element={<OrdersView />} />
-						<Route
+						{/* <Route
 							path="/orders/details/:orderId"
 							element={<ProductsView />}
-						/>
+						/> */}
 
 						{/* Profile Routes - nested under AppLayout */}
 						<Route path="/profile" element={<ProfileLayout />}>
@@ -125,6 +127,14 @@ export default function Router() {
 						<Route
 							path="/admin/orders"
 							element={<AdminOrdersView />}
+						/>
+						<Route
+							path="/admin/orders/create"
+							element={<CreateOrderView />}
+						/>
+						<Route
+							path="/admin/orders/edit/:orderId"
+							element={<UpdateOrderView />}
 						/>
 					</Route>
 

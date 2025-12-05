@@ -112,12 +112,14 @@ export default function AdminUnconfirmedUsersView() {
                 </>
             ) : null}
 
-            <AdminConfirmedTable 
-                type="unconfirmed"
-                users={users} 
-                isLoading={isLoading} 
-                error={error} 
-            />  {/* Pass the required props to the table */}
+            <div className="max-w-7xl">
+                <AdminConfirmedTable 
+                    type="unconfirmed"
+                    users={users} 
+                    isLoading={isLoading} 
+                    error={error} 
+                /> 
+            </div>
 
             <Pagination
                 route="admin/confirm"

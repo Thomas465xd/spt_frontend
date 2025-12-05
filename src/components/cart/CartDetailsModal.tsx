@@ -125,7 +125,8 @@ export default function ConfirmUserModal() {
                                             <>
                                                 <button
                                                     type="button"
-                                                    className="bg-orange-600 hover:bg-orange-700 w-full rounded-full p-2 text-white font-medium text-sm cursor-pointer transition-colors"
+                                                    disabled
+                                                    className="bg-orange-600 hover:bg-orange-700 w-full rounded-full p-2 text-white font-medium text-sm cursor-pointer transition-colors disabled:opacity-50 disabled:hover:bg-orange-600 disabled:cursor-not-allowed"
                                                     onClick={() => navigate("/cart/checkout")}
                                                 >
                                                     Ir a Emitir Orden de Compra

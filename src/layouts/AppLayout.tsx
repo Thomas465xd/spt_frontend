@@ -1,4 +1,4 @@
-import { Link, Navigate, Outlet, useNavigate } from "react-router-dom";
+import { Link, Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import Logo from "../components/ui/Logo";
 import NavMenu from "../components/ui/NavMenu";
@@ -13,6 +13,10 @@ export default function AppLayout() {
     const queryClient = useQueryClient();
     const navigate = useNavigate();
     const { data, isError, isLoading } = useAuth();
+    const location = useLocation(); 
+
+    const currentPath = location.pathname; 
+    console.log(currentPath)
 
     const logout = () => {
         localStorage.removeItem('SPT_ADMIN_TOKEN');
@@ -64,29 +68,38 @@ export default function AppLayout() {
                 <nav>
                     <div className="mx-auto flex flex-wrap justify-center md:justify-between bg-slate-800 w-full p-4 mt-4 md:mt-0 shadow-inner">
                         <div className="flex flex-wrap items-center justify-center gap-3 md:gap-6 ">
-                            <Link to={'/'} className="group text-white font-medium hover:text-orange-300 transition-colors flex items-center gap-1.5 px-2 py-1 rounded hover:bg-slate-700">
+                            <Link 
+                                to={'/'} 
+                                className={`group font-medium ${currentPath == "/" ? "text-orange-300" : "text-white"} hover:text-orange-300 transition-colors flex items-center gap-1.5 px-2 py-1 rounded hover:bg-slate-700`}
+                            >
                                 <Home size={18} className="group-hover:-translate-y-0.5 transition-all duration-500" />
                                 <span>Inicio</span>
                             </Link>
-                            {/*
-                            <Link to={'/categories'} className="group text-white font-medium hover:text-orange-300 transition-colors flex items-center gap-1.5 px-2 py-1 rounded hover:bg-slate-700">
-                                <Tag size={18} />
-                                <span>Categorías</span>
-                            </Link>
-                            */}
-                            <Link to={'/profile'} className="group text-white font-medium hover:text-orange-300 transition-colors flex items-center gap-1.5 px-2 py-1 rounded hover:bg-slate-700">
+                            <Link 
+                                to={'/profile'} 
+                                className={`group font-medium ${currentPath == "/profile" ? "text-orange-300" : "text-white"} hover:text-orange-300 transition-colors flex items-center gap-1.5 px-2 py-1 rounded hover:bg-slate-700`}
+                            >
                                 <User size={18} className="group-hover:-translate-y-0.5 transition-all duration-500" />
                                 <span>Perfil</span>
                             </Link>
-                            <Link to={'/products'} className="group text-white font-medium hover:text-orange-300 transition-colors flex items-center gap-1.5 px-2 py-1 rounded hover:bg-slate-700">
+                            <Link 
+                                to={'/products'} 
+                                className={`group font-medium ${currentPath == "/products" ? "text-orange-300" : "text-white"} hover:text-orange-300 transition-colors flex items-center gap-1.5 px-2 py-1 rounded hover:bg-slate-700`}
+                            >
                                 <Boxes size={18} className="group-hover:-translate-y-0.5 transition-all duration-500" />
                                 <span>Productos</span>
                             </Link>
-                            <Link to={'/cart'} className="group text-white font-medium hover:text-orange-300 transition-colors flex items-center gap-1.5 px-2 py-1 rounded hover:bg-slate-700">
+                            <Link 
+                                to={'/cart'} 
+                                className={`group font-medium ${currentPath == "/cart" ? "text-orange-300" : "text-white"} hover:text-orange-300 transition-colors flex items-center gap-1.5 px-2 py-1 rounded hover:bg-slate-700`}
+                            >
                                 <ShoppingCart size={18} className="group-hover:-translate-y-0.5 transition-all duration-500" />
                                 <span>Carrito</span>
                             </Link>
-                            <Link to={'/orders'} className="group text-white font-medium hover:text-orange-300 transition-colors flex items-center gap-1.5 px-2 py-1 rounded hover:bg-slate-700">
+                            <Link 
+                                to={'/orders'} 
+                                className={`group font-medium ${currentPath == "/orders" ? "text-orange-300" : "text-white"} hover:text-orange-300 transition-colors flex items-center gap-1.5 px-2 py-1 rounded hover:bg-slate-700`}
+                            >
                                 <ClipboardList size={18} className="group-hover:-translate-y-0.5 transition-all duration-500" />
                                 <span>Ordenes</span>
                             </Link>

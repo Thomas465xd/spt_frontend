@@ -6,7 +6,7 @@ import ErrorMessage from "../ui/ErrorMessage";
 import { useQuery } from "@tanstack/react-query";
 import { getUserByRut } from "@/api/AdminAPI";
 import { formatRUT } from "@/utilities/rut";
-import AdminDiscountForm from "@/views/admin/AdminDiscountForm";
+import AdminDiscountForm from "@/components/admin/AdminDiscountForm";
 
 export default function AdminDiscount() {
     const [searchQuery, setSearchQuery] = useState<string>("");

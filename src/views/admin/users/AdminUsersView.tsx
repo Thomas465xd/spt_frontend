@@ -103,7 +103,7 @@ export default function AdminUsersView() {
                     <div className="flex gap-5 justify-center my-5">
                         <Link
                             className=" bg-orange-500 text-white px-5 py-2 rounded-full"
-                            to="/admin/confirm"
+                            to="/admin/users"
                         >
                             Volver a Usuarios
                         </Link>
@@ -111,12 +111,14 @@ export default function AdminUsersView() {
                 </>
             ) : null}
 
-            <AdminConfirmedTable 
-                type="confirmed"
-                users={users} 
-                isLoading={isLoading} 
-                error={error} 
-            />  {/* Pass the required props to the table */}
+            <div className="max-w-7xl mx-auto">
+                <AdminConfirmedTable 
+                    type="confirmed"
+                    users={users} 
+                    isLoading={isLoading} 
+                    error={error} 
+                />
+            </div>
 
             <Pagination
                 route="admin/users"

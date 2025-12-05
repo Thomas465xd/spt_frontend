@@ -1,6 +1,8 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function NotFound() {
+    const navigate = useNavigate(); 
+
     return (
         <div className="flex flex-col items-center justify-center min-h-scree px-6 text-center">
             
@@ -19,12 +21,21 @@ export default function NotFound() {
                 </p>
 
                 {/* Back to Home Button */}
-                <Link 
-                    to="/" 
-                    className="mt-6 inline-block px-6 py-3 text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-all"
-                >
-                    Go Back Home
-                </Link>
+                <div className="flex gap-4">
+                    <Link 
+                        to="/" 
+                        className="mt-6 inline-block px-6 py-3 text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition-all"
+                    >
+                        Go Back Home
+                    </Link>
+
+                    <button
+                        onClick={() => navigate(-1)}
+                        className="mt-6 inline-block px-6 py-3 text-white bg-slate-700 rounded-lg hover:bg-slate-800 transition-all"
+                    >
+                        Go To Previous Page
+                    </button>
+                </div>
             </div>
         </div>
     );
