@@ -127,8 +127,6 @@ export default function OrderTable({ orders, admin }: OrderTableProps) {
 		});
 	};
 
-    console.log(orders)
-
 	return (
 		<div className="my-20">
 			<div className="px-4 sm:px-6 lg:px-8">
