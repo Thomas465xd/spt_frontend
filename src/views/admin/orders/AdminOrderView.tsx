@@ -5,8 +5,36 @@ import Loader from "@/components/ui/Loader";
 import Pagination from "@/components/ui/Pagination";
 import SearchBar from "@/components/ui/SearchBar";
 import { useQuery } from "@tanstack/react-query";
+import { CheckCircle, Package, Truck, XCircle } from "lucide-react";
 import { useEffect } from "react";
 import { Link, Navigate, useSearchParams } from "react-router-dom";
+
+const orderStatusOptions = [
+    {
+        value: "Pendiente",
+        label: "Pendiente",
+        icon: Package,
+        color: "text-yellow-600"
+    },
+    {
+        value: "En Transito",
+        label: "En Tránsito",
+        icon: Truck,
+        color: "text-blue-600"
+    },
+    {
+        value: "Entregado",
+        label: "Entregado",
+        icon: CheckCircle,
+        color: "text-green-600"
+    },
+    {
+        value: "Cancelado",
+        label: "Cancelado",
+        icon: XCircle,
+        color: "text-red-600"
+    }
+];
 
 export default function AdminOrdersView() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -67,13 +95,22 @@ export default function AdminOrdersView() {
                     Aquí puedes ver los Detalles de las Órdenes y <span className="font-bold text-orange-500">Administrarlas.</span>
                 </p>
             )}
+
+            <SearchBar
+                route="orders"
+                param="orderId"
+                inputType="text"
+                formText="Buscar Orden por ID "
+                mini
+                searchText="Orden"
+            />
             
             <SearchBar
                 route="admin/orders"
                 param="businessRut"
                 inputType="text"
                 formText="Buscar Orden por RUT del Negocio. Ej. 12.345.678-9"
-                searchText="RUT Negocio"
+                searchText="Empresa"
             />
 
             <SearchBar
@@ -82,6 +119,15 @@ export default function AdminOrdersView() {
                 inputType="text"
                 formText="Buscar Orden por País. Ej. Chile"
                 searchText="País"
+            />
+
+            <SearchBar
+                route="admin/orders"
+                param="status"
+                inputType="select"
+                formText="Buscar Orden por su Estado. Ej. Pendiente"
+                searchText="Estado"
+                options={orderStatusOptions}
             />
 
             {hasActiveSearch ? (
@@ -97,10 +143,10 @@ export default function AdminOrdersView() {
             {hasActiveSearch && (
                 <div className="flex gap-5 justify-center my-10">
                     <Link
-                        className="bg-orange-500 hover:bg-orange-600 text-white px-5 py-2 rounded-full transition-colors"
+                        className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-2 rounded-full transition-colors"
                         to="/admin/orders"
                     >
-                        Volver a Órdenes
+                        Volver a Todas las Órdenes
                     </Link>
                 </div>
             )}
@@ -116,11 +162,20 @@ export default function AdminOrdersView() {
             </p>
 
             <SearchBar
+                route="orders"
+                param="orderId"
+                inputType="text"
+                formText="Buscar Orden por ID "
+                mini
+                searchText="Orden"
+            />
+
+            <SearchBar
                 route="admin/orders"
                 param="businessRut"
                 inputType="text"
                 formText="Buscar Orden por RUT de la Empresa. Ej. 12.345.678-9"
-                searchText="RUT Empresa"
+                searchText="Empresa"
             />
 
             <SearchBar
@@ -131,6 +186,15 @@ export default function AdminOrdersView() {
                 searchText="País"
             />
 
+            <SearchBar
+                route="admin/orders"
+                param="status"
+                inputType="select"
+                formText="Buscar Orden por su Estado. Ej. Pendiente"
+                searchText="Estado"
+                options={orderStatusOptions}
+            />
+
             <p className="text-gray-700 text-center my-10">
                 Al cambiar el estado de la orden, el cliente <span className="font-bold text-orange-500">será notificado por correo</span>
             </p>
@@ -139,14 +203,14 @@ export default function AdminOrdersView() {
                 <>
                     <div className="text-center mt-10 mb-10">
                         <Link
-                            className="bg-orange-500 hover:bg-orange-600 text-white px-10 py-4 rounded-full transition-colors"
+                            className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-2 rounded-full transition-colors"
                             to="/admin/orders"
                         >
                             Volver a Todas las Órdenes
                         </Link>
                     </div>
 
-                    <p className="text-gray-700 text-center my-10">
+                    <p className="text-gray-700 text-center mt-10">
                         Órdenes encontradas: <span className="font-bold text-orange-500">{totalOrders}</span>
                     </p>
                 </>

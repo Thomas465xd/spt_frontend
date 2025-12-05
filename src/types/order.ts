@@ -29,6 +29,7 @@ export const orderSchema = z.object({
     items: z.array(orderItemSchema).min(1, "Debe haber al menos un producto"), 
     payment: z.string().min(1, "Método de pago es requerido"), 
     shipper: z.string().min(1, "Expedidor es requerido"), 
+    trackingNumber: z.string().min(1, "Tracking Number es requerido"),
     status: orderStatusSchema,
     country: z.string().min(1, "País es requerido"), 
     total: z.number().min(0, "El total debe ser mayor o igual a 0"),
@@ -36,8 +37,11 @@ export const orderSchema = z.object({
     businessRut: z.string().min(1, "RUT del negocio es requerido"), 
     user: z.union([z.string(), authUserSchema]), // For populated or unpopulated
 
-    createdAt: z.string().or(z.date()), // ✅ API returns ISO string, but could be Date
-    updatedAt: z.string().or(z.date())  // ✅ Same here
+    estimatedDelivery: z.string().or(z.date()), // API returns ISO string, but could be Date
+    deliveredAt: z.string().or(z.date()).nullable(), // Same here
+
+    createdAt: z.string().or(z.date()), // API returns ISO string, but could be Date
+    updatedAt: z.string().or(z.date())  // Same here
 }).refine((data) => {
     // Validate that total = sum of all lineTotal values
     const calculatedTotal = data.items.reduce((sum, item) => sum + item.lineTotal, 0);
@@ -68,6 +72,6 @@ export const updateOrderStatusSchema = z.object({
 export type Order = z.infer<typeof orderSchema>;
 export type OrderStatusEnum = z.infer<typeof orderStatusSchema>;
 export type OrderItem = z.infer<typeof orderItemSchema>
-export type OrderForm = Pick<Order, "items" | "businessName" | "businessRut" | "payment" | "shipper" | "country" | "total" | "user" | "status">;
+export type OrderForm = Pick<Order, "items" | "businessName" | "businessRut" | "payment" | "shipper" | "country" | "total" | "user" | "status" | "estimatedDelivery" | "trackingNumber" | "deliveredAt">;
 export type OrderStatusForm = z.infer<typeof updateOrderStatusSchema>;
 export type GetOrdersResponse = z.infer<typeof getOrdersResponseSchema>;
