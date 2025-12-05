@@ -8,3 +8,9 @@ export function formatDate(isoString: string) {
 
     return formatter.format(date);
 }
+
+export const formatDateForInput = (dateString: string | Date | null) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD
+};

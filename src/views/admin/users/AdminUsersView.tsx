@@ -103,7 +103,7 @@ export default function AdminUsersView() {
                     <div className="flex gap-5 justify-center my-5">
                         <Link
                             className=" bg-orange-500 text-white px-5 py-2 rounded-full"
-                            to="/admin/confirm"
+                            to="/admin/users"
                         >
                             Volver a Usuarios
                         </Link>

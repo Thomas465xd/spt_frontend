@@ -43,14 +43,14 @@ export default function Footer() {
 									Carrito
 								</Link>
 							</li>
-							<li>
+							{/* <li>
 								<Link
 									to="/cart/checkout"
 									className="text-gray-300 hover:text-white transition"
 								>
 									Checkout
 								</Link>
-							</li>
+							</li> */}
 						</ul>
 					</div>
 
@@ -90,10 +90,10 @@ export default function Footer() {
 						<h3 className="text-lg font-bold mb-4">Contacto</h3>
 						<p>
 							<a
-								href="mailto:equipo@portalspt.cl"
+								href="mailto:contacto@sptrade.cl"
 								className="text-gray-300 hover:text-white transition"
 							>
-								equipo@portalspt.cl
+								contacto@sptrade.cl
 							</a>
 						</p>
 						<p>

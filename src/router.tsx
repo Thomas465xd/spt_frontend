@@ -3,8 +3,6 @@ import { lazy, Suspense } from "react";
 import Loader from "./components/ui/Loader";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react"
-import CreateOrderView from "./views/admin/orders/CreateOrderView";
-import UpdateOrderView from "./views/admin/orders/UpdateOrderView";
 
 // Lazy load layouts
 const AppLayout = lazy(() => import("./layouts/AppLayout"));
@@ -17,8 +15,8 @@ const ProfileLayout = lazy(() => import("./layouts/ProfileLayout"));
 const ClientView = lazy(() => import("./views/home/ClientView"));
 const ProductsView = lazy(() => import("./views/products/ProductsView"));
 const CartView = lazy(() => import("./views/cart/CartView"));
-const CartCheckoutView = lazy(() => import("./views/cart/CartCheckoutView"));
-const OrdersView = lazy(() => import("./views/orders/deprecated/OrdersView"));
+//const CartCheckoutView = lazy(() => import("./views/cart/deprecated/CartCheckoutView"));
+const OrdersView = lazy(() => import("./views/orders/OrdersView"));
 
 // Auth views
 const LoginView = lazy(() => import("./views/auth/LoginView"));
@@ -38,6 +36,8 @@ const AdminUnconfirmedUsersView = lazy(
 	() => import("./views/admin/users/AdminUnconfirmedUsersView")
 );
 const AdminOrdersView = lazy(() => import("./views/admin/orders/AdminOrderView"));
+const CreateOrderView = lazy(() => import("./views/admin/orders/CreateOrderView"))
+const UpdateOrderView = lazy(() => import("./views/admin/orders/UpdateOrderView"))
 
 // Profile views
 const ProfileView = lazy(() => import("./views/profile/ProfileView"));
@@ -64,15 +64,15 @@ export default function Router() {
 						<Route path="/" element={<ClientView />} />
 						<Route path="/products" element={<ProductsView />} />
 						<Route path="/cart" element={<CartView />} />
-						<Route
+						{/* <Route
 							path="/cart/checkout"
 							element={<CartCheckoutView />}
-						/>
+						/> */}
 						<Route path="/orders" element={<OrdersView />} />
-						<Route
+						{/* <Route
 							path="/orders/details/:orderId"
 							element={<ProductsView />}
-						/>
+						/> */}
 
 						{/* Profile Routes - nested under AppLayout */}
 						<Route path="/profile" element={<ProfileLayout />}>
