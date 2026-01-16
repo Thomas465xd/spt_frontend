@@ -18,16 +18,16 @@ export async function createAccount(formData: UserRegistrationForm) {
         if (isAxiosError(error)) {
             console.error("🔍 Error de Axios detectado:");
             console.error("➡️ Código de estado:", error.response?.status);
-            console.error("➡️ Mensaje de error:", error.response?.data?.error || error.message);
+            console.error("➡️ Mensaje de error:", error.response?.data?.errors || error.message);
             console.error("➡️ Respuesta completa:", error.response?.data);
 
             // Lanzamos un error más detallado para que pueda ser manejado correctamente
-            throw new Error(error.response?.data?.message || "Ocurrió un error en la API");
+            throw new Error(error.response?.data?.errors[0].message || "Ocurrió un error en la API");
         } else {
             console.error("⚠️ Error desconocido:", error);
-            throw new Error("Error inesperado. Intenta nuevamente. Si el error persiste, contacta al administrador.");
+            throw new Error("Error inesperado. Intenta nuevamente.");
         }
-    }
+	}
 }
 
 export async function login(formData: UserLoginForm) {
@@ -51,16 +51,16 @@ export async function login(formData: UserLoginForm) {
         if (isAxiosError(error)) {
             console.error("🔍 Error de Axios detectado:");
             console.error("➡️ Código de estado:", error.response?.status);
-            console.error("➡️ Mensaje de error:", error.response?.data?.error || error.message);
+            console.error("➡️ Mensaje de error:", error.response?.data?.errors || error.message);
             console.error("➡️ Respuesta completa:", error.response?.data);
 
             // Lanzamos un error más detallado para que pueda ser manejado correctamente
-            throw new Error(error.response?.data?.message || "Ocurrió un error en la API");
+            throw new Error(error.response?.data?.errors[0].message || "Ocurrió un error en la API");
         } else {
             console.error("⚠️ Error desconocido:", error);
             throw new Error("Error inesperado. Intenta nuevamente.");
         }
-    }
+	}
 }
 
 export async function forgotPasswordEmail(email: ForgotPasswwordForm) {
@@ -75,16 +75,16 @@ export async function forgotPasswordEmail(email: ForgotPasswwordForm) {
         if (isAxiosError(error)) {
             console.error("🔍 Error de Axios detectado:");
             console.error("➡️ Código de estado:", error.response?.status);
-            console.error("➡️ Mensaje de error:", error.response?.data?.error || error.message);
+            console.error("➡️ Mensaje de error:", error.response?.data?.errors || error.message);
             console.error("➡️ Respuesta completa:", error.response?.data);
 
             // Lanzamos un error más detallado para que pueda ser manejado correctamente
-            throw new Error(error.response?.data?.message || "Ocurrió un error en la API");
+            throw new Error(error.response?.data?.errors[0].message || "Ocurrió un error en la API");
         } else {
             console.error("⚠️ Error desconocido:", error);
             throw new Error("Error inesperado. Intenta nuevamente.");
         }
-    }
+	}
 }
 
 export async function validatePasswordToken(token: string): Promise<boolean> {
@@ -99,21 +99,16 @@ export async function validatePasswordToken(token: string): Promise<boolean> {
         if (isAxiosError(error)) {
             console.error("🔍 Error de Axios detectado:");
             console.error("➡️ Código de estado:", error.response?.status);
-            console.error("➡️ Mensaje de error:", error.response?.data?.error || error.message);
+            console.error("➡️ Mensaje de error:", error.response?.data?.errors || error.message);
             console.error("➡️ Respuesta completa:", error.response?.data);
 
-            // Si el error es por token inválido, devolvemos `false` en lugar de lanzar error
-            if (error.response?.status === 400 || error.response?.status === 401) {
-                return false;
-            }
-
             // Lanzamos un error más detallado para que pueda ser manejado correctamente
-            throw new Error(error.response?.data?.message || "Ocurrió un error en la API");
+            throw new Error(error.response?.data?.errors[0].message || "Ocurrió un error en la API");
         } else {
             console.error("⚠️ Error desconocido:", error);
             throw new Error("Error inesperado. Intenta nuevamente.");
         }
-    }
+	}
 }
 
 export async function setPassword({token, formData}: {formData: ConfigurePasswordForm, token: PasswordToken['token']}) {
@@ -128,16 +123,16 @@ export async function setPassword({token, formData}: {formData: ConfigurePasswor
         if (isAxiosError(error)) {
             console.error("🔍 Error de Axios detectado:");
             console.error("➡️ Código de estado:", error.response?.status);
-            console.error("➡️ Mensaje de error:", error.response?.data?.error || error.message);
+            console.error("➡️ Mensaje de error:", error.response?.data?.errors || error.message);
             console.error("➡️ Respuesta completa:", error.response?.data);
 
             // Lanzamos un error más detallado para que pueda ser manejado correctamente
-            throw new Error(error.response?.data?.message || "Ocurrió un error en la API");
+            throw new Error(error.response?.data?.errors[0].message || "Ocurrió un error en la API");
         } else {
             console.error("⚠️ Error desconocido:", error);
             throw new Error("Error inesperado. Intenta nuevamente.");
         }
-    }
+	}
 }
 
 export async function resetPassword({token, formData} : {formData: ConfigurePasswordForm, token: PasswordToken['token']}) {
@@ -152,14 +147,14 @@ export async function resetPassword({token, formData} : {formData: ConfigurePass
         if (isAxiosError(error)) {
             console.error("🔍 Error de Axios detectado:");
             console.error("➡️ Código de estado:", error.response?.status);
-            console.error("➡️ Mensaje de error:", error.response?.data?.error || error.message);
+            console.error("➡️ Mensaje de error:", error.response?.data?.errors || error.message);
             console.error("➡️ Respuesta completa:", error.response?.data);
 
             // Lanzamos un error más detallado para que pueda ser manejado correctamente
-            throw new Error(error.response?.data?.message || "Ocurrió un error en la API");
+            throw new Error(error.response?.data?.errors[0].message || "Ocurrió un error en la API");
         } else {
             console.error("⚠️ Error desconocido:", error);
             throw new Error("Error inesperado. Intenta nuevamente.");
         }
-    }
+	}
 }
