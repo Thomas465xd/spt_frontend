@@ -46,7 +46,7 @@ export default function ProductCard({ product, customDiscount }: ProductCardProp
 			cartDetails: [
 				{
 					quantity: 1,
-					unitValue: parseInt(finalPrice),
+					unitValue: parseInt(basePrice), // used to be finalPrice (with IVA) but for client requirements now it is just basePrice
 					image: product.urlImg,
 					idVarianteProducto: product.variants[0].id,
 					itemName: product.name,
@@ -60,11 +60,11 @@ export default function ProductCard({ product, customDiscount }: ProductCardProp
 	};
 
 	const basePrice = product.variants[0].salePrices.price ?? "N/A"; // Default value if salePrices is undefined
-	const finalPrice = product.variants[0].salePrices.finalPrice ?? "N/A"; // Default value if salePrices is undefined
+    //! not used for now...
+	// const finalPrice = product.variants[0].salePrices.finalPrice ?? "N/A"; // Default value if salePrices is undefined
 
 	const hasStock = product.variants[0].stockInfo?.[0]?.quantityAvailable > 0;
 
-    //! Hardcoded discount value | it will be gone once discounts are configured
     const discount = product.variants[0].discounts.length > 0 ? product.variants[0].discounts[0] : customDiscount;
 
 	return (
