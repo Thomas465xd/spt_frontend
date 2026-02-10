@@ -69,10 +69,10 @@ While Bsale handles product and inventory management, **Portal SPT has its own b
 - **Custom Discount System**: Loyalty program where administrators can assign personalized discounts (1-100%) to specific businesses
 - **Order Records**: Persistent order history and business intelligence separate from Bsale's checkout system
 
-This hybrid architecture combines the powerful inventory management of Bsale with custom business logic tailored to Portal SPT's specific needs.
-
 #### Custom Discount & Loyalty System:
 Administrators can assign **custom discount percentages** to affiliated businesses through the backend API. These discounts are automatically applied during checkout and serve as a loyalty program to reward long-term partnerships with Portal SPT. This feature is entirely managed by the `spt_backend`, allowing flexible business rules independent of Bsale's discount system.
+
+This hybrid architecture combines the powerful inventory management of Bsale with custom business logic tailored to Portal SPT's specific needs.
 
 ---
 
