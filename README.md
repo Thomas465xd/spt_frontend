@@ -1,5 +1,20 @@
 # Portal SPT - B2B Partner Platform Frontend 🚀
 
+<div align="center">
+
+![Spare Parts Trade Logo](./public/logo.svg)
+
+**Providing quality spare parts and exceptional service since 2020.**
+
+[![React](https://img.shields.io/badge/React-19.1-blue?logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38bdf8?logo=tailwind-css)](https://tailwindcss.com/)
+[![License](https://img.shields.io/badge/License-Private-red.svg)](#-license)
+
+[Website](https://www.morangojoyas.cl) • [Report Bug](https://github.com/Thomas465xd/JUP-RealEstate_Frontend/issues) • [Request Feature](https://github.com/Thomas465xd/JUP-RealEstate_Frontend/issues)
+
+</div>
+
 ---
 
 ## 📋 Table of Contents
@@ -10,6 +25,8 @@
 - [Project Structure](#-project-structure)
 - [Usage](#-usage)
 - [License](#-license)
+
+**See also:** [Backend Repository](https://github.com/Thomas465xd/spt_backend)
 
 ---
 
@@ -221,6 +238,6 @@ For use, distribution, or modification of this code, please contact the owner di
 
 ---
 
-**Made with ❤️ for Portal SPT**
+**Made with ❤️ for Spare Parts Trade**
 
 _Your trusted B2B partner platform - Streamlining business transactions_
