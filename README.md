@@ -20,6 +20,9 @@
 ## 📋 Table of Contents
 
 - [About the Project](#-about-the-project)
+  - [Bsale Integration](#-bsale-integration---the-core-of-product-management)
+  - [Backend Architecture](#-backend-architecture---custom-business-logic)
+- [System Architecture](#️-system-architecture)
 - [Features](#-features)
 - [Technologies](#️-technologies)
 - [Project Structure](#-project-structure)
@@ -42,30 +45,105 @@ This frontend project provides:
 - **For Administrators**: Complete control panel to manage users, orders, and platform content
 - **For the Business**: Professional digital presence with optimized performance, integrated analytics, and secure payment processing
 
+### 🔗 Bsale Integration - The Core of Product Management
+
+One of the most remarkable features of Portal SPT is its **deep integration with Bsale**, a cloud-based point-of-sale (POS) and inventory management system. Bsale powers the entire product catalog, shopping cart, and inventory management functionalities:
+
+#### What Bsale Provides:
+- **Product Catalog**: All products, variants, prices, and inventory are synced in real-time from Bsale
+- **Shopping Cart Management**: Cart operations (add, update, delete) are handled through Bsale's API
+- **Inventory Control**: Stock levels and product availability are managed centrally through Bsale
+- **Checkout Processing**: Order creation and initial checkout flow leverage Bsale's marketplace APIs
+- **Product Search & Discovery**: Product filtering, search, and display utilize Bsale's product database
+
+The frontend communicates with Bsale through dedicated API endpoints (`/src/api/BsaleOrderAPI.ts`, `/src/api/ProductAPI.ts`) that handle authentication and data transformation between Bsale's format and the application's needs.
+
+### 🔧 Backend Architecture - Custom Business Logic
+
+While Bsale handles product and inventory management, **Portal SPT has its own backend (`spt_backend`)** that manages business-specific features:
+
+#### Backend Responsibilities:
+- **User Management**: Registration, confirmation, and user profile management
+- **Authentication**: Secure login, password management, and session handling
+- **Order Administration**: Custom order tracking and management system separate from Bsale
+- **Custom Discount System**: Loyalty program where administrators can assign personalized discounts (1-100%) to specific businesses
+- **Order Records**: Persistent order history and business intelligence separate from Bsale's checkout system
+
+This hybrid architecture combines the powerful inventory management of Bsale with custom business logic tailored to Portal SPT's specific needs.
+
+#### Custom Discount & Loyalty System:
+Administrators can assign **custom discount percentages** to affiliated businesses through the backend API. These discounts are automatically applied during checkout and serve as a loyalty program to reward long-term partnerships with Portal SPT. This feature is entirely managed by the `spt_backend`, allowing flexible business rules independent of Bsale's discount system.
+
+---
+
+## 🏗️ System Architecture
+
+Portal SPT uses a **hybrid architecture** that combines external services with custom business logic:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     Portal SPT Frontend                      │
+│                    (React + TypeScript)                      │
+└───────────┬─────────────────────────────────┬───────────────┘
+            │                                 │
+            │                                 │
+    ┌───────▼────────┐              ┌────────▼────────┐
+    │  Bsale API     │              │  SPT Backend    │
+    │  Integration   │              │  (Custom API)   │
+    └───────┬────────┘              └────────┬────────┘
+            │                                 │
+            │                                 │
+    ┌───────▼────────────────┐      ┌────────▼────────────────┐
+    │  • Product Catalog     │      │  • User Management      │
+    │  • Shopping Cart       │      │  • Authentication       │
+    │  • Inventory System    │      │  • Order Records        │
+    │  • Checkout Flow       │      │  • Custom Discounts     │
+    │  • Stock Management    │      │  • Admin Functions      │
+    └────────────────────────┘      └─────────────────────────┘
+```
+
+### Integration Points:
+
+**Bsale Integration** (`/src/api/BsaleOrderAPI.ts`, `/src/api/ProductAPI.ts`):
+- Handles all product-related operations through Bsale's marketplace API
+- Manages shopping cart state and checkout processes
+- Real-time inventory synchronization
+- Uses Bsale's access token authentication
+
+**Backend Integration** (`/src/api/OrderAPI.ts`, `/src/api/AuthAPI.ts`, `/src/api/AdminAPI.ts`):
+- Manages user accounts and authentication tokens
+- Stores order history independently from Bsale
+- Applies custom business rules and discounts
+- Provides admin panel functionality
+
 ---
 
 ## ✨ Features
 
 ### 🛒 For Business Partners
 
-- **Product Catalog**: Browse and search through available products with detailed information
-- **Shopping Cart**: Add products to cart with quantity management
-- **Order Management**: View order history and track current orders
+- **Product Catalog** (Bsale): Browse and search through available products with real-time inventory from Bsale
+- **Shopping Cart** (Bsale): Add products to cart with quantity management powered by Bsale's cart API
+- **Custom Discounts**: Benefit from personalized loyalty discounts assigned by administrators
+- **Order Management** (Backend): View order history and track current orders through the custom backend
 - **Profile Management**: Update personal information and shipping details
-- **Secure Authentication**: Login and registration with password recovery
+- **Secure Authentication** (Backend): Login and registration with password recovery
 - **Responsive Design**: Optimized experience across all devices
 
 ### 🔐 For Administrators
 
 - **Admin Dashboard**: Comprehensive overview of platform metrics
-- **User Management**: Manage user accounts, confirmations, and permissions
-- **Order CRUD**: Create, view, update, and manage orders
-- **Product Management**: Control product listings and availability
+- **User Management** (Backend): Manage user accounts, confirmations, and permissions
+- **Custom Discount Assignment** (Backend): Set personalized discount rates (1-100%) for businesses as a loyalty program
+- **Order CRUD** (Backend): Create, view, update, and manage orders through the custom backend system
+- **Product Management** (Bsale): Control product listings and availability through Bsale integration
 - **User Search**: Quick lookup and management of business partners
 - **Secure Access**: Role-based authentication and authorization
 
 ### 🚀 Technical Features
 
+- **Bsale Integration**: Cloud-based POS and inventory management system powering all product operations
+- **Hybrid Architecture**: Combines Bsale's inventory management with custom business logic
 - **Fast Development**: Hot Module Replacement (HMR) with Vite
 - **Type Safety**: TypeScript for robust and maintainable code
 - **Optimized Performance**: Code splitting and lazy loading
