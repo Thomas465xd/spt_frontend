@@ -6,15 +6,26 @@ import { useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import { formatId, getIdLabels, getMaxLength, getValidation, ID_TYPES, type IdType } from "@/utilities/identification";
 
 export default function LoginForm() {
     const initialValues : UserLoginForm = {
+        idType: "RUT",
         personalId: "",
         email: "",
         password: ""
     }
 
-    const { register, handleSubmit, reset, formState: { errors } } = useForm<UserLoginForm>({defaultValues: initialValues});
+    const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<UserLoginForm>({defaultValues: initialValues});
+
+    const selectedIdType = watch("idType") as IdType;
+    const idLabels = getIdLabels(selectedIdType);
+    const validation = getValidation(selectedIdType);
+
+    const handleIdTypeChange = (newIdType: IdType) => {
+        setValue("idType", newIdType);
+        setValue("personalId", "", { shouldValidate: false });
+    };
 
     const navigate = useNavigate();
 
@@ -56,19 +67,52 @@ export default function LoginForm() {
             onSubmit={handleSubmit(handleLogin)}
             noValidate
         >
-            <div className="flex flex-col gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div className="">
                     <label 
                         className="label text-2xl font-normal"
                     >
-                        Número de Identificación
+                        Tipo de ID
+                    </label>
+                    <select
+                        className="input"
+                        {...register("idType", {
+                            required: "El tipo de identificación es obligatorio",
+                            onChange: (e) => handleIdTypeChange(e.target.value as IdType)
+                        })}
+                    >
+                        {ID_TYPES.map((type) => (
+                            <option key={type.value} value={type.value}>
+                                {type.label}
+                            </option>
+                        ))}
+                    </select>
+                    {errors.idType && (
+                        <ErrorMessage>{errors.idType.message}</ErrorMessage>
+                    )}
+                </div>
+
+                <div className="md:col-span-2">
+                    <label 
+                        className="label text-2xl font-normal"
+                    >
+                        {idLabels.personal}
                     </label>
                     <input 
                         type="text"
-                        placeholder="Ingresa tu ID de registro (RUT, RUC, NIT, etc...)"
+                        placeholder={idLabels.personalPlaceholder}
                         className="input"
+                        maxLength={getMaxLength(selectedIdType, "personal")}
                         {...register("personalId", {
-                            required: "El número de identificación no puede ir vacío",
+                            required: `El ${idLabels.personal} no puede ir vacío`,
+                            pattern: {
+                                value: validation.pattern,
+                                message: validation.message
+                            },
+                            onChange: (e) => {
+                                const formatted = formatId(e.target.value, selectedIdType);
+                                setValue("personalId", formatted, { shouldValidate: true });
+                            }
                         })}
                     />
                     {errors.personalId && (

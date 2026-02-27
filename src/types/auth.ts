@@ -83,6 +83,7 @@ export const registerSchema = userSchema.pick({
 });
 
 export const loginSchema = userSchema.pick({
+    idType: true,
     personalId: true,
     email: true,
     password: true,

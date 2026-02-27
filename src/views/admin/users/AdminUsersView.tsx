@@ -23,7 +23,7 @@ export default function AdminUsersView() {
 
     if(page < 1) return <Navigate to={`/admin/users?page=1`} replace />
 
-    const itemsPerPage = 5; 
+    const itemsPerPage =10; 
 
     const users = data?.users || [];
     const totalUsers = data?.totalUsers || 0; // Assuming totalUsers is returned from the API
