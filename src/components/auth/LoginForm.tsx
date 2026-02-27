@@ -45,7 +45,7 @@ export default function LoginForm() {
                 })
             } else {
                 Swal.fire({
-                    title: "Sesion Iniciada Correctamente",
+                    title: "Sesión Iniciada Correctamente",
                     text: data.message, 
                     icon: "success",
                 }).then(() => {
