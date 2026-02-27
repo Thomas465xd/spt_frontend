@@ -102,10 +102,10 @@ const AdminConfirmedTable: FC<AdminConfirmedTableProps> = ({ type, users, isLoad
                                                     Nombre
                                                 </th>
                                                 <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                                    RUT
+                                                    ID Personal
                                                 </th>
                                                 <th className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                                    RUT Empresa
+                                                    ID Empresa
                                                 </th>
                                                 <th className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                                                     Email
@@ -127,8 +127,8 @@ const AdminConfirmedTable: FC<AdminConfirmedTableProps> = ({ type, users, isLoad
                                                     <td className="py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-0">
                                                         {user.name}
                                                     </td>
-                                                    <td className="px-3 py-4 text-sm text-gray-900">{user.rut}</td>
-                                                    <td className="px-3 py-4 text-sm text-gray-900">{user.businessRut}</td>
+                                                    <td className="px-3 py-4 text-sm text-gray-900">{user.personalId}</td>
+                                                    <td className="px-3 py-4 text-sm text-gray-900">{user.businessId}</td>
                                                     <td className="py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-0">
                                                         {user.email}
                                                     </td>

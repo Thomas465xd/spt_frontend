@@ -14,17 +14,17 @@ export default function UserSearchModal({
 	onClose: () => void;
 	onSelectUser: (user: AdminTableUser) => void;
 }) {
-	const [searchRUT, setSearchRUT] = useState("");
+	const [searchId, setSearchId] = useState("");
 	const [searchEmail, setSearchEmail] = useState("");
 	const [page, setPage] = useState(1);
 
 	const { data, isLoading } = useQuery({
-		queryKey: ["users", page, searchRUT, searchEmail],
+		queryKey: ["users", page, searchId, searchEmail],
 		queryFn: () =>
 			getConfirmedUsers({
 				page,
 				perPage: 10,
-				searchRUT,
+				searchId,
 				searchEmail,
 			}),
 		enabled: isOpen,
@@ -39,7 +39,7 @@ export default function UserSearchModal({
 	};
 
 	const handleClearSearch = () => {
-		setSearchRUT("");
+		setSearchId("");
 		setSearchEmail("");
 		setPage(1);
 	};
@@ -67,16 +67,16 @@ export default function UserSearchModal({
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div>
 							<label className="block text-sm font-medium text-gray-700 mb-2">
-								Buscar por RUT Empresa
+								Buscar por ID
 							</label>
 							<input
 								type="text"
-								value={searchRUT}
-								onChange={(e) => setSearchRUT(e.target.value)}
+								value={searchId}
+								onChange={(e) => setSearchId(e.target.value)}
 								onKeyDown={(e) =>
 									e.key === "Enter" && handleSearch()
 								}
-								placeholder="Ej: 76.123.456-7"
+								placeholder="Ej: 76.123.456-7 o 20123456789"
 								className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
 							/>
 						</div>
@@ -152,7 +152,7 @@ export default function UserSearchModal({
 														{user.name}
 													</h3>
 													<span className="text-xs text-gray-500">
-														RUT: {user.rut}
+														ID Personal: {user.personalId}
 													</span>
 												</div>
 												<div className="grid grid-cols-2 gap-4 text-sm">
@@ -166,10 +166,10 @@ export default function UserSearchModal({
 													</div>
 													<div>
 														<span className="text-gray-600">
-															RUT Empresa:
+															ID Empresa:
 														</span>
 														<span className="ml-2 font-medium text-gray-900">
-															{user.businessRut}
+															{user.businessId}
 														</span>
 													</div>
 													<div>

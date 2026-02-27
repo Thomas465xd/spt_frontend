@@ -4,8 +4,8 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import ErrorMessage from "../ui/ErrorMessage";
 import { useQuery } from "@tanstack/react-query";
-import { getUserByRut } from "@/api/AdminAPI";
-import { formatRUT } from "@/utilities/rut";
+import { getUserByIdentification } from "@/api/AdminAPI";
+
 import AdminDiscountForm from "@/components/admin/AdminDiscountForm";
 
 export default function AdminDiscount() {
@@ -15,7 +15,7 @@ export default function AdminDiscount() {
     // Obtener usuario con useQuery
     const { data, isLoading, error } = useQuery({
         queryKey: ["userDiscount", searchQuery],
-        queryFn: () => getUserByRut({ rut: searchQuery }),
+        queryFn: () => getUserByIdentification({ identificationId: searchQuery }),
         enabled: shouldSearch && !!searchQuery.trim(),  // Solo ejecuta si shouldSearch es true y hay searchQuery
         retry: false
     });
@@ -24,7 +24,7 @@ export default function AdminDiscount() {
         search: "" 
     };
 
-    const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<SearchFormData>({
+    const { register, handleSubmit, reset, formState: { errors } } = useForm<SearchFormData>({
         defaultValues: initialValues
     });
 
@@ -48,19 +48,11 @@ export default function AdminDiscount() {
                 <div className="relative flex-grow">
                     <input 
                         type="text"
-                        placeholder="Ingresa el RUT o Email del Usuario. Ej. 12.345.678-9"
+                        placeholder="Ingresa el ID o Email del Usuario"
                         className="p-3 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
-                        maxLength={12}
+                        
                         {...register("search", {
-                            required: "El RUT no puede ir vacío",
-                            pattern: {
-                                value: /^\d{1,2}\.?\d{3}\.?\d{3}-[\dkK]$/,
-                                message: "Formato de RUT inválido. Ejemplo: 12.345.678-9"
-                            },
-                            onChange: (e) => {
-                                const formattedRUT = formatRUT(e.target.value);
-                                setValue("search", formattedRUT, { shouldValidate: true });
-                            }
+                            required: "El campo de búsqueda no puede ir vacío",
                         })}
                     />
                 </div>
@@ -93,7 +85,7 @@ export default function AdminDiscount() {
                             </h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 text-green-900">
                                     <div>
-                                        <span className="font-medium">RUT Empresa:</span> {data.businessRut}
+                                        <span className="font-medium">ID Empresa:</span> {data.businessId}
                                     </div>
                                     <div>
                                         <span className="font-medium">Empresa:</span> {data.businessName}

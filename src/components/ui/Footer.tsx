@@ -166,7 +166,7 @@ export default function Footer() {
 								Metropolitana
 							</p>
                             <p className="text-xs text-gray-400">
-                                Developed by: <a href="https://github.com/Thomas465xd" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition">Iñigo Del Campo</a>
+                                Developed by: <a href="https://thomas-dev-portfolio.vercel.app" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition">Iñigo Del Campo</a>
                             </p>
 						</div>
 					</div>

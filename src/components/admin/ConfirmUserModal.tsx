@@ -111,12 +111,12 @@ export default function ConfirmUserModal() {
                                                     <td className="p-2">{user.businessName}</td>
                                                 </tr>
                                                 <tr className="">
-                                                    <td className="p-2 font-bold">🪪 RUT Personal:</td>
-                                                    <td className="p-2">{user.rut}</td>
+                                                    <td className="p-2 font-bold">🪪 ID Personal:</td>
+                                                    <td className="p-2">{user.personalId}</td>
                                                 </tr>
                                                 <tr className="">
-                                                    <td className="p-2 font-bold">🆔 RUT Empresa:</td>
-                                                    <td className="p-2">{user.businessRut}</td>
+                                                    <td className="p-2 font-bold">🆔 ID Empresa:</td>
+                                                    <td className="p-2">{user.businessId}</td>
                                                 </tr>
                                                 <tr className="">
                                                     <td className="p-2 font-bold">📍 Dirección:</td>

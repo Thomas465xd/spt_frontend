@@ -182,7 +182,7 @@ export default function OrderTable({ orders, admin }: OrderTableProps) {
                                         scope="col"
                                         className="px-2 py-3.5 text-left text-sm font-semibold whitespace-nowrap text-gray-900"
                                     >
-                                        RUT Empresa
+                                        ID Empresa
                                     </th>
                                 ) : (
                                     <th
@@ -335,13 +335,13 @@ export default function OrderTable({ orders, admin }: OrderTableProps) {
                                                                 className="text-orange-400 hover:text-orange-600 duration-300 transition-colors cursor-pointer"
                                                                 onClick={() =>
                                                                     copyToClipboard(
-                                                                        order.businessRut
+                                                                        order.businessId
                                                                     )
                                                                 }
                                                             />
                                                         </div>
                                                         <span>
-                                                            {order.businessRut}
+                                                            {order.businessId}
                                                         </span>
                                                     </div>
 												) : (
@@ -507,10 +507,10 @@ export default function OrderTable({ orders, admin }: OrderTableProps) {
                                                             ) : (
 															<div>
 																<span className="text-gray-600">
-																	RUT de la Empresa:
+																	ID de la Empresa:
 																</span>
 																<span className="ml-2 font-medium text-gray-900">
-																	{order.businessRut}
+																	{order.businessId}
 																</span>
 															</div>
                                                             )}
@@ -544,7 +544,7 @@ export default function OrderTable({ orders, admin }: OrderTableProps) {
                                                                         className="text-orange-400 hover:text-orange-600 duration-300 transition-colors cursor-pointer"
                                                                         onClick={() =>
                                                                             copyToClipboard(
-                                                                                order.businessRut
+                                                                                order.businessId
                                                                             )
                                                                         }
                                                                     />

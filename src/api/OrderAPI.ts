@@ -4,7 +4,7 @@ import { getOrdersResponseSchema, Order, OrderForm, orderSchema, OrderStatusForm
 
 //TODO: Work on API Calls to the /orders endpoints
 
-export async function getOrdersAdmin({ page, perPage, status, businessRut, country } : { page: number, perPage: number, status: string, businessRut: string, country: string }) {
+export async function getOrdersAdmin({ page, perPage, status, businessId, country } : { page: number, perPage: number, status: string, businessId: string, country: string }) {
     try {
         // Base url
         let url = `/orders?page=${page}&perPage=${perPage}`;
@@ -18,8 +18,8 @@ export async function getOrdersAdmin({ page, perPage, status, businessRut, count
             url += `&status=${encodeURIComponent(status)}`
         }
 
-        if(businessRut) {
-            url += `&businessRut=${encodeURIComponent(businessRut)}`
+        if(businessId) {
+            url += `&businessId=${encodeURIComponent(businessId)}`
         }
 
         const { data } = await api.get(url);
