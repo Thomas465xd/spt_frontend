@@ -137,7 +137,7 @@ interface IdValidation {
 
 const validationPatterns: Record<IdType, IdValidation> = {
     RUT: {
-        pattern: /^\d{1,2}\.?\d{3}\.?\d{3}-[\dkK]$/,
+        pattern: /^\d{1,2}\.\d{3}\.\d{3}-[\dkK]$/,
         message: "Formato de RUT inválido. Ejemplo: 12.345.678-9",
     },
     RUC: {
