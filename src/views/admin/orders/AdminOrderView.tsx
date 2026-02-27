@@ -42,20 +42,20 @@ export default function AdminOrdersView() {
     // Get search parameters
     const searchCountry = searchParams.get("country") || "";
     const searchStatus = searchParams.get("status") || "";
-    const searchBusinessRut = searchParams.get("businessRut") || "";
+    const searchBusinessId = searchParams.get("businessId") || "";
     const page = parseInt(searchParams.get("page") || "1", 10);
 
     const itemsPerPage = 10;
 
     // Fetch orders with filters
     const { data, isLoading, isError } = useQuery({
-        queryKey: ["orders", searchCountry, searchBusinessRut, searchStatus, page],
+        queryKey: ["orders", searchCountry, searchBusinessId, searchStatus, page],
         queryFn: () => getOrdersAdmin({
             perPage: itemsPerPage, 
             page, 
             country: searchCountry, 
             status: searchStatus, 
-            businessRut: searchBusinessRut
+            businessId: searchBusinessId
         }),
         staleTime: 1000 * 60 * 5,
         refetchOnWindowFocus: false,
@@ -68,7 +68,7 @@ export default function AdminOrdersView() {
             newParams.set("page", "1");
             setSearchParams(newParams);
         }
-    }, [searchCountry, searchStatus, searchBusinessRut]);
+    }, [searchCountry, searchStatus, searchBusinessId]);
     
     if (page < 1) return <Navigate to={`/admin/orders?page=1`} replace />;
 
@@ -82,7 +82,7 @@ export default function AdminOrdersView() {
     const totalPages = data?.totalPages || 1;
 
     // Check if there are any active searches
-    const hasActiveSearch = searchCountry || searchStatus || searchBusinessRut;
+    const hasActiveSearch = searchCountry || searchStatus || searchBusinessId;
 
     if (orders.length === 0) return (
         <>
@@ -109,9 +109,9 @@ export default function AdminOrdersView() {
                 <>
                     <SearchBar
                         route="admin/orders"
-                        param="businessRut"
+                        param="businessId"
                         inputType="text"
-                        formText="Buscar Orden por RUT del Negocio. Ej. 12.345.678-9"
+                        formText="Buscar Orden por ID de la Empresa"
                         searchText="Empresa"
                     />
         
@@ -186,9 +186,9 @@ export default function AdminOrdersView() {
 
             <SearchBar
                 route="admin/orders"
-                param="businessRut"
+                param="businessId"
                 inputType="text"
-                formText="Buscar Orden por RUT de la Empresa. Ej. 12.345.678-9"
+                formText="Buscar Orden por ID de la Empresa"
                 searchText="Empresa"
             />
 

@@ -85,23 +85,23 @@ export default function ProfileForm({ data }: ProfileFormProps) {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="space-y-2">
-                        <label htmlFor="rut" className="text-sm font-bold">RUT de registro</label>
+                        <label htmlFor="personalId" className="text-sm font-bold">ID Personal</label>
                         <input 
                             type="text"
                             disabled 
-                            id="rut"
-                            placeholder={data.rut}
+                            id="personalId"
+                            placeholder={data.personalId}
                             className="w-full p-3 rounded border border-gray-300 bg-gray-100 cursor-not-allowed"
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <label htmlFor="businessRut" className="text-sm font-bold">RUT de la Empresa</label>
+                        <label htmlFor="businessId" className="text-sm font-bold">ID de la Empresa</label>
                         <input 
                             type="text"
                             disabled 
-                            id="businessRut"
-                            placeholder={data.businessRut}
+                            id="businessId"
+                            placeholder={data.businessId}
                             className="w-full p-3 rounded border border-gray-300 bg-gray-100 cursor-not-allowed"
                         />
                     </div>

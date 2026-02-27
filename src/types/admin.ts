@@ -4,8 +4,9 @@ export const adminTableUserSchema = z.object({
     _id: z.string(),
     name: z.string(),
     businessName: z.string(),
-    rut: z.string(),
-    businessRut: z.string(),
+    idType: z.enum(["RUT", "RUC", "NIT"]),
+    personalId: z.string(),
+    businessId: z.string(),
     email: z.string().email(),
     phone: z.string(),
     address: z.string(),
@@ -32,7 +33,7 @@ export const userStatusSchema = z.object({
 });
 
 export const userDiscountSearchSchema = z.object({
-    rut: z.string()
+    identificationId: z.string()
 })
 
 export const userDiscountSchema = z.object({

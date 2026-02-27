@@ -2,9 +2,9 @@ import api from "@/lib/axios";
 import { isAxiosError } from "axios";
 import {authUserSchema, Token, UserDiscountForm, UserDiscountSearch, userResponseSchema, usersResponseSchema, UserStatusForm } from "../types";
 
-export async function getConfirmedUsers({ page, perPage, searchRUT, searchEmail }: { page: number, perPage: number, searchRUT?: string, searchEmail?: string }) {
+export async function getConfirmedUsers({ page, perPage, searchId, searchEmail }: { page: number, perPage: number, searchId?: string, searchEmail?: string }) {
     try {
-        const url = `/auth/admin/users?page=${page}&perPage=${perPage}&searchRUT=${searchRUT || ""}&searchEmail=${searchEmail || ""}`;
+        const url = `/auth/admin/users?page=${page}&perPage=${perPage}&searchId=${searchId || ""}&searchEmail=${searchEmail || ""}`;
         const { data } = await api.get(url);
 
         const response = usersResponseSchema.safeParse(data);
@@ -30,9 +30,9 @@ export async function getConfirmedUsers({ page, perPage, searchRUT, searchEmail 
     } 
 }
 
-export async function getUnconfirmedUsers({ page, perPage, searchRUT, searchEmail }: { page: number, perPage: number, searchRUT?: string, searchEmail?: string }) {
+export async function getUnconfirmedUsers({ page, perPage, searchId, searchEmail }: { page: number, perPage: number, searchId?: string, searchEmail?: string }) {
     try {
-        const url = `/auth/admin/unconfirmed-users?page=${page}&perPage=${perPage}&searchRUT=${searchRUT || ""}&searchEmail=${searchEmail || ""}`;
+        const url = `/auth/admin/unconfirmed-users?page=${page}&perPage=${perPage}&searchId=${searchId || ""}&searchEmail=${searchEmail || ""}`;
         const { data } = await api.get(url);
 
         const response = usersResponseSchema.safeParse(data);
@@ -87,10 +87,10 @@ export async function getUserById({ userId } : UserStatusForm) {
     }
 }
 
-//TODO Get user by RUT
-export async function getUserByRut({ rut } : UserDiscountSearch) {
+// Get user by personal or business identification
+export async function getUserByIdentification({ identificationId } : UserDiscountSearch) {
     try {
-        const url = `/auth/admin/user/rut/${rut}`;
+        const url = `/auth/admin/user/identification/${identificationId}`;
         const { data } = await api.get(url);
         console.log(data)
 

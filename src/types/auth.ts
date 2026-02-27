@@ -25,8 +25,9 @@ export const userSchema = z.object({
     _id: z.string(),
     name: z.string(),
     businessName: z.string(),
-    rut: z.string(),
-    businessRut: z.string(),
+    idType: z.enum(["RUT", "RUC", "NIT"]),
+    personalId: z.string(),
+    businessId: z.string(),
     email: z.string().email(),
     phone: z.string(),
     confirmed: z.boolean(),
@@ -50,8 +51,9 @@ export const authUserSchema = z.object({
 
     name: z.string(),
     businessName: z.string(),
-    rut: z.string(),
-    businessRut: z.string(),
+    idType: z.enum(["RUT", "RUC", "NIT"]),
+    personalId: z.string(),
+    businessId: z.string(),
     email: z.string().email(),
     phone: z.string(),
     admin: z.boolean(),
@@ -70,15 +72,18 @@ export const authUserSchema = z.object({
 export const registerSchema = userSchema.pick({
     name: true,
     businessName: true,
-    rut: true,
-    businessRut: true,
+    idType: true,
+    personalId: true,
+    businessId: true,
     email: true,
     phone: true,
     address: true,
+}).extend({
+    country: z.string().min(1, "El país es obligatorio"),
 });
 
 export const loginSchema = userSchema.pick({
-    rut: true,
+    personalId: true,
     email: true,
     password: true,
 });

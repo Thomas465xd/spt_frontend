@@ -35,7 +35,7 @@ export default function CreateOrderForm() {
 			status: "Pendiente",
 			country: "Chile",
 			businessName: "",
-			businessRut: "",
+			businessId: "",
 			user: "",
             estimatedDelivery: "", 
             deliveredAt: null,
@@ -101,7 +101,7 @@ export default function CreateOrderForm() {
                     status: data.status,
                     country: data.country,
                     businessName: data.businessName,
-                    businessRut: data.businessRut,
+                    businessId: data.businessId,
                     total: calculateTotal(),
                     user: selectedUser._id,
                     estimatedDelivery: data.estimatedDelivery, 
@@ -117,7 +117,7 @@ export default function CreateOrderForm() {
 	const handleSelectUser = (user: AuthUser) => {
 		setSelectedUser(user);
 		setValue("businessName", user.businessName);
-		setValue("businessRut", user.businessRut);
+		setValue("businessId", user.businessId);
 		setValue("user", user._id);
 	};
 
@@ -174,11 +174,11 @@ export default function CreateOrderForm() {
 												</div>
 												<div>
 													<span className="text-gray-600">
-														RUT Empresa:
+														ID Empresa:
 													</span>
 													<span className="ml-2 font-medium text-gray-900">
 														{
-															selectedUser.businessRut
+															selectedUser.businessId
 														}
 													</span>
 												</div>

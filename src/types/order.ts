@@ -34,7 +34,7 @@ export const orderSchema = z.object({
     country: z.string().min(1, "País es requerido"), 
     total: z.number().min(0, "El total debe ser mayor o igual a 0"),
     businessName: z.string().min(1, "Nombre del negocio es requerido"), 
-    businessRut: z.string().min(1, "RUT del negocio es requerido"), 
+    businessId: z.string().min(1, "Identificación del negocio es requerida"), 
     user: z.union([z.string(), authUserSchema]), // For populated or unpopulated
 
     estimatedDelivery: z.string().or(z.date()), // API returns ISO string, but could be Date
@@ -53,7 +53,7 @@ export const orderSchema = z.object({
 
 export const getOrdersResponseSchema = z.object({
     orders: z.array(orderSchema), 
-    businessRut: z.string().optional(), // For user orders
+    businessId: z.string().optional(), // For user orders
     totalOrders: z.number(), 
     totalPages: z.number(), 
     perPage: z.number(), 
@@ -72,6 +72,6 @@ export const updateOrderStatusSchema = z.object({
 export type Order = z.infer<typeof orderSchema>;
 export type OrderStatusEnum = z.infer<typeof orderStatusSchema>;
 export type OrderItem = z.infer<typeof orderItemSchema>
-export type OrderForm = Pick<Order, "items" | "businessName" | "businessRut" | "payment" | "shipper" | "country" | "total" | "user" | "status" | "estimatedDelivery" | "trackingNumber" | "deliveredAt">;
+export type OrderForm = Pick<Order, "items" | "businessName" | "businessId" | "payment" | "shipper" | "country" | "total" | "user" | "status" | "estimatedDelivery" | "trackingNumber" | "deliveredAt">;
 export type OrderStatusForm = z.infer<typeof updateOrderStatusSchema>;
 export type GetOrdersResponse = z.infer<typeof getOrdersResponseSchema>;

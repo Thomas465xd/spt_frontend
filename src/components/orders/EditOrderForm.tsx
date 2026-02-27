@@ -50,7 +50,7 @@ export default function EditOrderForm() {
 			status: "Pendiente",
 			country: "Chile",
 			businessName: "",
-			businessRut: "",
+			businessId: "",
 			user: "",
             trackingNumber: "",
             estimatedDelivery: "", 
@@ -76,7 +76,7 @@ export default function EditOrderForm() {
 				status: orderData.status,
 				country: orderData.country,
 				businessName: orderData.businessName,
-				businessRut: orderData.businessRut,
+				businessId: orderData.businessId,
                 trackingNumber: orderData.trackingNumber, 
                 estimatedDelivery: formatDateForInput(orderData.estimatedDelivery),
                 deliveredAt: orderData.deliveredAt ? formatDateForInput(orderData.deliveredAt) : null,
@@ -92,8 +92,9 @@ export default function EditOrderForm() {
 					_id: orderData.user._id,
 					name: orderData.user.name,
 					businessName: orderData.user.businessName,
-					rut: orderData.user.rut,
-					businessRut: orderData.user.businessRut,
+					idType: orderData.user.idType,
+					personalId: orderData.user.personalId,
+					businessId: orderData.user.businessId,
 					email: orderData.user.email,
 					phone: orderData.user.phone,
 					address: orderData.user.address,
@@ -161,7 +162,7 @@ export default function EditOrderForm() {
 					status: data.status,
 					country: data.country,
 					businessName: data.businessName,
-					businessRut: data.businessRut,
+					businessId: data.businessId,
 					total: calculateTotal(),
 					user: selectedUser._id,
 					trackingNumber: data.trackingNumber, 
@@ -177,7 +178,7 @@ export default function EditOrderForm() {
 	const handleSelectUser = (user: AuthUser) => {
 		setSelectedUser(user);
 		setValue("businessName", user.businessName);
-		setValue("businessRut", user.businessRut);
+		setValue("businessId", user.businessId);
 		setValue("user", user._id);
 	};
 
@@ -250,11 +251,11 @@ export default function EditOrderForm() {
 												</div>
 												<div>
 													<span className="text-gray-600">
-														RUT Empresa:
+														ID Empresa:
 													</span>
 													<span className="ml-2 font-medium text-gray-900">
 														{
-															selectedUser.businessRut
+															selectedUser.businessId
 														}
 													</span>
 												</div>
