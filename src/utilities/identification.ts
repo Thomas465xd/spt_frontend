@@ -145,7 +145,7 @@ const validationPatterns: Record<IdType, IdValidation> = {
         message: "Formato de RUC inválido. Debe tener entre 8 y 11 dígitos",
     },
     NIT: {
-        pattern: /^\d{1,3}\.?\d{3}\.?\d{3}-?\d$/,
+        pattern: /^\d{1,3}\.\d{3}\.\d{3}-\d$/,
         message: "Formato de NIT inválido. Ejemplo: 123.456.789-0",
     },
 };
