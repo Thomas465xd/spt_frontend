@@ -1,1 +1,33 @@
 @import "tailwindcss";
+
+@utility flex-center {
+    @apply flex justify-center items-center gap-2;  
+}
+
+@utility flex-between {
+    @apply flex justify-between items-center gap-2; 
+}
+
+@utility flex-align {
+    @apply flex items-center gap-2; 
+}
+
+@utility flex-center-col {
+    @apply flex flex-col justify-center items-center; 
+}
+
+@utility input {
+    @apply w-full p-3 rounded border border-gray-300 mt-1; 
+}
+
+@utility input-submit {
+    @apply font-bold bg-slate-800 hover:bg-slate-900 w-full p-3 text-white cursor-pointer rounded;
+}
+
+@utility form {
+    @apply mt-10 space-y-5 bg-white shadow-lg rounded py-12 px-10 border border-gray-200;
+}
+
+@utility label {
+    @apply text-sm font-bold; 
+}

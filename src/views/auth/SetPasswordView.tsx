@@ -1,5 +1,5 @@
 import { validatePasswordToken } from "@/api/AuthAPI";
-import SetPasswordForm from "@/components/auth/SetPasswordForm"
+import SetPasswordForm from "@/components/auth/PasswordForm"
 import Loader from "@/components/ui/Loader";
 import { PasswordToken } from "@/types/index"
 import { useEffect, useState } from "react";
