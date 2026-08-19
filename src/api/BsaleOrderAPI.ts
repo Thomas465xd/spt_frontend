@@ -11,6 +11,7 @@ import {
 } from "../types";
 import { requestErrorHandler } from "@/lib/axios";
 
+// TODO: Flaged for deletion
 export async function getOrdersByEmail({
 	email,
 	token,
