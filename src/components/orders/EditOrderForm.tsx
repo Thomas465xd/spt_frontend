@@ -7,20 +7,18 @@ import { useNavigate, useParams } from "react-router-dom";
 import UserSearchModal from "./UserSearchModal";
 import Loader from "@/components/ui/Loader";
 import { getOrderByIdAdmin, updateOrder } from "@/api/OrderAPI";
-import { formatToCLP } from "@/utilities/price";
 import { AuthUser } from "@/types/auth";
 import Swal from "sweetalert2";
-import { OrderForm } from "@/types/order";
+import { countries, OrderForm } from "@/types/order";
 import { formatDateForInput } from "@/utilities/date";
+import { formatCurrency } from "@/utilities/price";
 
 export default function EditOrderForm() {
 	const navigate = useNavigate();
 	const { orderId } = useParams<{ orderId: string }>();
 	const queryClient = useQueryClient();
 	const [isUserModalOpen, setIsUserModalOpen] = useState(false);
-	const [selectedUser, setSelectedUser] = useState<AuthUser | null>(
-		null
-	);
+	const [selectedUser, setSelectedUser] = useState<AuthUser | null>(null);
 
 	// Fetch order data
 	const {
@@ -45,16 +43,18 @@ export default function EditOrderForm() {
 	} = useForm<OrderForm>({
 		defaultValues: {
 			items: [{ sku: "", name: "", price: 0, quantity: 1, lineTotal: 0 }],
-			payment: "",
+			paymentMethod: "",
 			shipper: "",
 			status: "Pendiente",
 			country: "Chile",
+			currency: "CLP",
 			businessName: "",
 			businessId: "",
 			user: "",
-            trackingNumber: "",
-            estimatedDelivery: "", 
-            deliveredAt: null
+			trackingNumber: "",
+			estimatedDelivery: "",
+			deliveredAt: null,
+			purchaseOrderNumber: "",
 		},
 	});
 
@@ -64,32 +64,44 @@ export default function EditOrderForm() {
 	});
 
 	const items = watch("items");
-    const status = watch("status"); 
+	const status = watch("status");
+	const country = watch("country");
+	const currency = watch("currency");
+
+	useEffect(() => {
+		setValue("currency", country === "Chile" ? "CLP" : "PEN");
+	}, [country, setValue]);
 
 	// Populate form when order data is loaded
 	useEffect(() => {
 		if (orderData) {
 			reset({
 				items: orderData.items,
-				payment: orderData.payment,
+				paymentMethod: orderData.paymentMethod,
 				shipper: orderData.shipper,
 				status: orderData.status,
 				country: orderData.country,
 				businessName: orderData.businessName,
+				purchaseOrderNumber: orderData.purchaseOrderNumber,
 				businessId: orderData.businessId,
-                trackingNumber: orderData.trackingNumber, 
-                estimatedDelivery: formatDateForInput(orderData.estimatedDelivery),
-                deliveredAt: orderData.deliveredAt ? formatDateForInput(orderData.deliveredAt) : null,
+				currency: orderData.currency,
+				trackingNumber: orderData.trackingNumber,
+				estimatedDelivery: formatDateForInput(
+					orderData.estimatedDelivery,
+				),
+				deliveredAt: orderData.deliveredAt
+					? formatDateForInput(orderData.deliveredAt)
+					: null,
 				user:
 					typeof orderData.user === "string"
 						? orderData.user
-						: orderData.user._id,
+						: orderData.user.id,
 			});
 
 			// Set selected user if user data is populated
 			if (typeof orderData.user !== "string") {
 				setSelectedUser({
-					_id: orderData.user._id,
+					id: orderData.user.id,
 					name: orderData.user.name,
 					businessName: orderData.user.businessName,
 					idType: orderData.user.idType,
@@ -116,7 +128,7 @@ export default function EditOrderForm() {
 		onSuccess: () => {
 			toast.success("Orden actualizada exitosamente");
 			queryClient.invalidateQueries({ queryKey: ["orders"] });
-            queryClient.invalidateQueries({ queryKey: ["order", orderId]})
+			queryClient.invalidateQueries({ queryKey: ["order", orderId] });
 			navigate("/admin/orders");
 		},
 		onError: (error) => {
@@ -144,42 +156,47 @@ export default function EditOrderForm() {
 			return;
 		}
 
-        Swal.fire({
-            title: "¿Estas Seguro? 🚚📦",
-            text: "En caso de haber actualizado el estado de la orden, un email será enviado automáticamente al usuario afectado.",
-            icon: "info",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Si, Actualizar",
-            cancelButtonText: "Volver",
-        }).then((result) => {
-            if (result.isConfirmed) {
+		Swal.fire({
+			title: "¿Estas Seguro? 🚚📦",
+			text: "En caso de haber actualizado el estado de la orden, un email será enviado automáticamente al usuario afectado.",
+			icon: "info",
+			showCancelButton: true,
+			confirmButtonColor: "#3085d6",
+			cancelButtonColor: "#d33",
+			confirmButtonText: "Si, Actualizar",
+			cancelButtonText: "Volver",
+		}).then((result) => {
+			if (result.isConfirmed) {
 				const orderFormData = {
 					items: data.items,
-					payment: data.payment,
+					paymentMethod: data.paymentMethod,
 					shipper: data.shipper,
 					status: data.status,
+					currency: data.currency,
 					country: data.country,
 					businessName: data.businessName,
 					businessId: data.businessId,
 					total: calculateTotal(),
-					user: selectedUser._id,
-					trackingNumber: data.trackingNumber, 
-					estimatedDelivery: data.estimatedDelivery, 
-					deliveredAt: data.deliveredAt
+					user: selectedUser.id,
+					trackingNumber: data.trackingNumber,
+					estimatedDelivery: data.estimatedDelivery,
+					deliveredAt: data.deliveredAt,
+					purchaseOrderNumber: data.purchaseOrderNumber,
 				};
 
-                updateOrderMutation({ orderId: orderId!, formData: orderFormData });
-            }
-        });
+				updateOrderMutation({
+					orderId: orderId!,
+					formData: orderFormData,
+				});
+			}
+		});
 	};
 
 	const handleSelectUser = (user: AuthUser) => {
 		setSelectedUser(user);
 		setValue("businessName", user.businessName);
 		setValue("businessId", user.businessId);
-		setValue("user", user._id);
+		setValue("user", user.id);
 	};
 
 	if (isLoadingOrder) return <Loader />;
@@ -311,6 +328,198 @@ export default function EditOrderForm() {
 							)}
 						</div>
 
+						{/* Order Details */}
+						<div className="space-y-4">
+							<h2 className="text-lg font-semibold text-gray-900">
+								Detalles de la Orden
+							</h2>
+
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Método de Pago{" "}
+										<span className="text-red-500 font-bold">
+											*
+										</span>
+									</label>
+									<input
+										{...register("paymentMethod", {
+											required: true,
+										})}
+										type="text"
+										placeholder="Transferencia Bancaria"
+										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+									/>
+									{errors.paymentMethod && (
+										<p className="text-red-600 text-xs mt-1">
+											Método de pago es requerido
+										</p>
+									)}
+								</div>
+
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Expedidor{" "}
+										<span className="text-red-500 font-bold">
+											*
+										</span>
+									</label>
+									<input
+										{...register("shipper", {
+											required: true,
+										})}
+										type="text"
+										placeholder="Chilexpress"
+										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+									/>
+									{errors.shipper && (
+										<p className="text-red-600 text-xs mt-1">
+											Expedidor es requerido
+										</p>
+									)}
+								</div>
+
+								{/* Tracking Number */}
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Número de Seguimiento{" "}
+										<span className="text-red-500 font-bold">
+											*
+										</span>
+									</label>
+									<input
+										{...register("trackingNumber", {
+											required: true,
+										})}
+										type="text"
+										placeholder="9234012398424"
+										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+									/>
+									{errors.trackingNumber && (
+										<p className="text-red-600 text-xs mt-1">
+											Número de seguimiento es requerido
+										</p>
+									)}
+								</div>
+
+								{/* Purchase order number */}
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Número de orden de compra (opcional)
+									</label>
+									<input
+										{...register("purchaseOrderNumber", {
+											required: false,
+										})}
+										type="text"
+										placeholder="Ej. ORD00342-2026"
+										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+									/>
+								</div>
+
+								{/* Estimated Delivery */}
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Fecha de Entrega Estimadaa{" "}
+										<span className="text-red-500 font-bold">
+											*
+										</span>
+									</label>
+									<input
+										{...register("estimatedDelivery", {
+											required: true,
+										})}
+										type="date"
+										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+									/>
+									{errors.estimatedDelivery && (
+										<p className="text-red-600 text-xs mt-1">
+											Fecha de entrega estimada es
+											requerida
+										</p>
+									)}
+								</div>
+
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Estado *
+									</label>
+									<select
+										{...register("status", {
+											required: true,
+										})}
+										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+									>
+										<option value="Pendiente">
+											Pendiente
+										</option>
+										<option value="En Transito">
+											En Tránsito
+										</option>
+										<option value="Entregado">
+											Entregado
+										</option>
+										<option value="Cancelado">
+											Cancelado
+										</option>
+									</select>
+								</div>
+
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										País{" "}
+										<span className="text-red-500 font-bold">
+											*
+										</span>
+									</label>
+									<select
+										{...register("country", {
+											required: true,
+										})}
+										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+									>
+										{countries.map((country) => {
+											return (
+												<option value={country}>
+													{country}
+												</option>
+											);
+										})}
+									</select>
+								</div>
+
+								<div className="">
+									<label>Moneda</label>
+									<input
+										type="text"
+										disabled
+										id="currency"
+										placeholder={currency}
+										className="w-full px-3 py-2 rounded border border-gray-300 bg-gray-100 cursor-not-allowed"
+									/>
+								</div>
+
+								{/* Delivered At - Only show if status is "Entregado" */}
+								<div className="md:col-span-2">
+									<label
+										className={`block text-sm font-medium text-gray-700 mb-1`}
+									>
+										Fecha de Entrega Real
+									</label>
+									<input
+										{...register("deliveredAt")}
+										disabled={status !== "Entregado"}
+										type="date"
+										className="disabled:opacity-50 disabled:cursor-not-allowed w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+									/>
+									<p className="text-xs text-gray-500 mt-1">
+										Este campo solo está disponible cuando
+										el estado de la orden es "Entregado"
+									</p>
+								</div>
+							</div>
+						</div>
+
 						{/* Order Items */}
 						<div className="space-y-4">
 							<div className="flex items-center justify-between">
@@ -361,12 +570,15 @@ export default function EditOrderForm() {
 										<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 											<div>
 												<label className="block text-sm font-medium text-gray-700 mb-1">
-													SKU *
+													SKU{" "}
+													<span className="text-red-500 font-bold">
+														*
+													</span>
 												</label>
 												<input
 													{...register(
 														`items.${index}.sku`,
-														{ required: true }
+														{ required: true },
 													)}
 													type="text"
 													placeholder="MB001294"
@@ -381,12 +593,15 @@ export default function EditOrderForm() {
 
 											<div>
 												<label className="block text-sm font-medium text-gray-700 mb-1">
-													Nombre del Producto *
+													Nombre del Producto{" "}
+													<span className="text-red-500 font-bold">
+														*
+													</span>
 												</label>
 												<input
 													{...register(
 														`items.${index}.name`,
-														{ required: true }
+														{ required: true },
 													)}
 													type="text"
 													placeholder="GASKET,M/T CASE PLUG"
@@ -401,27 +616,58 @@ export default function EditOrderForm() {
 											</div>
 
 											<div>
-												<label className="block text-sm font-medium text-gray-700 mb-1">
-													Precio Unitario *
+												<label
+													htmlFor="price"
+													className="block text-sm font-medium text-gray-700 mb-1"
+												>
+													Precio Unitario{" "}
+													<span className="text-red-500 font-bold">
+														*
+													</span>
 												</label>
-												<input
-													{...register(
-														`items.${index}.price`,
-														{
-															required: true,
-															valueAsNumber: true,
-															min: 0,
-															onChange: () =>
-																calculateLineTotal(
-																	index
-																),
-														}
-													)}
-													type="number"
-													step="0.01"
-													placeholder="1025.00"
-													className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-												/>
+												<div className="">
+													<div
+														className="
+                                                            flex items-center border border-gray-300 rounded-md bg-white px-3 outline-1 -outline-offset-1 
+                                                            outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 
+                                                            focus-within:outline-orange-500 dark:bg-white/5 dark:outline-white/10 
+                                                            dark:focus-within:outline-orange-500"
+													>
+														<div className="shrink-0 text-base text-gray-500 select-none sm:text-sm/6 dark:text-gray-400">
+															$
+														</div>
+														<input
+															{...register(
+																`items.${index}.price`,
+																{
+																	required: true,
+																	valueAsNumber: true,
+																	min: 0,
+																	onChange:
+																		() =>
+																			calculateLineTotal(
+																				index,
+																			),
+																},
+															)}
+															type="number"
+															step="0.01"
+															min={0}
+															placeholder="Escribir sin puntos. Ej: 19990"
+															className="
+                                                                w-full px-3 py-2 block grow bg-white text-base text-gray-900 
+                                                                placeholder:text-gray-400 focus:outline-none sm:text-sm/6 
+                                                            "
+														/>
+														<div
+															id="price-currency"
+															className="shrink-0 text-base text-gray-500 select-none sm:text-sm/6 dark:text-gray-400"
+														>
+															{currency}
+														</div>
+													</div>
+												</div>
+
 												{errors.items?.[index]
 													?.price && (
 													<p className="text-red-600 text-xs mt-1">
@@ -443,9 +689,9 @@ export default function EditOrderForm() {
 															min: 1,
 															onChange: () =>
 																calculateLineTotal(
-																	index
+																	index,
 																),
-														}
+														},
 													)}
 													type="number"
 													placeholder="2"
@@ -464,153 +710,16 @@ export default function EditOrderForm() {
 													Subtotal
 												</label>
 												<div className="px-3 py-2 bg-gray-50 border border-gray-300 rounded-md font-semibold text-gray-900">
-													{formatToCLP(
+													{formatCurrency(
 														items[index]
-															?.lineTotal || 0
+															?.lineTotal || 0,
+														orderData.currency,
 													)}
 												</div>
 											</div>
 										</div>
 									</div>
 								))}
-							</div>
-						</div>
-
-						{/* Order Details */}
-						<div className="space-y-4">
-							<h2 className="text-lg font-semibold text-gray-900">
-								Detalles de la Orden
-							</h2>
-
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-								<div>
-									<label className="block text-sm font-medium text-gray-700 mb-1">
-										Método de Pago *
-									</label>
-									<input
-										{...register("payment", {
-											required: true,
-										})}
-										type="text"
-										placeholder="Transferencia Bancaria"
-										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-									/>
-									{errors.payment && (
-										<p className="text-red-600 text-xs mt-1">
-											Método de pago es requerido
-										</p>
-									)}
-								</div>
-
-								<div>
-									<label className="block text-sm font-medium text-gray-700 mb-1">
-										Expedidor *
-									</label>
-									<input
-										{...register("shipper", {
-											required: true,
-										})}
-										type="text"
-										placeholder="Chilexpress"
-										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-									/>
-									{errors.shipper && (
-										<p className="text-red-600 text-xs mt-1">
-											Expedidor es requerido
-										</p>
-									)}
-								</div>
-
-                                {/* Tracking Number */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Número de Seguimiento *
-                                    </label>
-                                    <input
-                                        {...register('trackingNumber', { required: true })}
-                                        type="text"
-                                        placeholder="9234012398424"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                                    />
-                                    {errors.trackingNumber && (
-                                        <p className="text-red-600 text-xs mt-1">Número de seguimiento es requerido</p>
-                                    )}
-                                </div>
-
-                                {/* Estimated Delivery */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Fecha de Entrega Estimada *
-                                    </label>
-                                    <input
-                                        {...register('estimatedDelivery', { required: true })}
-                                        type="date"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                                    />
-                                    {errors.estimatedDelivery && (
-                                        <p className="text-red-600 text-xs mt-1">Fecha de entrega estimada es requerida</p>
-                                    )}
-                                </div>
-
-								<div>
-									<label className="block text-sm font-medium text-gray-700 mb-1">
-										Estado *
-									</label>
-									<select
-										{...register("status", {
-											required: true,
-										})}
-										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-									>
-										<option value="Pendiente">
-											Pendiente
-										</option>
-										<option value="En Transito">
-											En Tránsito
-										</option>
-										<option value="Entregado">
-											Entregado
-										</option>
-										<option value="Cancelado">
-											Cancelado
-										</option>
-									</select>
-								</div>
-
-								<div>
-									<label className="block text-sm font-medium text-gray-700 mb-1">
-										País *
-									</label>
-									<input
-										{...register("country", {
-											required: true,
-										})}
-										type="text"
-										placeholder="Chile"
-										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-									/>
-									{errors.country && (
-										<p className="text-red-600 text-xs mt-1">
-											País es requerido
-										</p>
-									)}
-								</div>
-
-                                {/* Delivered At - Only show if status is "Entregado" */}
-                                <div className="md:col-span-2">
-                                    <label className={`block text-sm font-medium text-gray-700 mb-1`}>
-                                        Fecha de Entrega Real
-                                    </label>
-                                    <input
-                                        {...register('deliveredAt')}
-                                        disabled={status !== "Entregado"}
-                                        type="date"
-                                        className="disabled:opacity-50 disabled:cursor-not-allowed w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                                    />
-                                    <p className="text-xs text-gray-500 mt-1">
-                                        Este campo solo está disponible cuando el estado de la orden es "Entregado"
-                                    </p>
-                                </div>
 							</div>
 						</div>
 
@@ -621,7 +730,10 @@ export default function EditOrderForm() {
 									Total de la Orden:
 								</span>
 								<span className="text-orange-600">
-									{formatToCLP(calculateTotal())}
+									{formatCurrency(
+										calculateTotal(),
+										orderData.currency,
+									)}
 								</span>
 							</div>
 						</div>

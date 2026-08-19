@@ -138,7 +138,7 @@ export default function UserSearchModal({
 							<div className="space-y-3 mb-6">
 								{users.map((user) => (
 									<div
-										key={user._id}
+										key={user.id}
 										className="border border-gray-200 rounded-lg p-4 hover:border-orange-500 hover:bg-orange-50 transition-all cursor-pointer"
 										onClick={() => {
 											onSelectUser(user);
@@ -152,7 +152,8 @@ export default function UserSearchModal({
 														{user.name}
 													</h3>
 													<span className="text-xs text-gray-500">
-														ID Personal: {user.personalId}
+														ID Personal:{" "}
+														{user.personalId}
 													</span>
 												</div>
 												<div className="grid grid-cols-2 gap-4 text-sm">
@@ -216,7 +217,7 @@ export default function UserSearchModal({
 									<button
 										onClick={() =>
 											setPage((p) =>
-												Math.min(totalPages, p + 1)
+												Math.min(totalPages, p + 1),
 											)
 										}
 										disabled={page === totalPages}

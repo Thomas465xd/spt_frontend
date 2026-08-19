@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { Plus, Trash2, User } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -8,17 +8,15 @@ import { createOrder } from "@/api/OrderAPI";
 import { AuthUser } from "@/types/auth";
 import UserSearchModal from "./UserSearchModal";
 import Swal from "sweetalert2";
-import { OrderForm } from "@/types/order";
-import { formatToCLP } from "@/utilities/price";
+import { countries, OrderForm } from "@/types/order";
+import { formatCurrency } from "@/utilities/price";
 
 // Main Create Order Form Component
 export default function CreateOrderForm() {
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
 	const [isUserModalOpen, setIsUserModalOpen] = useState(false);
-	const [selectedUser, setSelectedUser] = useState<AuthUser | null>(
-		null
-	);
+	const [selectedUser, setSelectedUser] = useState<AuthUser | null>(null);
 
 	const {
 		register,
@@ -30,16 +28,18 @@ export default function CreateOrderForm() {
 	} = useForm<OrderForm>({
 		defaultValues: {
 			items: [{ sku: "", name: "", price: 0, quantity: 1, lineTotal: 0 }],
-			payment: "",
+			paymentMethod: "",
 			shipper: "",
 			status: "Pendiente",
 			country: "Chile",
+			currency: "CLP",
 			businessName: "",
 			businessId: "",
 			user: "",
-            estimatedDelivery: "", 
-            deliveredAt: null,
-            trackingNumber: "", 
+			estimatedDelivery: "",
+			deliveredAt: null,
+			trackingNumber: "",
+			purchaseOrderNumber: "",
 		},
 	});
 
@@ -49,13 +49,19 @@ export default function CreateOrderForm() {
 	});
 
 	const items = watch("items");
+	const country = watch("country");
+	const currency = watch("currency");
+
+	useEffect(() => {
+		setValue("currency", country === "Chile" ? "CLP" : "PEN");
+	}, [country, setValue]);
 
 	// Create order mutation
 	const { mutate: createOrderMutation, isPending } = useMutation({
 		mutationFn: createOrder,
-        onError: (error) => {
-            toast.error(error.message || "Error al crear la orden");
-        },
+		onError: (error) => {
+			toast.error(error.message || "Error al crear la orden");
+		},
 		onSuccess: () => {
 			toast.success("Orden creada exitosamente");
 			queryClient.invalidateQueries({ queryKey: ["orders"] });
@@ -83,42 +89,44 @@ export default function CreateOrderForm() {
 			return;
 		}
 
-        Swal.fire({
-            title: "¿Estas Seguro? 🚚📦",
-            text: "Antes de registrar la orden revisa que los datos ingresados sean correctos.",
-            icon: "info",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Si, Registrar",
-            cancelButtonText: "Volver",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const orderData = {
-                    items: data.items,
-                    payment: data.payment,
-                    shipper: data.shipper,
-                    status: data.status,
-                    country: data.country,
-                    businessName: data.businessName,
-                    businessId: data.businessId,
-                    total: calculateTotal(),
-                    user: selectedUser._id,
-                    estimatedDelivery: data.estimatedDelivery, 
-                    trackingNumber: data.trackingNumber, 
-                    deliveredAt: null
-                };
+		Swal.fire({
+			title: "¿Estas Seguro? 🚚📦",
+			text: "Antes de registrar la orden revisa que los datos ingresados sean correctos.",
+			icon: "info",
+			showCancelButton: true,
+			confirmButtonColor: "#3085d6",
+			cancelButtonColor: "#d33",
+			confirmButtonText: "Si, Registrar",
+			cancelButtonText: "Volver",
+		}).then((result) => {
+			if (result.isConfirmed) {
+				const orderData = {
+					items: data.items,
+					paymentMethod: data.paymentMethod,
+					shipper: data.shipper,
+					currency: data.currency,
+					status: data.status,
+					country: data.country,
+					businessName: data.businessName,
+					businessId: data.businessId,
+					total: calculateTotal(),
+					user: selectedUser.id,
+					estimatedDelivery: data.estimatedDelivery,
+					trackingNumber: data.trackingNumber,
+					purchaseOrderNumber: data.purchaseOrderNumber,
+					deliveredAt: null,
+				};
 
-                createOrderMutation(orderData);
-            }
-        });
+				createOrderMutation(orderData);
+			}
+		});
 	};
 
 	const handleSelectUser = (user: AuthUser) => {
 		setSelectedUser(user);
 		setValue("businessName", user.businessName);
 		setValue("businessId", user.businessId);
-		setValue("user", user._id);
+		setValue("user", user.id);
 	};
 
 	const handleFormSubmit = (e: React.FormEvent) => {
@@ -234,6 +242,182 @@ export default function CreateOrderForm() {
 							)}
 						</div>
 
+						{/* Order Details */}
+						<div className="space-y-4">
+							<h2 className="text-lg font-semibold text-gray-900">
+								Detalles de la Orden
+							</h2>
+
+							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Método de Pago{" "}
+										<span className="text-red-500 font-bold">
+											*
+										</span>
+									</label>
+									<input
+										{...register("paymentMethod", {
+											required: true,
+										})}
+										type="text"
+										placeholder="Transferencia Bancaria"
+										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+									/>
+									{errors.paymentMethod && (
+										<p className="text-red-600 text-xs mt-1">
+											Método de pago es requerido
+										</p>
+									)}
+								</div>
+
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Expedidor{" "}
+										<span className="text-red-500 font-bold">
+											*
+										</span>
+									</label>
+									<input
+										{...register("shipper", {
+											required: true,
+										})}
+										type="text"
+										placeholder="Chilexpress"
+										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+									/>
+									{errors.shipper && (
+										<p className="text-red-600 text-xs mt-1">
+											Expedidor es requerido
+										</p>
+									)}
+								</div>
+
+								{/* Tracking Number */}
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Número de Seguimiento{" "}
+										<span className="text-red-500 font-bold">
+											*
+										</span>
+									</label>
+									<input
+										{...register("trackingNumber", {
+											required: true,
+										})}
+										type="text"
+										placeholder="Ej. 9234012398424"
+										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+									/>
+									{errors.trackingNumber && (
+										<p className="text-red-600 text-xs mt-1">
+											Número de seguimiento es requerido
+										</p>
+									)}
+								</div>
+
+								{/* Purchase order number */}
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Número de orden de compra (opcional)
+									</label>
+									<input
+										{...register("purchaseOrderNumber", {
+											required: false,
+										})}
+										type="text"
+										placeholder="Ej. ORD00342-2026"
+										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+									/>
+								</div>
+
+								{/* Estimated Delivery */}
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Fecha de Entrega Estimada{" "}
+										<span className="text-red-500 font-bold">
+											*
+										</span>
+									</label>
+									<input
+										{...register("estimatedDelivery", {
+											required: true,
+										})}
+										type="date"
+										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+									/>
+									{errors.estimatedDelivery && (
+										<p className="text-red-600 text-xs mt-1">
+											Fecha de entrega estimada es
+											requerida
+										</p>
+									)}
+								</div>
+
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Estado{" "}
+										<span className="text-red-500 font-bold">
+											*
+										</span>
+									</label>
+									<select
+										{...register("status", {
+											required: true,
+										})}
+										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+									>
+										<option value="Pendiente">
+											Pendiente
+										</option>
+										<option value="En Transito">
+											En Tránsito
+										</option>
+										<option value="Entregado">
+											Entregado
+										</option>
+										<option value="Cancelado">
+											Cancelado
+										</option>
+									</select>
+								</div>
+
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										País{" "}
+										<span className="text-red-500 font-bold">
+											*
+										</span>
+									</label>
+									<select
+										{...register("country", {
+											required: true,
+										})}
+										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+									>
+										{countries.map((country) => {
+											return (
+												<option value={country}>
+													{country}
+												</option>
+											);
+										})}
+									</select>
+								</div>
+
+								<div className="">
+									<label>Moneda</label>
+									<input
+										type="text"
+										disabled
+										id="currency"
+										placeholder={currency}
+										className="w-full px-3 py-2 rounded border border-gray-300 bg-gray-100 cursor-not-allowed"
+									/>
+								</div>
+							</div>
+						</div>
+
 						{/* Order Items */}
 						<div className="space-y-4">
 							<div className="flex items-center justify-between">
@@ -284,12 +468,15 @@ export default function CreateOrderForm() {
 										<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 											<div>
 												<label className="block text-sm font-medium text-gray-700 mb-1">
-													SKU *
+													SKU{" "}
+													<span className="text-red-500 font-bold">
+														*
+													</span>
 												</label>
 												<input
 													{...register(
 														`items.${index}.sku`,
-														{ required: true }
+														{ required: true },
 													)}
 													type="text"
 													placeholder="MB001294"
@@ -304,12 +491,15 @@ export default function CreateOrderForm() {
 
 											<div>
 												<label className="block text-sm font-medium text-gray-700 mb-1">
-													Nombre del Producto *
+													Nombre del Producto{" "}
+													<span className="text-red-500 font-bold">
+														*
+													</span>
 												</label>
 												<input
 													{...register(
 														`items.${index}.name`,
-														{ required: true }
+														{ required: true },
 													)}
 													type="text"
 													placeholder="GASKET,M/T CASE PLUG"
@@ -324,28 +514,58 @@ export default function CreateOrderForm() {
 											</div>
 
 											<div>
-												<label className="block text-sm font-medium text-gray-700 mb-1">
-													Precio Unitario *
+												<label
+													htmlFor="price"
+													className="block text-sm font-medium text-gray-700 mb-1"
+												>
+													Precio Unitario{" "}
+													<span className="text-red-500 font-bold">
+														*
+													</span>
 												</label>
-												<input
-													{...register(
-														`items.${index}.price`,
-														{
-															required: true,
-															valueAsNumber: true,
-															min: 0,
-															onChange: () =>
-																calculateLineTotal(
-																	index
-																),
-														}
-													)}
-													type="number"
-													step="0.01"
-                                                    min={0}
-													placeholder="Escribir sin puntos. Ej: 19990"
-													className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-												/>
+												<div className="">
+													<div
+														className="
+                                                            flex items-center border border-gray-300 rounded-md bg-white px-3 outline-1 -outline-offset-1 
+                                                            outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 
+                                                            focus-within:outline-orange-500 dark:bg-white/5 dark:outline-white/10 
+                                                            dark:focus-within:outline-orange-500"
+													>
+														<div className="shrink-0 text-base text-gray-500 select-none sm:text-sm/6 dark:text-gray-400">
+															$
+														</div>
+														<input
+															{...register(
+																`items.${index}.price`,
+																{
+																	required: true,
+																	valueAsNumber: true,
+																	min: 0,
+																	onChange:
+																		() =>
+																			calculateLineTotal(
+																				index,
+																			),
+																},
+															)}
+															type="number"
+															step="0.01"
+															min={0}
+															placeholder="Escribir sin puntos. Ej: 19990"
+															className="
+                                                                w-full px-3 py-2 block grow bg-white text-base text-gray-900 
+                                                                placeholder:text-gray-400 focus:outline-none sm:text-sm/6 
+                                                            "
+														/>
+														<div
+															id="price-currency"
+															className="shrink-0 text-base text-gray-500 select-none sm:text-sm/6 dark:text-gray-400"
+														>
+															{currency}
+														</div>
+													</div>
+												</div>
+
 												{errors.items?.[index]
 													?.price && (
 													<p className="text-red-600 text-xs mt-1">
@@ -367,9 +587,9 @@ export default function CreateOrderForm() {
 															min: 1,
 															onChange: () =>
 																calculateLineTotal(
-																	index
+																	index,
 																),
-														}
+														},
 													)}
 													type="number"
 													placeholder="2"
@@ -388,137 +608,16 @@ export default function CreateOrderForm() {
 													Subtotal
 												</label>
 												<div className="px-3 py-2 bg-gray-50 border border-gray-300 rounded-md font-semibold text-gray-900">
-													{formatToCLP(
+													{formatCurrency(
 														items[index]
-															?.lineTotal || 0
+															?.lineTotal || 0,
+														currency,
 													)}
 												</div>
 											</div>
 										</div>
 									</div>
 								))}
-							</div>
-						</div>
-
-						{/* Order Details */}
-						<div className="space-y-4">
-							<h2 className="text-lg font-semibold text-gray-900">
-								Detalles de la Orden
-							</h2>
-
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-								<div>
-									<label className="block text-sm font-medium text-gray-700 mb-1">
-										Método de Pago *
-									</label>
-									<input
-										{...register("payment", {
-											required: true,
-										})}
-										type="text"
-										placeholder="Transferencia Bancaria"
-										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-									/>
-									{errors.payment && (
-										<p className="text-red-600 text-xs mt-1">
-											Método de pago es requerido
-										</p>
-									)}
-								</div>
-
-								<div>
-									<label className="block text-sm font-medium text-gray-700 mb-1">
-										Expedidor *
-									</label>
-									<input
-										{...register("shipper", {
-											required: true,
-										})}
-										type="text"
-										placeholder="Chilexpress"
-										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-									/>
-									{errors.shipper && (
-										<p className="text-red-600 text-xs mt-1">
-											Expedidor es requerido
-										</p>
-									)}
-								</div>
-                            
-                                {/* Tracking Number */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Número de Seguimiento *
-                                    </label>
-                                    <input
-                                        {...register('trackingNumber', { required: true })}
-                                        type="text"
-                                        placeholder="Ej. 9234012398424"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                                    />
-                                    {errors.trackingNumber && (
-                                        <p className="text-red-600 text-xs mt-1">Número de seguimiento es requerido</p>
-                                    )}
-                                </div>
-
-                                {/* Estimated Delivery */}
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                        Fecha de Entrega Estimada *
-                                    </label>
-                                    <input
-                                        {...register('estimatedDelivery', { required: true })}
-                                        type="date"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-                                    />
-                                    {errors.estimatedDelivery && (
-                                        <p className="text-red-600 text-xs mt-1">Fecha de entrega estimada es requerida</p>
-                                    )}
-                                </div>
-
-								<div>
-									<label className="block text-sm font-medium text-gray-700 mb-1">
-										Estado *
-									</label>
-									<select
-										{...register("status", {
-											required: true,
-										})}
-										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-									>
-										<option value="Pendiente">
-											Pendiente
-										</option>
-										<option value="En Transito">
-											En Tránsito
-										</option>
-										<option value="Entregado">
-											Entregado
-										</option>
-										<option value="Cancelado">
-											Cancelado
-										</option>
-									</select>
-								</div>
-
-								<div>
-									<label className="block text-sm font-medium text-gray-700 mb-1">
-										País *
-									</label>
-									<input
-										{...register("country", {
-											required: true,
-										})}
-										type="text"
-										placeholder="Chile"
-										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-									/>
-									{errors.country && (
-										<p className="text-red-600 text-xs mt-1">
-											País es requerido
-										</p>
-									)}
-								</div>
 							</div>
 						</div>
 
@@ -529,7 +628,7 @@ export default function CreateOrderForm() {
 									Total de la Orden:
 								</span>
 								<span className="text-orange-600">
-									{formatToCLP(calculateTotal())}
+									{formatCurrency(calculateTotal(), currency)}
 								</span>
 							</div>
 						</div>
