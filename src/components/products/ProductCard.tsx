@@ -1,6 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { ProductWebType } from "@/types/index";
-import { formatToCLP } from "@/utilities/price";
 import { capitalizeFirstLetter } from "@/utilities/text";
 import ProductDetailsModal from "./ProductDetailsModal";
 import { useCart } from "@/hooks/useCart";
@@ -9,10 +8,17 @@ import { copyToClipboard } from "@/utilities/copy";
 
 type ProductCardProps = {
 	product: ProductWebType;
-    customDiscount: number; 
+	customDiscount: number;
 };
 
-export default function ProductCard({ product, customDiscount }: ProductCardProps) {
+function formatToCLP(value: number): string {
+	return `$ ${Math.round(value).toLocaleString("es-CL")}`;
+}
+
+export default function ProductCard({
+	product,
+	customDiscount,
+}: ProductCardProps) {
 	const navigate = useNavigate();
 	const location = useLocation();
 
@@ -60,12 +66,15 @@ export default function ProductCard({ product, customDiscount }: ProductCardProp
 	};
 
 	const basePrice = product.variants[0].salePrices.price ?? "N/A"; // Default value if salePrices is undefined
-    //! not used for now...
+	//! not used for now...
 	// const finalPrice = product.variants[0].salePrices.finalPrice ?? "N/A"; // Default value if salePrices is undefined
 
 	const hasStock = product.variants[0].stockInfo?.[0]?.quantityAvailable > 0;
 
-    const discount = product.variants[0].discounts.length > 0 ? product.variants[0].discounts[0] : customDiscount;
+	const discount =
+		product.variants[0].discounts.length > 0
+			? product.variants[0].discounts[0]
+			: customDiscount;
 
 	return (
 		<>
@@ -109,49 +118,59 @@ export default function ProductCard({ product, customDiscount }: ProductCardProp
 							</span>
 						</p>
 
-                        {/* Product Prices */}
-                        <div className="mt-2">
-                            {/* Base Price (Subtle Gray) */}
-                            {basePrice && (
-                                <p className="text-gray-400 text-sm font-medium">
-                                    Precio Neto: {formatToCLP(parseInt(basePrice))}
-                                </p>
-                            )}
+						{/* Product Prices */}
+						<div className="mt-2">
+							{/* Base Price (Subtle Gray) */}
+							{basePrice && (
+								<p className="text-gray-400 text-sm font-medium">
+									Precio Neto:{" "}
+									{formatToCLP(parseInt(basePrice))}
+								</p>
+							)}
 
-                            {/* Price Display */}
-                            {!discount ? (
-                                // Final Price (No Discount)
-                                <p className="text-orange-600 text-xl font-bold mt-1">
-                                    {basePrice ? formatToCLP(parseInt(basePrice)) : "N/A"}
-                                </p>
-                            ) : (
-                                // Discounted Price
-                                <div className="mt-1">
-                                    {/* Original Price (Strikethrough)
+							{/* Price Display */}
+							{!discount ? (
+								// Final Price (No Discount)
+								<p className="text-orange-600 text-xl font-bold mt-1">
+									{basePrice
+										? formatToCLP(parseInt(basePrice))
+										: "N/A"}
+								</p>
+							) : (
+								// Discounted Price
+								<div className="mt-1">
+									{/* Original Price (Strikethrough)
                                     <p className="text-gray-500 text-sm font-medium line-through">
                                         {finalPrice ? formatToCLP(parseInt(finalPrice)) : "N/A"}
                                     </p>
                                     */}
 
-                                    {/* Discounted Price (Bold & Highlighted) */}
-                                    <p className="text-orange-600 text-2xl font-bold">
-                                        {basePrice ? formatToCLP(parseInt(basePrice) * (1 - (customDiscount / 100))) : "N/A"}
-                                    </p>
+									{/* Discounted Price (Bold & Highlighted) */}
+									<p className="text-orange-600 text-2xl font-bold">
+										{basePrice
+											? formatToCLP(
+													parseInt(basePrice) *
+														(1 -
+															customDiscount /
+																100),
+												)
+											: "N/A"}
+									</p>
 
-                                    {/* Discount Percentage */}
-                                    <p className="text-green-600 text-sm font-semibold">
-                                        🔥 {discount}% OFF
-                                    </p>
-                                </div>
-                            )}
-                        </div>
+									{/* Discount Percentage */}
+									<p className="text-green-600 text-sm font-semibold">
+										🔥 {discount}% OFF
+									</p>
+								</div>
+							)}
+						</div>
 
 						{/* Product Category */}
 						<p className="text-slate-800 text-sm mt-2 truncate">
 							Categoría:{" "}
 							<span className="font-semibold">
 								{capitalizeFirstLetter(
-									product.productType.name
+									product.productType.name,
 								)}
 							</span>
 						</p>
@@ -161,16 +180,20 @@ export default function ProductCard({ product, customDiscount }: ProductCardProp
 							<span className="font-semibold">
 								{capitalizeFirstLetter(
 									product.variants[0].description ||
-										"No Disponible"
+										"No Disponible",
 								)}
 							</span>
 						</p>
 
-                        {/* Product Description */}
-                        <p 
-                            className="text-slate-800 text-sm mt-2 truncate" 
-                            dangerouslySetInnerHTML={{ __html: capitalizeFirstLetter(product.description || "No Disponible") }} 
-                        />
+						{/* Product Description */}
+						<p
+							className="text-slate-800 text-sm mt-2 truncate"
+							dangerouslySetInnerHTML={{
+								__html: capitalizeFirstLetter(
+									product.description || "No Disponible",
+								),
+							}}
+						/>
 
 						<div className="flex justify-center gap-3">
 							<p
@@ -220,9 +243,9 @@ export default function ProductCard({ product, customDiscount }: ProductCardProp
 			{/* Conditionally render the ProductDetailsModal */}
 			{productDetails === product.variants?.[0]?.code && (
 				<ProductDetailsModal
-                    product={product} 
-                    customDiscount={customDiscount}
-                />
+					product={product}
+					customDiscount={customDiscount}
+				/>
 			)}
 		</>
 	);
