@@ -1,6 +1,20 @@
 import { z } from "zod";
 
 /** Auth & Admin */
+export enum Countries {
+	Chile = "Chile",
+	Peru = "Peru",
+	Colombia = "Colombia",
+}
+
+export enum Identifications {
+	Peru = "RUC",
+	Chile = "RUT",
+	Colombia = "NIT",
+}
+
+export const countrySchema = z.enum(["Chile", "Peru", "Colombia"]);
+export const identificationsSchema = z.enum(["RUT", "RUC", "NIT"]);
 
 export const regionSchema = z.enum([
 	"Arica y Parinacota",
@@ -25,7 +39,7 @@ export const userSchema = z.object({
 	id: z.string(),
 	name: z.string(),
 	businessName: z.string(),
-	idType: z.enum(["RUT", "RUC", "NIT"]),
+	idType: identificationsSchema,
 	personalId: z.string(),
 	businessId: z.string(),
 	email: z.string().email(),
@@ -38,7 +52,7 @@ export const userSchema = z.object({
 
 	discount: z.number().min(0).max(100).optional(),
 
-	country: z.string().optional(),
+	country: countrySchema,
 	region: regionSchema.optional(),
 	city: z.string().optional(),
 	province: z.string().optional(),
@@ -50,7 +64,7 @@ export const authUserSchema = z.object({
 	id: z.string(),
 	name: z.string(),
 	businessName: z.string(),
-	idType: z.enum(["RUT", "RUC", "NIT"]),
+	idType: identificationsSchema,
 	personalId: z.string(),
 	businessId: z.string(),
 	email: z.string().email(),
@@ -58,7 +72,7 @@ export const authUserSchema = z.object({
 	admin: z.boolean(),
 	address: z.string(),
 	discount: z.number().min(0).max(100).optional(),
-	country: z.string().optional(),
+	country: countrySchema,
 	region: regionSchema.optional(),
 	city: z.string().optional(),
 	province: z.string().optional(),
@@ -118,6 +132,8 @@ export type ConfigurePasswordForm = z.infer<typeof setPasswordSchema>;
 export type Token = z.infer<typeof tokenSchema>;
 export type PasswordToken = Pick<Token, "token">;
 export type UserUpdatePasswordForm = z.infer<typeof updatePasswordSchema>;
+export type CountryEnum = z.infer<typeof countrySchema>;
+export type IdentificationsEnum = z.infer<typeof identificationsSchema>;
 export type UserProfileForm = Pick<
 	User,
 	"name" | "businessName" | "email" | "phone" | "address"
