@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import Loader from "./components/ui/Loader";
 import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/react"
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 // Lazy load layouts
 const AppLayout = lazy(() => import("./layouts/AppLayout"));
@@ -22,27 +22,33 @@ const OrdersView = lazy(() => import("./views/orders/OrdersView"));
 const LoginView = lazy(() => import("./views/auth/LoginView"));
 const RegisterView = lazy(() => import("./views/auth/RegisterView"));
 const ForgotPasswordView = lazy(
-	() => import("./views/auth/ForgotPasswordView")
+	() => import("./views/auth/ForgotPasswordView"),
 );
 const ResetPasswordView = lazy(() => import("./views/auth/ResetPasswordView"));
 const SetPasswordView = lazy(() => import("./views/auth/SetPasswordView"));
 
 // Admin views
 const AdminDashboardView = lazy(
-	() => import("./views/admin/AdminDashboardView")
+	() => import("./views/admin/AdminDashboardView"),
 );
 const AdminUsersView = lazy(() => import("./views/admin/users/AdminUsersView"));
 const AdminUnconfirmedUsersView = lazy(
-	() => import("./views/admin/users/AdminUnconfirmedUsersView")
+	() => import("./views/admin/users/AdminUnconfirmedUsersView"),
 );
-const AdminOrdersView = lazy(() => import("./views/admin/orders/AdminOrderView"));
-const CreateOrderView = lazy(() => import("./views/admin/orders/CreateOrderView"))
-const UpdateOrderView = lazy(() => import("./views/admin/orders/UpdateOrderView"))
+const AdminOrdersView = lazy(
+	() => import("./views/admin/orders/AdminOrderView"),
+);
+const CreateOrderView = lazy(
+	() => import("./views/admin/orders/CreateOrderView"),
+);
+const UpdateOrderView = lazy(
+	() => import("./views/admin/orders/UpdateOrderView"),
+);
 
 // Profile views
 const ProfileView = lazy(() => import("./views/profile/ProfileView"));
 const ChangePasswordView = lazy(
-	() => import("./views/profile/ChangePasswordView")
+	() => import("./views/profile/ChangePasswordView"),
 );
 const ExtraProfileView = lazy(() => import("./views/profile/ExtraProfileView"));
 
@@ -50,9 +56,7 @@ const ExtraProfileView = lazy(() => import("./views/profile/ExtraProfileView"));
 const NotFound = lazy(() => import("./views/404/NotFound"));
 
 // Loading component for Suspense fallback
-const LoadingFallback = () => (
-    <Loader />
-);
+const LoadingFallback = () => <Loader />;
 
 export default function Router() {
 	return (
@@ -112,10 +116,7 @@ export default function Router() {
 
 					{/* Admin Layout Routes */}
 					<Route element={<AdminLayout />}>
-						<Route
-							path="/admin/dashboard"
-							element={<AdminDashboardView />}
-						/>
+						<Route path="/admin" element={<AdminDashboardView />} />
 						<Route
 							path="/admin/users"
 							element={<AdminUsersView />}
@@ -142,10 +143,10 @@ export default function Router() {
 					<Route path="*" element={<Navigate to="/404" replace />} />
 				</Routes>
 			</Suspense>
-            
-            {/* Place Vercel Analytics outside <Routes> to track all pages */}
+
+			{/* Place Vercel Analytics outside <Routes> to track all pages */}
 			<Analytics />
-            <SpeedInsights />
+			<SpeedInsights />
 		</BrowserRouter>
 	);
 }
