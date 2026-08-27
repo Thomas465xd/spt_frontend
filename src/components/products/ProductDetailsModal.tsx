@@ -6,15 +6,12 @@ import { ProductWebType } from "@/types/index";
 import { capitalizeFirstLetter } from "@/utilities/text";
 import { useCart } from "@/hooks/useCart";
 import { copyToClipboard } from "@/utilities/copy";
+import { formatCurrency } from "@/utilities/price";
 
 type ProductDetailsModalProps = {
 	product: ProductWebType;
 	customDiscount: number;
 };
-
-function formatToCLP(value: number): string {
-	return `$ ${Math.round(value).toLocaleString("es-CL")}`;
-}
 
 export default function ProductDetailsModal({
 	product,
@@ -209,7 +206,7 @@ export default function ProductDetailsModal({
 														<strong>
 															Precio Neto:
 														</strong>{" "}
-														{formatToCLP(
+														{formatCurrency(
 															parseInt(basePrice),
 														)}
 													</p>
@@ -230,7 +227,7 @@ export default function ProductDetailsModal({
 															(IVA):
 														</strong>{" "}
 														{finalPrice
-															? formatToCLP(
+															? formatCurrency(
 																	parseInt(
 																		finalPrice,
 																	),
@@ -242,7 +239,7 @@ export default function ProductDetailsModal({
 													<div>
 														{/* Strikethrough Original Price
                                                         <p className="text-gray-500 text-sm line-through">
-                                                            <strong>Antes:</strong> {finalPrice ? formatToCLP(parseInt(finalPrice)) : "N/A"}
+                                                            <strong>Antes:</strong> {finalPrice ? formatCurrency(parseInt(finalPrice)) : "N/A"}
                                                         </p>
                                                         */}
 
@@ -252,7 +249,7 @@ export default function ProductDetailsModal({
 																Ahora:
 															</strong>{" "}
 															{basePrice
-																? formatToCLP(
+																? formatCurrency(
 																		parseInt(
 																			basePrice,
 																		) *
