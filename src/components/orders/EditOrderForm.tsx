@@ -111,6 +111,7 @@ export default function EditOrderForm() {
 					phone: orderData.user.phone,
 					address: orderData.user.address,
 					admin: orderData.user.admin,
+					country: orderData.country,
 				});
 			}
 		}
@@ -480,7 +481,10 @@ export default function EditOrderForm() {
 									>
 										{countries.map((country) => {
 											return (
-												<option value={country}>
+												<option
+													className="w-full"
+													value={country}
+												>
 													{country}
 												</option>
 											);

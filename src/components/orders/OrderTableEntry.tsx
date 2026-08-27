@@ -4,6 +4,7 @@ import Dialog from "../ui/Dialog";
 import { copyToClipboard } from "@/utilities/copy";
 import { Link } from "react-router-dom";
 import { formatCurrency } from "@/utilities/price";
+import Flag from "react-flagpack";
 
 type OrderTableEntryProps = {
 	order: Order;
@@ -123,8 +124,26 @@ export default function OrderTableEntry({
 						</div>
 					)}
 				</td>
-				<td className="px-2 py-2 text-sm whitespace-nowrap text-gray-500">
-					{order.country}
+				<td className="px-2 py-2 text-sm whitespace-nowrap text-gray-500 boder-none">
+					{order.country === "Chile" ? (
+						<Flag
+							code="CL"
+							gradient="real-linear"
+							size="m"
+							hasDropShadow
+							className="border-none"
+						/>
+					) : order.country === "Peru" ? (
+						<Flag
+							code="PE"
+							gradient="real-linear"
+							size="m"
+							hasDropShadow
+							className="border-none"
+						/>
+					) : (
+						order.country
+					)}
 				</td>
 				<td className="px-2 py-2 text-sm whitespace-nowrap">
 					{/* Made select responsive with proper sizing */}
@@ -400,7 +419,7 @@ export default function OrderTableEntry({
 													</td>
 													<td className="px-4 py-2 text-sm text-right text-gray-900">
 														{formatCurrency(
-															order.total,
+															item.price,
 															order.currency,
 														)}
 													</td>
@@ -409,7 +428,7 @@ export default function OrderTableEntry({
 													</td>
 													<td className="px-4 py-2 text-sm text-right font-semibold text-gray-900">
 														{formatCurrency(
-															order.total,
+															item.lineTotal,
 															order.currency,
 														)}
 													</td>
