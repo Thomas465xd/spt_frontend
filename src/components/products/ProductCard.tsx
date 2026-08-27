@@ -5,15 +5,12 @@ import ProductDetailsModal from "./ProductDetailsModal";
 import { useCart } from "@/hooks/useCart";
 import { useEffect } from "react";
 import { copyToClipboard } from "@/utilities/copy";
+import { formatCurrency } from "@/utilities/price";
 
 type ProductCardProps = {
 	product: ProductWebType;
 	customDiscount: number;
 };
-
-function formatToCLP(value: number): string {
-	return `$ ${Math.round(value).toLocaleString("es-CL")}`;
-}
 
 export default function ProductCard({
 	product,
@@ -124,7 +121,7 @@ export default function ProductCard({
 							{basePrice && (
 								<p className="text-gray-400 text-sm font-medium">
 									Precio Neto:{" "}
-									{formatToCLP(parseInt(basePrice))}
+									{formatCurrency(parseInt(basePrice))}
 								</p>
 							)}
 
@@ -133,7 +130,7 @@ export default function ProductCard({
 								// Final Price (No Discount)
 								<p className="text-orange-600 text-xl font-bold mt-1">
 									{basePrice
-										? formatToCLP(parseInt(basePrice))
+										? formatCurrency(parseInt(basePrice))
 										: "N/A"}
 								</p>
 							) : (
@@ -141,14 +138,14 @@ export default function ProductCard({
 								<div className="mt-1">
 									{/* Original Price (Strikethrough)
                                     <p className="text-gray-500 text-sm font-medium line-through">
-                                        {finalPrice ? formatToCLP(parseInt(finalPrice)) : "N/A"}
+                                        {finalPrice ? formatCurrency(parseInt(finalPrice)) : "N/A"}
                                     </p>
                                     */}
 
 									{/* Discounted Price (Bold & Highlighted) */}
 									<p className="text-orange-600 text-2xl font-bold">
 										{basePrice
-											? formatToCLP(
+											? formatCurrency(
 													parseInt(basePrice) *
 														(1 -
 															customDiscount /

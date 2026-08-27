@@ -1,6 +1,7 @@
 import api from "@/lib/bsale";
 import {
 	CartForm,
+	Countries,
 	detailCartSchema,
 	productWebDescriptionResponseSchema,
 } from "../types";
@@ -19,10 +20,24 @@ export async function getAllProductDescription({
 	code?: string;
 }) {
 	try {
-		//const url = `/v2/products/list/market_info.json?limit=${limit}&offset=${offset}&expand=[descriptions, variantsInfo, variant.salePrice, variant.stock, productType, images, baseInfo, variant.discount, brand]&priceListId=1&name=${name}`;
+		const country = localStorage.getItem("country");
+
+		let priceListId = 0;
+
+		switch (country) {
+			case Countries.Chile:
+			case Countries.Colombia: // TODO: Bsale colombia is not yet implemented
+			default:
+				priceListId = 1;
+				break;
+
+			case Countries.Peru:
+				priceListId = 5;
+				break;
+		}
 
 		// Base URL
-		let url = `/v2/products/list/market_info.json?limit=${limit}&offset=${offset}&expand=[descriptions, variantsInfo, variant.salePrice, variant.stock, productType, images, baseInfo, variant.discount, brand]&priceListId=1&productWebType=virtual`;
+		let url = `/v2/products/list/market_info.json?limit=${limit}&offset=${offset}&priceListId=${priceListId}&expand=[descriptions, variantsInfo, variant.salePrice, variant.stock, productType, images, baseInfo, variant.discount, brand]&productWebType=virtual`;
 
 		// Conditionally add name if it exists
 		if (name) {
@@ -34,9 +49,9 @@ export async function getAllProductDescription({
 			url += `&code=${encodeURIComponent(code)}`;
 		}
 
-		//console.log(url)
+		// console.log(url)
 		const { data } = await api.get(url);
-		//console.log(data)
+		// console.log(data);
 
 		const response = productWebDescriptionResponseSchema.safeParse(data);
 		if (response.success) {

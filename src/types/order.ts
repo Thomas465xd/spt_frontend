@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { authUserSchema } from "./auth";
+import { authUserSchema, countrySchema } from "./auth";
 
 export const orderStatusSchema = z.enum([
 	"Pendiente",
@@ -9,10 +9,9 @@ export const orderStatusSchema = z.enum([
 ]);
 
 // Mirrors the Currencies enum in the backend Order model
-export const countries = ["Chile", "Perú"];
+export const countries = ["Chile", "Peru"];
 export const currencies = ["CLP", "PEN"];
 
-export const countrySchema = z.enum(["Chile", "Perú"]);
 export const currencySchema = z.enum(["PEN", "CLP"]);
 
 export const orderItemSchema = z
@@ -52,7 +51,7 @@ export const orderSchema = z
 		purchaseOrderNumber: z.string().optional(), // optional in OrderAttrs; absent on some responses
 		currency: currencySchema,
 		status: orderStatusSchema,
-		country: z.string().min(1, "País es requerido"),
+		country: countrySchema,
 		total: z.number().min(0, "El total debe ser mayor o igual a 0"),
 		businessName: z.string().min(1, "Nombre del negocio es requerido"),
 		businessId: z.string().min(1, "RUT del negocio es requerido"),
@@ -99,7 +98,7 @@ export const updateOrderStatusSchema = z.object({
 export type Order = z.infer<typeof orderSchema>;
 export type OrderStatusEnum = z.infer<typeof orderStatusSchema>;
 export type OrderItem = z.infer<typeof orderItemSchema>;
-export type CountryEnum = z.infer<typeof countrySchema>;
+
 export type CurrencyEnum = z.infer<typeof currencySchema>;
 export type OrderForm = Pick<
 	Order,

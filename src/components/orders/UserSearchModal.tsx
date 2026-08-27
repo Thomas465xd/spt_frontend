@@ -1,5 +1,5 @@
 import { getConfirmedUsers } from "@/api/AdminAPI";
-import { AdminTableUser } from "@/types/admin";
+import { AuthUser } from "@/types/auth";
 import { useQuery } from "@tanstack/react-query";
 import { Search, User, X } from "lucide-react";
 import { useState } from "react";
@@ -12,7 +12,7 @@ export default function UserSearchModal({
 }: {
 	isOpen: boolean;
 	onClose: () => void;
-	onSelectUser: (user: AdminTableUser) => void;
+	onSelectUser: (user: AuthUser) => void;
 }) {
 	const [searchId, setSearchId] = useState("");
 	const [searchEmail, setSearchEmail] = useState("");

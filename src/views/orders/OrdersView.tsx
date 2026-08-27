@@ -45,7 +45,7 @@ const countriesOptions = [
 		color: "text-blue-500",
 	},
 	{
-		value: "Perú",
+		value: "Peru",
 		label: "Perú",
 		icon: Earth,
 		color: "text-red-500",

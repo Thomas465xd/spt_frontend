@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import ConfirmUserModal from "./ConfirmUserModal";
+import Flag from "react-flagpack";
 
 type AdminConfirmedTableProps = {
 	type: "confirmed" | "unconfirmed";
@@ -140,8 +141,34 @@ const AdminConfirmedTable: FC<AdminConfirmedTableProps> = ({
 											<tbody className="divide-y divide-gray-200">
 												{users.map((user) => (
 													<tr key={user.id}>
-														<td className="py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-0">
-															{user.name}
+														<td className="text-nowrap py-4 pl-4 text-sm text-gray-900 sm:pl-0">
+															<div className="flex items-center gap-2 ">
+																{user.country ===
+																"Chile" ? (
+																	<Flag
+																		code="CL"
+																		gradient="real-linear"
+																		size="m"
+																		hasDropShadow
+																		className="border-none"
+																	/>
+																) : user.country ===
+																  "Peru" ? (
+																	<Flag
+																		code="PE"
+																		gradient="real-linear"
+																		size="m"
+																		hasDropShadow
+																		className="border-none"
+																	/>
+																) : (
+																	""
+																)}
+
+																<span>
+																	{user.name}
+																</span>
+															</div>
 														</td>
 														<td className="px-3 py-4 text-sm text-gray-900">
 															{user.personalId}

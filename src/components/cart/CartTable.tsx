@@ -7,14 +7,11 @@ import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import Loader from "../ui/Loader";
 import { Navigate } from "react-router-dom";
+import { formatCurrency } from "@/utilities/price";
 
 type CartTableProps = {
 	cartDetails: CartDetailData[];
 };
-
-function formatToCLP(value: number): string {
-	return `$ ${Math.round(value).toLocaleString("es-CL")}`;
-}
 
 export default function CartTable({ cartDetails }: CartTableProps) {
 	const { data, isLoading, isError } = useAuth();
@@ -192,12 +189,12 @@ export default function CartTable({ cartDetails }: CartTableProps) {
 											{hasDiscount ? (
 												<div>
 													<span className="line-through text-gray-400 mr-2">
-														{formatToCLP(
+														{formatCurrency(
 															item.cd_unit_value,
 														)}
 													</span>
 													<span className="font-medium text-gray-900">
-														{formatToCLP(
+														{formatCurrency(
 															item.cd_unit_value *
 																(1 -
 																	discountPercentage /
@@ -206,13 +203,15 @@ export default function CartTable({ cartDetails }: CartTableProps) {
 													</span>
 												</div>
 											) : (
-												formatToCLP(item.cd_unit_value)
+												formatCurrency(
+													item.cd_unit_value,
+												)
 											)}
 										</td>
 										{hasAnyDiscount && (
 											<td className="whitespace-nowrap px-3 py-4 text-sm font-medium text-green-600">
 												{hasDiscount
-													? `-${formatToCLP((item.cd_unit_value * discountPercentage) / 100)}`
+													? `-${formatCurrency((item.cd_unit_value * discountPercentage) / 100)}`
 													: "-"}
 											</td>
 										)}
@@ -220,7 +219,7 @@ export default function CartTable({ cartDetails }: CartTableProps) {
 											{item.quantity}
 										</td>
 										<td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-											{formatToCLP(item.cd_sub_total)}
+											{formatCurrency(item.cd_sub_total)}
 										</td>
 										<td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
 											<div className="flex items-center justify-end space-x-3">
@@ -294,7 +293,7 @@ export default function CartTable({ cartDetails }: CartTableProps) {
 											Subtotal (con descuentos):
 										</td>
 										<td className="whitespace-nowrap px-3 py-4 text-sm font-medium text-gray-900">
-											{formatToCLP(subtotal)}
+											{formatCurrency(subtotal)}
 										</td>
 										<td></td>
 									</tr>
@@ -306,7 +305,7 @@ export default function CartTable({ cartDetails }: CartTableProps) {
 											IVA (19%):
 										</td>
 										<td className="whitespace-nowrap px-3 py-2 text-sm font-medium text-gray-900">
-											{formatToCLP(iva)}
+											{formatCurrency(iva)}
 										</td>
 										<td></td>
 									</tr>
@@ -318,7 +317,7 @@ export default function CartTable({ cartDetails }: CartTableProps) {
 											Total a pagar:
 										</td>
 										<td className="whitespace-nowrap px-3 py-4 font-bold text-lg text-orange-500">
-											{formatToCLP(total)}
+											{formatCurrency(total)}
 										</td>
 										<td></td>
 									</tr>
@@ -328,7 +327,7 @@ export default function CartTable({ cartDetails }: CartTableProps) {
                                             Descuentos:
                                         </td>
                                         <td className="whitespace-nowrap px-3 py-2 text-sm font-medium text-green-600">
-                                            -{formatToCLP(totalDiscount )}
+                                            -{formatCurrency(totalDiscount )}
                                         </td>
                                         <td></td>
                                     </tr>
