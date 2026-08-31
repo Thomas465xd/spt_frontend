@@ -182,6 +182,7 @@ const AdminConfirmedTable: FC<AdminConfirmedTableProps> = ({
 														<td className="px-3 py-4 text-sm text-gray-900">
 															{formatPhone(
 																user.phone,
+																user.country,
 															)}
 														</td>
 														<td className="px-3 py-4 text-sm text-gray-900">

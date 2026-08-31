@@ -1,10 +1,12 @@
-import { Countries } from "../types";
+import { Countries, CountryEnum } from "../types";
 
-export function formatPhone(phone: string): string {
+export function formatPhone(phone: string, country?: CountryEnum): string {
 	// Remove any non-numeric characters
 	const cleaned = phone.replace(/\D/g, "");
 
-	const resolvedCountry = localStorage.getItem("country") as Countries;
+	const resolvedCountry = country
+		? country
+		: (localStorage.getItem("country") as Countries);
 
 	switch (resolvedCountry) {
 		case Countries.Chile: {

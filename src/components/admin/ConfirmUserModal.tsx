@@ -7,6 +7,19 @@ import { confirmUser, getUserById } from "@/api/AdminAPI";
 import { toast } from "react-toastify";
 import Loader from "../ui/Loader";
 import { XMarkIcon } from "@heroicons/react/20/solid";
+import {
+	BriefcaseBusiness,
+	Building,
+	Globe2,
+	IdCard,
+	Mail,
+	MapPin,
+	Phone,
+	User,
+} from "lucide-react";
+import { capitalizeFirstLetter } from "@/utilities/text";
+import { formatPhone } from "@/utilities/phone";
+import Flag from "react-flagpack";
 
 export default function ConfirmUserModal() {
 	const location = useLocation();
@@ -26,6 +39,7 @@ export default function ConfirmUserModal() {
 		queryKey: ["user", confirmUserId],
 		queryFn: () => getUserById({ userId: confirmUserId }),
 		enabled: !!confirmUserId, // Esto asegura que no se ejecute si no hay confirmUserId
+		retry: 2,
 	});
 
 	const user = data?.user;
@@ -34,8 +48,8 @@ export default function ConfirmUserModal() {
 	const { mutate, isPending } = useMutation({
 		mutationFn: confirmUser,
 		onError: (error) => {
-			navigate(location.pathname, { replace: true });
 			toast.error(error.message);
+			navigate(location.pathname, { replace: true });
 		},
 		onSuccess: (data) => {
 			// "delete" unconfirmed user from query cache
@@ -94,15 +108,15 @@ export default function ConfirmUserModal() {
 
 								<Dialog.Title
 									as="h3"
-									className="font-black text-4xl  my-5"
+									className="font-bold text-4xl  my-5"
 								>
 									Confirmar Usuario
 								</Dialog.Title>
 
-								<p className="text-xl font-bold">
+								<p className="text-xl">
 									Una vez confirmado el usuario será enviado
 									un email con las instrucciones para {""}
-									<span className="text-orange-600">
+									<span className="text-orange-600 font-bold">
 										establecer su contraseña
 									</span>
 								</p>
@@ -110,65 +124,133 @@ export default function ConfirmUserModal() {
 								{isLoading && <Loader />}
 								{error && (
 									<p className="text-red-600 my-4">
-										{error.message}.
+										{error.message}
 									</p>
 								)}
 
 								{user && (
-									<div className="mt-5 p-5 border border-gray-300 rounded-lg bg-gray-50">
-										<table className="w-full border-collapse border border-gray-300">
+									<div className="mt-5 p-5 border border-slate-200 rounded-lg bg-slate-50">
+										<table className="w-full">
 											<tbody>
 												<tr className="">
-													<td className="p-2 font-bold">
-														👨‍💼 Nombre:
+													<td className="p-2 font-bold flex-align">
+														<Globe2
+															size={20}
+															className="text-gray-400"
+														/>
+														País:
 													</td>
 													<td className="p-2">
-														{user.name}
+														<div className="flex-align">
+															{user.country}
+															{user.country ===
+															"Chile" ? (
+																<Flag
+																	code="CL"
+																	gradient="real-linear"
+																	size="m"
+																	hasDropShadow
+																	className="border-none"
+																/>
+															) : user.country ===
+															  "Peru" ? (
+																<Flag
+																	code="PE"
+																	gradient="real-linear"
+																	size="m"
+																	hasDropShadow
+																	className="border-none"
+																/>
+															) : (
+																""
+															)}
+														</div>
 													</td>
 												</tr>
 												<tr className="">
-													<td className="p-2 font-bold">
-														🏢 Empresa:
+													<td className="p-2 font-bold flex-align">
+														<User
+															size={20}
+															className="text-gray-400"
+														/>
+														Nombre:
+													</td>
+													<td className="p-2">
+														{capitalizeFirstLetter(
+															user.name,
+														)}
+													</td>
+												</tr>
+												<tr className="">
+													<td className="p-2 font-bold flex-align">
+														<Building
+															size={20}
+															className="text-gray-400"
+														/>
+														Empresa:
 													</td>
 													<td className="p-2">
 														{user.businessName}
 													</td>
 												</tr>
 												<tr className="">
-													<td className="p-2 font-bold">
-														🪪 ID Personal:
+													<td className="p-2 font-bold flex-align">
+														<IdCard
+															size={20}
+															className="text-gray-400"
+														/>
+														ID Personal:
 													</td>
 													<td className="p-2">
 														{user.personalId}
 													</td>
 												</tr>
 												<tr className="">
-													<td className="p-2 font-bold">
-														🆔 ID Empresa:
+													<td className="p-2 font-bold flex-align">
+														<BriefcaseBusiness
+															size={20}
+															className="text-gray-400"
+														/>
+														ID Empresa:
 													</td>
 													<td className="p-2">
 														{user.businessId}
 													</td>
 												</tr>
 												<tr className="">
-													<td className="p-2 font-bold">
-														📍 Dirección:
+													<td className="p-2 font-bold flex-align">
+														<MapPin
+															size={20}
+															className="text-gray-400"
+														/>
+														Dirección:
 													</td>
 													<td className="p-2">
 														{user.address}
 													</td>
 												</tr>
 												<tr className="">
-													<td className="p-2 font-bold">
-														📞 Teléfono:
+													<td className="p-2 font-bold flex-align">
+														<Phone
+															size={20}
+															className="text-gray-400"
+														/>
+														Teléfono:
 													</td>
 													<td className="p-2">
-														{user.phone}
+														{formatPhone(
+															user.phone,
+															user.country,
+														)}
 													</td>
 												</tr>
 												<tr>
-													<td className="p-2 font-bold">
-														📧 Correo:
+													<td className="p-2 font-bold flex-align">
+														<Mail
+															size={20}
+															className="text-gray-400"
+														/>
+														Correo:
 													</td>
 													<td className="p-2">
 														{user.email}
@@ -187,7 +269,7 @@ export default function ConfirmUserModal() {
 									<input
 										type="submit"
 										disabled={isLoading || isPending}
-										className="bg-orange-500 hover:bg-orange-600 w-full p-3 text-white font-black text-xl cursor-pointer rounded transition-colors disabled:opacity-50"
+										className="bg-orange-500 hover:bg-orange-600 w-full p-3 text-white font-bold text-xl cursor-pointer rounded transition-colors disabled:opacity-50"
 										value="Autorizar Usuario"
 									/>
 								</form>
