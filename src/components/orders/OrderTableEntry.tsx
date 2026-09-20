@@ -39,6 +39,7 @@ export default function OrderTableEntry({
 	onStatusChange,
 	onDelete,
 }: OrderTableEntryProps) {
+	const displayCurrency = order.currency || (order.country === "Peru" ? "PEN" : "CLP");
 	const estimated = new Date(order.estimatedDelivery);
 	const delivered = order.deliveredAt ? new Date(order.deliveredAt) : null;
 
@@ -188,7 +189,7 @@ export default function OrderTableEntry({
 					{order.shipper}
 				</td>
 				<td className="px-2 py-2 text-sm whitespace-nowrap text-gray-900 font-semibold">
-					{formatCurrency(order.total, order.currency)}
+					{formatCurrency(order.total, displayCurrency)}
 				</td>
 				{admin ? (
 					<td className="py-2 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap sm:pr-0">
@@ -294,7 +295,7 @@ export default function OrderTableEntry({
 										Moneda:
 									</span>
 									<span className="ml-2 font-medium text-gray-900">
-										{order.currency}
+										{displayCurrency}
 									</span>
 								</div>
 
@@ -420,7 +421,7 @@ export default function OrderTableEntry({
 													<td className="px-4 py-2 text-sm text-right text-gray-900">
 														{formatCurrency(
 															item.price,
-															order.currency,
+															displayCurrency,
 														)}
 													</td>
 													<td className="px-4 py-2 text-sm text-center text-gray-900">
@@ -429,7 +430,7 @@ export default function OrderTableEntry({
 													<td className="px-4 py-2 text-sm text-right font-semibold text-gray-900">
 														{formatCurrency(
 															item.lineTotal,
-															order.currency,
+															displayCurrency,
 														)}
 													</td>
 												</tr>
@@ -446,7 +447,7 @@ export default function OrderTableEntry({
 												<td className="px-4 py-3 text-right text-sm font-bold text-gray-900">
 													{formatCurrency(
 														order.total,
-														order.currency,
+														displayCurrency,
 													)}
 												</td>
 											</tr>

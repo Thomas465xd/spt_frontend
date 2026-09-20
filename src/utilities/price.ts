@@ -22,5 +22,7 @@ export function formatCurrency(value: number, currency?: CurrencyEnum) {
 			return `$ ${Math.round(value).toLocaleString("es-CL")}`;
 		case "PEN":
 			return `S/ ${Math.round(value).toLocaleString("es-PE")}`;
+		case "USD":
+			return `$ ${Math.round(value).toLocaleString("en-US")} USD`;
 	}
 }

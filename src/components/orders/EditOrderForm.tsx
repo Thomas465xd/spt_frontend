@@ -4,14 +4,22 @@ import { Plus, Trash2, User } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
+import {
+	Menu,
+	MenuButton,
+	MenuItem,
+	MenuItems,
+} from "@headlessui/react";
 import UserSearchModal from "./UserSearchModal";
 import Loader from "@/components/ui/Loader";
 import { getOrderByIdAdmin, updateOrder } from "@/api/OrderAPI";
 import { AuthUser } from "@/types/auth";
 import Swal from "sweetalert2";
-import { countries, OrderForm } from "@/types/order";
+import { countries, currencies, CurrencyEnum, OrderForm } from "@/types/order";
 import { formatDateForInput } from "@/utilities/date";
 import { formatCurrency } from "@/utilities/price";
+import { ChevronDownIcon } from "lucide-react";
+import Flag from "react-flagpack";
 
 export default function EditOrderForm() {
 	const navigate = useNavigate();
@@ -39,7 +47,7 @@ export default function EditOrderForm() {
 		watch,
 		setValue,
 		reset,
-		formState: { errors },
+		formState: { errors, dirtyFields },
 	} = useForm<OrderForm>({
 		defaultValues: {
 			items: [{ sku: "", name: "", price: 0, quantity: 1, lineTotal: 0 }],
@@ -69,8 +77,19 @@ export default function EditOrderForm() {
 	const currency = watch("currency");
 
 	useEffect(() => {
+		if (!dirtyFields.country) return;
+
 		setValue("currency", country === "Chile" ? "CLP" : "PEN");
-	}, [country, setValue]);
+	}, [country, dirtyFields.country, setValue]);
+
+	const currencyOptions: Array<{
+		code: CurrencyEnum;
+		flagCode: "CL" | "PE" | "US";
+	}> = [
+		{ code: "CLP", flagCode: "CL" },
+		{ code: "PEN", flagCode: "PE" },
+		{ code: "USD", flagCode: "US" },
+	];
 
 	// Populate form when order data is loaded
 	useEffect(() => {
@@ -198,6 +217,13 @@ export default function EditOrderForm() {
 		setValue("businessName", user.businessName);
 		setValue("businessId", user.businessId);
 		setValue("user", user.id);
+	};
+
+	const handleCurrencySelect = (selectedCurrency: CurrencyEnum) => {
+		setValue("currency", selectedCurrency, {
+			shouldDirty: true,
+			shouldValidate: true,
+		});
 	};
 
 	if (isLoadingOrder) return <Loader />;
@@ -492,15 +518,79 @@ export default function EditOrderForm() {
 									</select>
 								</div>
 
-								<div className="">
-									<label>Moneda</label>
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">
+										Moneda{" "}
+										<span className="text-red-500 font-bold">
+											*
+										</span>
+									</label>
 									<input
-										type="text"
-										disabled
-										id="currency"
-										placeholder={currency}
-										className="w-full px-3 py-2 rounded border border-gray-300 bg-gray-100 cursor-not-allowed"
+										type="hidden"
+										{...register("currency", {
+											required: true,
+											validate: (value) =>
+												currencies.includes(value),
+										})}
 									/>
+									<Menu as="div" className="relative">
+										<MenuButton
+											className="w-full inline-flex items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500"
+										>
+											<div className="flex items-center gap-2">
+												<Flag
+													code={
+														(currency === "USD"
+															? "US"
+															: currency === "PEN"
+																? "PE"
+																: "CL") as "CL" | "PE" | "US"
+													}
+													gradient="real-linear"
+													size="m"
+													hasDropShadow
+												/>
+												<span>{currency}</span>
+											</div>
+											<ChevronDownIcon
+												aria-hidden="true"
+												className="size-5 text-slate-500"
+											/>
+										</MenuButton>
+										<MenuItems
+											transition
+											className="absolute right-0 z-10 mt-2 w-full min-w-40 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg outline-1 -outline-offset-1 outline-gray-200 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+										>
+											<div className="py-1">
+												{currencyOptions.map((currencyOption) => (
+													<MenuItem key={currencyOption.code}>
+														<button
+															type="button"
+															onClick={() =>
+																handleCurrencySelect(
+																	currencyOption.code,
+																)
+															}
+															className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 data-focus:bg-orange-50 data-focus:text-orange-700 data-focus:outline-hidden"
+														>
+															<span>{currencyOption.code}</span>
+															<Flag
+																code={currencyOption.flagCode}
+																gradient="real-linear"
+																size="m"
+																hasDropShadow
+															/>
+														</button>
+													</MenuItem>
+												))}
+											</div>
+										</MenuItems>
+									</Menu>
+									{errors.currency && (
+										<p className="text-red-600 text-xs mt-1">
+											Moneda es requerida
+										</p>
+									)}
 								</div>
 
 								{/* Delivered At - Only show if status is "Entregado" */}

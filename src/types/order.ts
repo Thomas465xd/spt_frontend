@@ -10,9 +10,9 @@ export const orderStatusSchema = z.enum([
 
 // Mirrors the Currencies enum in the backend Order model
 export const countries = ["Chile", "Peru"];
-export const currencies = ["CLP", "PEN"];
+export const currencies = ["CLP", "PEN", "USD"];
 
-export const currencySchema = z.enum(["PEN", "CLP"]);
+export const currencySchema = z.enum(["PEN", "CLP", "USD"]);
 
 export const orderItemSchema = z
 	.object({
