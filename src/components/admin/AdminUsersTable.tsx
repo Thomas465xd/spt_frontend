@@ -9,15 +9,16 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import ConfirmUserModal from "./ConfirmUserModal";
 import Flag from "react-flagpack";
+import { forgotPasswordEmail } from "@/api/AuthAPI";
 
-type AdminConfirmedTableProps = {
+type AdminUsersTableProps = {
 	type: "confirmed" | "unconfirmed";
 	users: UsersResponse["users"];
 	isLoading: boolean;
 	error: null;
 };
 
-const AdminConfirmedTable: FC<AdminConfirmedTableProps> = ({
+const AdminConfirmedTable: FC<AdminUsersTableProps> = ({
 	type,
 	users,
 	isLoading,
@@ -73,7 +74,7 @@ const AdminConfirmedTable: FC<AdminConfirmedTableProps> = ({
 	const handleDeleteUser = (userId: string) => {
 		Swal.fire({
 			title: "¿Estas Seguro de esta Acción? ⚠️",
-			text: "🚨 Recuerda que esta acción no es reversible 🚨",
+			text: "🚨 Recuerda que esta la elimnación de este usuario no es reversible 🚨",
 			icon: "warning",
 			showCancelButton: true,
 			confirmButtonColor: "#3085d6",
@@ -83,6 +84,33 @@ const AdminConfirmedTable: FC<AdminConfirmedTableProps> = ({
 		}).then((result) => {
 			if (result.isConfirmed) {
 				deleteNoPasswordUser(userId);
+			}
+		});
+	};
+
+	const { mutate: resendPasswordInstructions } = useMutation({
+		mutationFn: forgotPasswordEmail,
+		onError: (error) => {
+			toast.error(error.message);
+		},
+		onSuccess: () => {
+			toast.success("Instrucciones enviadas exitosamente.");
+		},
+	});
+
+	const handleResendInstructions = (email: string) => {
+		Swal.fire({
+			title: "Reenviar Instrucciones para completar usuario",
+			text: "Este usuario ya fue confirmado, pero aún no ha establecido una contraseña ¿deseas reenviar instrucciones para esto?",
+			icon: "info",
+			showCancelButton: true,
+			confirmButtonColor: "#3085d6",
+			cancelButtonColor: "#292524",
+			confirmButtonText: "Si, Reenviar",
+			cancelButtonText: "Cancelar",
+		}).then((result) => {
+			if (result.isConfirmed) {
+				resendPasswordInstructions({ email });
 			}
 		});
 	};
@@ -205,23 +233,38 @@ const AdminConfirmedTable: FC<AdminConfirmedTableProps> = ({
 																		Usuario
 																	</button>
 																) : (
-																	<button
-																		className="text-green-600 hover:underline"
-																		type="button"
-																		onClick={() =>
-																			navigate(
-																				location.pathname +
-																					`?confirmUser=${user.id}`,
-																			)
-																		}
-																	>
-																		Confirmar
-																		Usuario
-																	</button>
+																	<div className="flex flex-col items-start">
+																		<button
+																			className="text-red-700 hover:underline font-bold text-left"
+																			type="button"
+																			onClick={() =>
+																				handleDeleteUser(
+																					user.id,
+																				)
+																			}
+																		>
+																			Eliminar
+																			Usuario
+																		</button>
+
+																		<button
+																			className="text-green-600 hover:underline font-bold text-left"
+																			type="button"
+																			onClick={() =>
+																				navigate(
+																					location.pathname +
+																						`?confirmUser=${user.id}`,
+																				)
+																			}
+																		>
+																			Confirmar
+																			Usuario
+																		</button>
+																	</div>
 																)
 															) : user.passwordSet ? (
 																<button
-																	className="text-orange-600 hover:underline font-bold"
+																	className="text-orange-600 hover:underline font-bold text-left"
 																	type="button"
 																	onClick={() =>
 																		handleUserStatus(
@@ -233,18 +276,32 @@ const AdminConfirmedTable: FC<AdminConfirmedTableProps> = ({
 																	Usuario
 																</button>
 															) : (
-																<button
-																	className="text-red-700 hover:underline font-bold"
-																	type="button"
-																	onClick={() =>
-																		handleDeleteUser(
-																			user.id,
-																		)
-																	}
-																>
-																	Eliminar
-																	Usuario
-																</button>
+																<div className="flex flex-col items-start">
+																	<button
+																		className="text-blue-600 hover:underline font-bold text-left"
+																		type="button"
+																		onClick={() =>
+																			handleResendInstructions(
+																				user.email,
+																			)
+																		}
+																	>
+																		Reenviar
+																		Instrucciones
+																	</button>
+
+																	<button
+																		className="text-red-700 hover:underline font-bold text-left"
+																		type="button"
+																		onClick={() =>
+																			handleDeleteUser(
+																				user.id,
+																			)
+																		}
+																	>
+																		Eliminar
+																	</button>
+																</div>
 															)}
 														</td>
 													</tr>

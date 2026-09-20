@@ -1,5 +1,5 @@
 import { getUnconfirmedUsers } from "@/api/AdminAPI";
-import AdminConfirmedTable from "@/components/admin/AdminConfirmedTable";
+import AdminConfirmedTable from "@/components/admin/AdminUsersTable";
 import Heading from "@/components/ui/Heading";
 import Loader from "@/components/ui/Loader";
 import Pagination from "@/components/ui/Pagination";
