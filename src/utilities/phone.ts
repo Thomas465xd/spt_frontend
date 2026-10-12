@@ -19,9 +19,9 @@ export function formatPhone(phone: string, country?: CountryEnum): string {
 			const match = cleaned.match(/(\d{3})(\d{3})(\d{3})$/);
 			return match ? `${match[1]} ${match[2]} ${match[3]}` : phone;
 		}
-		// TODO: Bsale Colombia is not yet implemented
 		case Countries.Colombia: {
-			const match = cleaned.match(/(\d{1})(\d{4})(\d{4})$/);
+			// Colombian mobile: 10 digits -> "3XX XXX XXXX"
+			const match = cleaned.match(/(\d{3})(\d{3})(\d{4})$/);
 			return match ? `${match[1]} ${match[2]} ${match[3]}` : phone;
 		}
 		default: {

@@ -6,6 +6,7 @@ export function formatIdentification(value: string): string {
 	if (!value) return "";
 
 	switch (country) {
+		//* RUT
 		case Countries.Chile: {
 			// Remove dots, spaces and hyphen, e.g. 23165774-6
 			const clean = value.replace(/[.\-\s]/g, "").toUpperCase();
@@ -17,12 +18,13 @@ export function formatIdentification(value: string): string {
 
 			return `${formattedBody}-${dv}`;
 		}
+		//* RUC
 		case Countries.Peru: {
 			// RUC has no verifier-digit formatting, just 11 numeric digits
 			const clean = value.replace(/\D/g, "");
 			return clean.slice(0, 11);
 		}
-		// TODO: Bsale Colombia is not yet implemented
+		//* NIT
 		case Countries.Colombia: {
 			const clean = value.replace(/[.\-\s]/g, "");
 			if (clean.length < 2) return value;
@@ -31,7 +33,7 @@ export function formatIdentification(value: string): string {
 			const dv = clean.slice(-1);
 			const formattedBody = body.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
-			return `${formattedBody}-${dv}`;
+			return `${formattedBody} - ${dv}`;
 		}
 		default: {
 			const clean = value.replace(/[.\-\s]/g, "").toUpperCase();
@@ -93,8 +95,8 @@ const labelsByIdType: Record<IdentificationsEnum, IdLabels> = {
 	NIT: {
 		personal: "NIT Personal",
 		business: "NIT Empresa",
-		personalPlaceholder: "Ej. 123.456.789-0",
-		businessPlaceholder: "Ej. 900.123.456-7",
+		personalPlaceholder: "Ej. 123.456.789 - 0",
+		businessPlaceholder: "Ej. 900.123.456 - 7",
 	},
 };
 
@@ -148,7 +150,7 @@ function formatRUCInput(value: string): string {
 
 /**
  * Formats a Colombian NIT as the user types.
- * Input: raw digits → Output: `900.123.456-7`
+ * Input: raw digits → Output: `900.123.456 - 7`
  */
 function formatNITInput(value: string): string {
 	const cleaned = value.replace(/[^0-9]/g, "");
@@ -159,7 +161,7 @@ function formatNITInput(value: string): string {
 
 	numbers = numbers.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
-	return `${numbers}-${verifier}`;
+	return `${numbers} - ${verifier}`;
 }
 
 const formatters: Record<IdentificationsEnum, (value: string) => string> = {
@@ -193,8 +195,8 @@ const validationPatterns: Record<IdentificationsEnum, IdValidation> = {
 		message: "Formato de RUC inválido. Debe tener entre 8 y 11 dígitos",
 	},
 	NIT: {
-		pattern: /^\d{1,3}\.\d{3}\.\d{3}-\d$/,
-		message: "Formato de NIT inválido. Ejemplo: 123.456.789-0",
+		pattern: /^\d{1,3}\.\d{3}\.\d{3} - \d$/,
+		message: "Formato de NIT inválido. Ejemplo: 123.456.789 - 0",
 	},
 };
 
