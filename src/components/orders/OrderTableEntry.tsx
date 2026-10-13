@@ -5,6 +5,7 @@ import { copyToClipboard } from "@/utilities/copy";
 import { Link } from "react-router-dom";
 import { formatCurrency } from "@/utilities/price";
 import Flag from "react-flagpack";
+import { getFlagCodeForCountry } from "@/config/countryConfig";
 
 type OrderTableEntryProps = {
 	order: Order;
@@ -39,7 +40,8 @@ export default function OrderTableEntry({
 	onStatusChange,
 	onDelete,
 }: OrderTableEntryProps) {
-	const displayCurrency = order.currency || (order.country === "Peru" ? "PEN" : "CLP");
+	const displayCurrency =
+		order.currency || (order.country === "Peru" ? "PEN" : "CLP");
 	const estimated = new Date(order.estimatedDelivery);
 	const delivered = order.deliveredAt ? new Date(order.deliveredAt) : null;
 
@@ -126,25 +128,13 @@ export default function OrderTableEntry({
 					)}
 				</td>
 				<td className="px-2 py-2 text-sm whitespace-nowrap text-gray-500 boder-none">
-					{order.country === "Chile" ? (
-						<Flag
-							code="CL"
-							gradient="real-linear"
-							size="m"
-							hasDropShadow
-							className="border-none"
-						/>
-					) : order.country === "Peru" ? (
-						<Flag
-							code="PE"
-							gradient="real-linear"
-							size="m"
-							hasDropShadow
-							className="border-none"
-						/>
-					) : (
-						order.country
-					)}
+					<Flag
+						code={getFlagCodeForCountry(order.country)}
+						gradient="real-linear"
+						size="m"
+						className="border-none"
+						hasDropShadow
+					/>
 				</td>
 				<td className="px-2 py-2 text-sm whitespace-nowrap">
 					{/* Made select responsive with proper sizing */}

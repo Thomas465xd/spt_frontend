@@ -8,11 +8,9 @@ export const orderStatusSchema = z.enum([
 	"Cancelado",
 ]);
 
-// Mirrors the Currencies enum in the backend Order model
-export const countries = ["Chile", "Peru"];
-export const currencies = ["CLP", "PEN", "USD"];
-
-export const currencySchema = z.enum(["PEN", "CLP", "USD"]);
+//! Mirrors the Currencies enum in the backend Order model
+export const currencies = ["CLP", "PEN", "USD", "COP"];
+export const currencySchema = z.enum(["PEN", "CLP", "USD", "COP"]);
 
 export const orderItemSchema = z
 	.object({

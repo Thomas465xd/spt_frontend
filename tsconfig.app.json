@@ -17,7 +17,8 @@
 			"@/lib/*": ["lib/*"],
 			"@/utilities/*": ["utilities/*"],
 			"@/locales/*": ["locales/*"],
-			"@/hooks/*": ["hooks/*"]
+			"@/hooks/*": ["hooks/*"],
+			"@/config/*": ["config/*"]
 		},
 
 		/* Bundler mode */
@@ -35,6 +36,10 @@
 		"noFallthroughCasesInSwitch": true,
 		"noUncheckedSideEffectImports": true
 	},
-	"include": ["src"],
+	"include": [
+		"src",
+		"src/afsd/countryConfig.ts",
+		"src/afsd/currencyConfig.ts"
+	],
 	"exclude": ["src/**/deprecated"]
 }

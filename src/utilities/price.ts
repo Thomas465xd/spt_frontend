@@ -9,9 +9,8 @@ export function formatCurrency(value: number, currency?: CurrencyEnum) {
 				return `$ ${Math.round(value).toLocaleString("es-CL")}`;
 			case Countries.Peru:
 				return `S/ ${Math.round(value).toLocaleString("es-PE")}`;
-			// TODO: Bsale colombia is not yet implemented
 			case Countries.Colombia:
-				return `$ ${Math.round(value).toLocaleString("es-CL")}`;
+				return `$ ${Math.round(value).toLocaleString("es-CO")}`;
 			default:
 				return `$ ${Math.round(value).toLocaleString("es-CL")}`;
 		}
@@ -22,6 +21,8 @@ export function formatCurrency(value: number, currency?: CurrencyEnum) {
 			return `$ ${Math.round(value).toLocaleString("es-CL")}`;
 		case "PEN":
 			return `S/ ${Math.round(value).toLocaleString("es-PE")}`;
+		case "COP":
+			return `$ ${Math.round(value).toLocaleString("es-CO")} COP`;
 		case "USD":
 			return `$ ${Math.round(value).toLocaleString("en-US")} USD`;
 	}

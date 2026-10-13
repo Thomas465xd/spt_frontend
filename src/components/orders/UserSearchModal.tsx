@@ -4,7 +4,14 @@ import { useQuery } from "@tanstack/react-query";
 import { Search, User, X } from "lucide-react";
 import { useState } from "react";
 
-// User Search Modal Component
+/**
+ * Normalize ID by removing dots, hyphens, spaces, and converting to uppercase.
+ * This allows matching both formatted (76.123.456-7) and unformatted (76123456-7) IDs.
+ */
+function normalizeId(id: string): string {
+	return id.replace(/[.\-\s]/g, "").toUpperCase();
+}
+
 export default function UserSearchModal({
 	isOpen,
 	onClose,
@@ -18,13 +25,16 @@ export default function UserSearchModal({
 	const [searchEmail, setSearchEmail] = useState("");
 	const [page, setPage] = useState(1);
 
+	// Normalize the search ID for API calls
+	const normalizedSearchId = normalizeId(searchId);
+
 	const { data, isLoading } = useQuery({
-		queryKey: ["users", page, searchId, searchEmail],
+		queryKey: ["users", page, normalizedSearchId, searchEmail],
 		queryFn: () =>
 			getConfirmedUsers({
 				page,
 				perPage: 10,
-				searchId,
+				searchId: normalizedSearchId,
 				searchEmail,
 			}),
 		enabled: isOpen,

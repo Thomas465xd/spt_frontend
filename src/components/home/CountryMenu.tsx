@@ -1,13 +1,13 @@
+import { getFlagCodeForCountry } from "@/config/countryConfig";
 import { useCountry } from "@/hooks/useCountry";
-import { Countries } from "@/types/auth";
+import { countries, CountryEnum } from "@/types/auth";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDownIcon } from "lucide-react";
 import Flag from "react-flagpack";
 
 export default function CountryMenu() {
 	const { country, countryCode } = useCountry();
-
-	const handleCountrySelect = (country: Countries) => {
+	const handleCountrySelect = (country: CountryEnum) => {
 		localStorage.setItem("country", country);
 		window.location.reload();
 	};
@@ -46,34 +46,30 @@ export default function CountryMenu() {
                 "
 			>
 				<div className="py-1">
-					<MenuItem>
-						<button
-							onClick={() => handleCountrySelect(Countries.Chile)}
-							className="space-x-2 group w-full flex items-center px-4 py-2 text-sm text-slate-300 data-focus:bg-white/5 data-focus:text-white data-focus:outline-hidden"
-						>
-							<Flag
-								code="CL"
-								gradient="real-linear"
-								size="m"
-								hasDropShadow
-							/>
-							<span>Chile</span>
-						</button>
-					</MenuItem>
-					<MenuItem>
-						<button
-							onClick={() => handleCountrySelect(Countries.Peru)}
-							className="space-x-2 group w-full flex items-center px-4 py-2 text-sm text-slate-300 data-focus:bg-white/5 data-focus:text-white data-focus:outline-hidden"
-						>
-							<Flag
-								code="PE"
-								gradient="real-linear"
-								size="m"
-								hasDropShadow
-							/>
-							<span>Perú</span>
-						</button>
-					</MenuItem>
+					{countries.map((country) => {
+						return (
+							<MenuItem key={country}>
+								<button
+									onClick={() =>
+										handleCountrySelect(
+											country as CountryEnum,
+										)
+									}
+									className="space-x-2 group w-full flex items-center px-4 py-2 text-sm text-slate-300 data-focus:bg-white/5 data-focus:text-white data-focus:outline-hidden"
+								>
+									<Flag
+										code={getFlagCodeForCountry(
+											country as CountryEnum,
+										)}
+										gradient="real-linear"
+										size="m"
+										hasDropShadow
+									/>
+									<span>{country}</span>
+								</button>
+							</MenuItem>
+						);
+					})}
 				</div>
 			</MenuItems>
 		</Menu>

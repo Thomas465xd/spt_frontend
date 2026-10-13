@@ -4,22 +4,21 @@ import { Plus, Trash2, User } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-	Menu,
-	MenuButton,
-	MenuItem,
-	MenuItems,
-} from "@headlessui/react";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import UserSearchModal from "./UserSearchModal";
 import Loader from "@/components/ui/Loader";
 import { getOrderByIdAdmin, updateOrder } from "@/api/OrderAPI";
-import { AuthUser } from "@/types/auth";
+import { AuthUser, CountryEnum, countries } from "@/types/auth";
 import Swal from "sweetalert2";
-import { countries, currencies, CurrencyEnum, OrderForm } from "@/types/order";
+import { currencies, CurrencyEnum, OrderForm } from "@/types/order";
 import { formatDateForInput } from "@/utilities/date";
 import { formatCurrency } from "@/utilities/price";
 import { ChevronDownIcon } from "lucide-react";
 import Flag from "react-flagpack";
+import {
+	getCurrencyOptions,
+	getDefaultCurrencyForCountry,
+} from "@/config/currencyConfig";
 
 export default function EditOrderForm() {
 	const navigate = useNavigate();
@@ -79,17 +78,13 @@ export default function EditOrderForm() {
 	useEffect(() => {
 		if (!dirtyFields.country) return;
 
-		setValue("currency", country === "Chile" ? "CLP" : "PEN");
+		const defaultCurrency = getDefaultCurrencyForCountry(
+			country as CountryEnum,
+		);
+		setValue("currency", defaultCurrency);
 	}, [country, dirtyFields.country, setValue]);
 
-	const currencyOptions: Array<{
-		code: CurrencyEnum;
-		flagCode: "CL" | "PE" | "US";
-	}> = [
-		{ code: "CLP", flagCode: "CL" },
-		{ code: "PEN", flagCode: "PE" },
-		{ code: "USD", flagCode: "US" },
-	];
+	const currencyOptions = getCurrencyOptions(country as CountryEnum);
 
 	// Populate form when order data is loaded
 	useEffect(() => {
@@ -505,7 +500,7 @@ export default function EditOrderForm() {
 										})}
 										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
 									>
-										{countries.map((country) => {
+										{countries.map((country: string) => {
 											return (
 												<option
 													className="w-full"
@@ -534,17 +529,18 @@ export default function EditOrderForm() {
 										})}
 									/>
 									<Menu as="div" className="relative">
-										<MenuButton
-											className="w-full inline-flex items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500"
-										>
+										<MenuButton className="w-full inline-flex items-center justify-between rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500">
 											<div className="flex items-center gap-2">
 												<Flag
 													code={
-														(currency === "USD"
-															? "US"
-															: currency === "PEN"
-																? "PE"
-																: "CL") as "CL" | "PE" | "US"
+														currencyOptions.find(
+															(
+																opt: (typeof currencyOptions)[0],
+															) =>
+																opt.code ===
+																currency,
+														)?.flagCode ||
+														("CL" as const)
 													}
 													gradient="real-linear"
 													size="m"
@@ -562,27 +558,41 @@ export default function EditOrderForm() {
 											className="absolute right-0 z-10 mt-2 w-full min-w-40 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg outline-1 -outline-offset-1 outline-gray-200 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
 										>
 											<div className="py-1">
-												{currencyOptions.map((currencyOption) => (
-													<MenuItem key={currencyOption.code}>
-														<button
-															type="button"
-															onClick={() =>
-																handleCurrencySelect(
-																	currencyOption.code,
-																)
+												{currencyOptions.map(
+													(
+														currencyOption: (typeof currencyOptions)[0],
+													) => (
+														<MenuItem
+															key={
+																currencyOption.code
 															}
-															className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 data-focus:bg-orange-50 data-focus:text-orange-700 data-focus:outline-hidden"
 														>
-															<span>{currencyOption.code}</span>
-															<Flag
-																code={currencyOption.flagCode}
-																gradient="real-linear"
-																size="m"
-																hasDropShadow
-															/>
-														</button>
-													</MenuItem>
-												))}
+															<button
+																type="button"
+																onClick={() =>
+																	handleCurrencySelect(
+																		currencyOption.code,
+																	)
+																}
+																className="w-full flex items-center justify-between px-4 py-2 text-sm text-gray-700 data-focus:bg-orange-50 data-focus:text-orange-700 data-focus:outline-hidden"
+															>
+																<span>
+																	{
+																		currencyOption.code
+																	}
+																</span>
+																<Flag
+																	code={
+																		currencyOption.flagCode
+																	}
+																	gradient="real-linear"
+																	size="m"
+																	hasDropShadow
+																/>
+															</button>
+														</MenuItem>
+													),
+												)}
 											</div>
 										</MenuItems>
 									</Menu>

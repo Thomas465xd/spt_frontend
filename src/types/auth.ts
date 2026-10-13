@@ -1,10 +1,13 @@
 import { z } from "zod";
 
 /** Auth & Admin */
+export const countries = ["Chile", "Peru", "Colombia", "USA"];
+
 export enum Countries {
 	Chile = "Chile",
 	Peru = "Peru",
 	Colombia = "Colombia",
+	USA = "USA",
 }
 
 export enum Identifications {
