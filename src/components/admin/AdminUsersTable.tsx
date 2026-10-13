@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import ConfirmUserModal from "./ConfirmUserModal";
 import Flag from "react-flagpack";
 import { forgotPasswordEmail } from "@/api/AuthAPI";
+import { getFlagCodeForCountry } from "@/config/countryConfig";
 
 type AdminUsersTableProps = {
 	type: "confirmed" | "unconfirmed";
@@ -171,27 +172,15 @@ const AdminConfirmedTable: FC<AdminUsersTableProps> = ({
 													<tr key={user.id}>
 														<td className="text-nowrap py-4 pl-4 text-sm text-gray-900 sm:pl-0">
 															<div className="flex items-center gap-2 ">
-																{user.country ===
-																"Chile" ? (
-																	<Flag
-																		code="CL"
-																		gradient="real-linear"
-																		size="m"
-																		hasDropShadow
-																		className="border-none"
-																	/>
-																) : user.country ===
-																  "Peru" ? (
-																	<Flag
-																		code="PE"
-																		gradient="real-linear"
-																		size="m"
-																		hasDropShadow
-																		className="border-none"
-																	/>
-																) : (
-																	""
-																)}
+																<Flag
+																	code={getFlagCodeForCountry(
+																		user.country,
+																	)}
+																	gradient="real-linear"
+																	size="m"
+																	className="border-none"
+																	hasDropShadow
+																/>
 
 																<span>
 																	{user.name}
