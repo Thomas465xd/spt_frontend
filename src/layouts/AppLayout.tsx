@@ -6,6 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import HomeLoader from "@/components/ui/HomeLoader";
 import Swal from "sweetalert2";
 import Header from "@/components/home/Header";
+import BackToTopButton from "@/components/ui/BackToTop";
 
 export default function AppLayout() {
 	const queryClient = useQueryClient();
@@ -60,6 +61,8 @@ export default function AppLayout() {
 					pauseOnFocusLoss={false}
 					pauseOnHover={false}
 				/>
+
+				<BackToTopButton />
 			</div>
 		);
 }

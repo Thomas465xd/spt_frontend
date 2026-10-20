@@ -5,8 +5,9 @@ import Loader from "@/components/ui/Loader";
 import Pagination from "@/components/ui/Pagination";
 import SearchBar from "@/components/ui/SearchBar";
 import { useQuery } from "@tanstack/react-query";
-import { CheckCircle, Earth, Package, Pen, Truck, XCircle } from "lucide-react";
+import { CheckCircle, Package, Pen, Truck, XCircle } from "lucide-react";
 import { useEffect } from "react";
+import Flag from "react-flagpack";
 import { Link, Navigate, useSearchParams } from "react-router-dom";
 
 const orderStatusOptions = [
@@ -40,14 +41,23 @@ const countriesOptions = [
 	{
 		value: "Chile",
 		label: "Chile",
-		icon: Earth,
+		icon: Flag,
+		iconProps: { code: "CL", size: "m" },
 		color: "text-blue-500",
 	},
 	{
 		value: "Peru",
 		label: "Perú",
-		icon: Earth,
+		icon: Flag,
+		iconProps: { code: "PE", size: "m" },
 		color: "text-red-500",
+	},
+	{
+		value: "Colombia",
+		label: "Colombia",
+		icon: Flag,
+		iconProps: { code: "CO", size: "m" },
+		color: "text-orange-500",
 	},
 ];
 

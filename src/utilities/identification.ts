@@ -93,7 +93,7 @@ const labelsByIdType: Record<IdentificationsEnum, IdLabels> = {
 		businessPlaceholder: "Ej. 20123456789",
 	},
 	NIT: {
-		personal: "NIT Personal",
+		personal: "DNI Personal",
 		business: "NIT Empresa",
 		personalPlaceholder: "Ej. 123.456.789 - 0",
 		businessPlaceholder: "Ej. 900.123.456 - 7",

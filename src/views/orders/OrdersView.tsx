@@ -6,7 +6,7 @@ import Pagination from "@/components/ui/Pagination";
 import SearchBar from "@/components/ui/SearchBar";
 import { useAuth } from "@/hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
-import { CheckCircle, Earth, Package, Truck, XCircle } from "lucide-react";
+import { CheckCircle, Flag, Package, Truck, XCircle } from "lucide-react";
 import { useEffect } from "react";
 import { Link, Navigate, useSearchParams } from "react-router-dom";
 
@@ -41,14 +41,23 @@ const countriesOptions = [
 	{
 		value: "Chile",
 		label: "Chile",
-		icon: Earth,
+		icon: Flag,
+		iconProps: { code: "CL", size: "m" },
 		color: "text-blue-500",
 	},
 	{
 		value: "Peru",
 		label: "Perú",
-		icon: Earth,
+		icon: Flag,
+		iconProps: { code: "PE", size: "m" },
 		color: "text-red-500",
+	},
+	{
+		value: "Colombia",
+		label: "Colombia",
+		icon: Flag,
+		iconProps: { code: "CO", size: "m" },
+		color: "text-orange-500",
 	},
 ];
 

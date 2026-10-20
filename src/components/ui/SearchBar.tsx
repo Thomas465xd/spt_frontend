@@ -2,12 +2,16 @@ import { useForm } from "react-hook-form";
 import { SearchFormData } from "@/types/index";
 import { useNavigate } from "react-router-dom";
 import ErrorMessage from "./ErrorMessage";
-import { Search, ChevronDown, LucideIcon } from "lucide-react";
+import { Search, ChevronDown } from "lucide-react";
+import { ComponentType } from "react";
 
 export type SelectOption = {
 	value: string;
 	label: string;
-	icon?: LucideIcon;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	icon?: ComponentType<any>; // Supports both Lucide icons and Flag component
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	iconProps?: Record<string, any>; // Additional props for icons (e.g., code for Flag)
 	color?: string;
 };
 
@@ -77,7 +81,9 @@ export default function SearchBar({
 							<div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2">
 								{selectedOption?.icon ? (
 									<selectedOption.icon
-										size={18}
+										{...(selectedOption.iconProps || {
+											size: 18,
+										})}
 										className={
 											selectedOption.color ||
 											"text-gray-400"
