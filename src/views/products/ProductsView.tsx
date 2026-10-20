@@ -153,12 +153,7 @@ export default function ProductsView() {
 			<ProductsTable products={products} />
 
 			{/* Pagination */}
-			<Pagination
-				route="products"
-				page={page}
-				totalPages={totalPages}
-				searchQuery={searchQuery}
-			/>
+			<Pagination route="products" page={page} totalPages={totalPages} />
 
 			<button
 				className="fixed bottom-5 left-5 bg-orange-600 text-white p-4 rounded-full shadow-lg hover:bg-orange-700 transition-colors"
